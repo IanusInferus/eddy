@@ -1,2 +1,2 @@
-TransEncoding ".*?\.(vb|txt)" UTF-16
+TransEncoding ".*?\.(vb|txt|htm)" UTF-8
 pause
