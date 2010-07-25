@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.07.14.
+'  Version:     2010.07.25.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -148,7 +148,7 @@ Public Class FormMain
                     DataGridView_Multiview.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
                 End If
             Else
-                SplitContainer_Main.FixedPanel = FixedPanel.Panel2
+                SplitContainer_Main.FixedPanel = FixedPanel.Panel1
                 DataGridView_Multiview.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
                 SplitContainer_Main.SplitterDistance = 0
                 SplitContainer_Main.IsSplitterFixed = True
@@ -402,10 +402,7 @@ Public Class FormMain
                             If h(TextColumn) Is Nothing Then Continue For
                             For Each ts In h(TextColumn)
                                 If ts.Length < 0 OrElse ts.Index < 0 OrElse ts.Index + ts.Length > RichTextBoxForText.TextLength Then Continue For
-                                RichTextBoxForText.SelectionStart = ts.Index
-                                RichTextBoxForText.SelectionLength = ts.Length
-                                RichTextBoxForText.SelectionColor = ts.ForeColor
-                                RichTextBoxForText.SelectionBackColor = ts.BackColor
+                                RichTextBoxForText.SetTextColor(ts.Index, ts.Length, ts.ForeColor, ts.BackColor)
                             Next
                         Next
                         r(TextColumn) = RichTextBoxForText.Rtf
@@ -559,8 +556,8 @@ Public Class FormMain
                 DataGridView_Multiview.InvalidateRow(TextIndexValue)
             End If
         End If
-        If Value < VScrollBar_Bar.Minimum - 1 Then Value = VScrollBar_Bar.Minimum - 1
-        If Value > VScrollBar_Bar.Maximum - 1 Then Value = VScrollBar_Bar.Maximum - 1
+        If Value < VScrollBar_Bar.Minimum - 1 Then Return 'Value = VScrollBar_Bar.Minimum - 1
+        If Value > VScrollBar_Bar.Maximum - 1 Then Return 'Value = VScrollBar_Bar.Maximum - 1
         TextIndexValue = Value
         VScrollBar_Bar.Value = Value + 1
         For Each L In LocalizationTextBoxes
@@ -623,8 +620,7 @@ Public Class FormMain
             Source.SelectAll()
             Source.SelectionColor = System.Drawing.SystemColors.ControlText
             Source.SelectionBackColor = System.Drawing.SystemColors.Window
-            Source.SelectionStart = SourceStart
-            Source.SelectionLength = SourceLength
+            Source.Select(SourceStart, SourceLength)
         Next
         If ApplicationData.TextHighlighters.Count > 0 Then
             Dim Texts = New String(ApplicationData.Columns.Count - 1) {}
@@ -645,14 +641,10 @@ Public Class FormMain
                     If h(TextColumn) Is Nothing Then Continue For
                     For Each ts In h(TextColumn)
                         If ts.Length < 0 OrElse ts.Index < 0 OrElse ts.Index + ts.Length > Source.TextLength Then Continue For
-                        Source.SelectionStart = ts.Index
-                        Source.SelectionLength = ts.Length
-                        Source.SelectionColor = ts.ForeColor
-                        Source.SelectionBackColor = ts.BackColor
+                        Source.SetTextColor(ts.Index, ts.Length, ts.ForeColor, ts.BackColor)
                     Next
                 Next
-                Source.SelectionStart = SourceStart
-                Source.SelectionLength = SourceLength
+                Source.Select(SourceStart, SourceLength)
             Next
         End If
         For Each l In LocalizationTextBoxes
@@ -745,6 +737,14 @@ Public Class FormMain
             Return
         End If
         If ComboBox_TextName.DroppedDown Then
+            Dim i = TryCast(sender, Intercepter)
+            If i IsNot Nothing Then
+                i.Handled = False
+            End If
+            Return
+        End If
+
+        If TextCount = 1 Then
             Dim i = TryCast(sender, Intercepter)
             If i IsNot Nothing Then
                 i.Handled = False
@@ -923,8 +923,7 @@ Public Class FormMain
             lb.UpdateDisplay()
             If lb.TextBox.TextLength = TextLength Then
                 If lb.TextBox.SelectionStart <> SelectionStart OrElse lb.TextBox.SelectionLength <> SelectionLength Then
-                    lb.TextBox.SelectionStart = SelectionStart
-                    lb.TextBox.SelectionLength = SelectionLength
+                    lb.TextBox.Select(SelectionStart, SelectionLength)
                 End If
             End If
         Next
@@ -1024,7 +1023,7 @@ Public Class FormMain
         Set(ByVal Value As Integer)
             If ApplicationData.Columns.Count = 0 Then Throw New InvalidOperationException
             Dim l = LocalizationTextBoxes(CurrentColumnIndex)
-            l.TextBox.SelectionStart = Value
+            l.TextBox.Select(Value, l.TextBox.SelectionLength)
         End Set
     End Property
     Public Property Application_SelectionLength() As Integer Implements ITextLocalizerApplicationController.SelectionLength
@@ -1037,7 +1036,7 @@ Public Class FormMain
         Set(ByVal Value As Integer)
             If ApplicationData.Columns.Count = 0 Then Throw New InvalidOperationException
             Dim l = LocalizationTextBoxes(CurrentColumnIndex)
-            l.TextBox.SelectionLength = Value
+            l.TextBox.Select(l.TextBox.SelectionStart, Value)
         End Set
     End Property
     Public Property Application_Text(ByVal ColumnIndex As Integer) As String Implements ITextLocalizerApplicationController.Text
