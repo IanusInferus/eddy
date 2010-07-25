@@ -3,7 +3,7 @@
 '  File:        LocalizationTextListFactory.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化文本列表工厂默认实现
-'  Version:     2010.04.04.
+'  Version:     2010.07.25.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -25,7 +25,7 @@ Public Class LocalizationTextListFactory
 
     Public LOCTexter As ITexter(Of LOC) = New LOCTexter
 
-    Private SupportedTypesValue As String() = {"PlainText", "AgemoText", "LOC"}
+    Private SupportedTypesValue As String() = {"RawText", "PlainText", "AgemoText", "LOC"}
     Public ReadOnly Property SupportedTypes() As IEnumerable(Of String) Implements ILocalizationTextListFactory.SupportedTypes
         Get
             Return SupportedTypesValue.AsEnumerable()
@@ -36,6 +36,9 @@ Public Class LocalizationTextListFactory
     End Function
     Public Function Load(ByVal ProviderName As String, ByVal Type As String, ByVal Directory As String, ByVal Extension As String, ByVal TextName As String, ByVal IsReadOnly As Boolean, ByVal Encoding As System.Text.Encoding) As ILocalizationTextList Implements ILocalizationTextListFactory.Load
         Dim Path = GetPath(Directory, TextName & "." & Extension)
+        If Type.Equals("RawText", StringComparison.OrdinalIgnoreCase) Then
+            Return New RawTextList(Path, IsReadOnly, Encoding)
+        End If
         If Type.Equals("PlainText", StringComparison.OrdinalIgnoreCase) Then
             Return New PlainTextList(Path, IsReadOnly, Encoding)
         End If
@@ -52,6 +55,12 @@ Public Class LocalizationTextListFactory
         If Encoding Is Nothing Then Encoding = UTF16
         If IO.File.Exists(Path) Then Return Load(ProviderName, Type, Directory, Extension, TextName, IsReadOnly, Encoding)
         If Not IO.Directory.Exists(Directory) Then IO.Directory.CreateDirectory(Directory)
+        If Type.Equals("RawText", StringComparison.OrdinalIgnoreCase) Then
+            If IsReadOnly Then Throw New InvalidOperationException
+            If Template.Count <> 1 Then Throw New InvalidOperationException
+            Txt.WriteFile(Path, Encoding, (From t In Enumerable.Range(0, Template.Count) Select TranslateText(Template.Text(t))).Single)
+            Return New RawTextList(Path, False, Encoding)
+        End If
         If Type.Equals("PlainText", StringComparison.OrdinalIgnoreCase) Then
             If IsReadOnly Then Throw New InvalidOperationException
             Plain.WriteFile(Path, Encoding, From t In Enumerable.Range(0, Template.Count) Select TranslateText(Template.Text(t)))
@@ -67,6 +76,82 @@ Public Class LocalizationTextListFactory
         End If
         Throw New NotSupportedException
     End Function
+End Class
+
+Public Class RawTextList
+    Implements ILocalizationTextList
+
+    Private Path As String
+    Private IsReadOnlyValue As Boolean
+    Private Encoding As System.Text.Encoding
+    Private IsModifiedValue As Boolean
+    Private Value As String
+
+    Public Sub New(ByVal Path As String, ByVal IsReadOnly As Boolean, Optional ByVal Encoding As System.Text.Encoding = Nothing)
+        Me.Path = Path
+        Me.IsReadOnlyValue = IsReadOnly
+        Me.IsModifiedValue = False
+        If Encoding Is Nothing Then
+            Me.Encoding = Txt.GetEncoding(Path)
+        Else
+            Me.Encoding = Encoding
+        End If
+        Value = Txt.ReadFile(Path, Me.Encoding)
+    End Sub
+    Public Sub New(ByVal IsReadOnly As Boolean, ByVal Count As Integer)
+        Me.Path = ""
+        Me.IsReadOnlyValue = IsReadOnly
+        Me.IsModifiedValue = False
+        Value = ""
+    End Sub
+
+    Public ReadOnly Property Count() As Integer Implements ILocalizationTextList.Count
+        Get
+            Return 1
+        End Get
+    End Property
+
+    Public ReadOnly Property IsReadOnly() As Boolean Implements ILocalizationTextList.IsReadOnly
+        Get
+            Return IsReadOnlyValue
+        End Get
+    End Property
+
+    Public ReadOnly Property IsModified() As Boolean Implements ILocalizationTextList.IsModified
+        Get
+            Return IsModifiedValue
+        End Get
+    End Property
+
+    Public Property Item(ByVal Index As Integer) As String
+        Get
+            If Index <> 0 Then Throw New ArgumentOutOfRangeException
+            Return Value
+        End Get
+        Set(ByVal Value As String)
+            If IsReadOnlyValue Then Throw New InvalidOperationException
+            If Index <> 0 Then Throw New ArgumentOutOfRangeException
+            IsModifiedValue = True
+            Me.Value = Value
+        End Set
+    End Property
+
+    Public Property Text(ByVal Index As Integer) As String Implements ILocalizationTextList.Text
+        Get
+            Return Item(Index)
+        End Get
+        Set(ByVal Value As String)
+            Item(Index) = Value
+        End Set
+    End Property
+
+    Public Sub Flush() Implements ILocalizationTextList.Flush
+        If Path = "" Then Return
+        If IsModifiedValue Then
+            Txt.WriteFile(Path, Encoding, Value)
+            IsModifiedValue = False
+        End If
+    End Sub
 End Class
 
 Public Class PlainTextList

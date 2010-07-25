@@ -3,7 +3,7 @@
 '  File:        Voice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具控制符高亮插件
-'  Version:     2009.10.08.
+'  Version:     2010.07.25.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -48,7 +48,7 @@ Public Class Voice
         Else
             Config = New Config With {.Voices = New VoiceDescriptor() {}}
         End If
-        If Config.IgnoreSequence <> "" Then Regex = New Regex(Config.IgnoreSequence, RegexOptions.ExplicitCapture)
+        If Config.IgnoreSequence <> "" Then Regex = New Regex(Config.IgnoreSequence, RegexOptions.ExplicitCapture Or RegexOptions.Compiled)
         NameToVoiceName = Config.Voices.ToDictionary(Function(d) d.LocalizationBoxName, Function(d) d.TTSName, StringComparer.OrdinalIgnoreCase)
 
         Me.Label_VoiceTip = New System.Windows.Forms.Label

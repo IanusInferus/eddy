@@ -25,7 +25,13 @@
             <WindowsFormsHost Height="25" Margin="6,0" Name="windowsFormsHost2" VerticalAlignment="Bottom" />
         </Grid>
         <Grid Margin="6,58,30,38" Name="grid2" Grid.Column="2">
-            <RichTextBox Name="richTextBox1" Margin="0,0,0,274" VerticalScrollBarVisibility="Auto" AcceptsTab="True" />
+            <RichTextBox Name="richTextBox1" Margin="0,0,0,274" VerticalScrollBarVisibility="Auto" AcceptsTab="True">
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0"/>
+                    </Style>
+                </RichTextBox.Resources>
+            </RichTextBox>
         </Grid>
     </Grid>
 </Window>

@@ -1,4 +1,13 @@
-﻿2010.07.14
+﻿2010.07.26
+解决WPF RichTextBox段间距不为0的问题。
+
+2010.07.25
+增加RawText格式类型，以支持一般非结构化文本文件。
+修正ExtendedRichTextBox在更新时滚动条跳动的问题。
+修正EnableLocalizationGrid为假时最大化会在预览框位置出现灰块的问题。
+发现在单个文本框中有大量文本时处理非常慢。需要尽快开启Tomoe项目。
+
+2010.07.14
 放到SourceForge上。
 https://fflf.svn.sourceforge.net/svnroot/fflf/trunk/Eddy
 

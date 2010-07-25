@@ -5,7 +5,7 @@
 '               此代码是由以下两篇文章中的代码混合而成
 '               David Bennett http://blogs.technet.com/david_bennett/archive/2005/04/06/403402.aspx
 '               John Fisher http://www.codeproject.com/KB/edit/richtextboxplus.aspx?df=100&forumid=16179&exp=0&select=562462
-'  Version:     2009.12.27.
+'  Version:     2010.07.25.
 
 '==========================================================================
 
@@ -14,6 +14,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.ComponentModel
 Imports System.Runtime.InteropServices
+Imports System.Drawing
 Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.TextEncoding
@@ -190,6 +191,75 @@ Public Class ExtendedRichTextBox
         End Get
     End Property
 
+    Private Structure AbsoluteIndex
+        Public Start As Integer
+        Public Length As Integer
+        Public ForeColor As Color
+        Public BackColor As Color
+    End Structure
+
+    Private Structure LinedIndex
+        Public StartLine As Integer
+        Public StartChar As Integer
+        Public EndLine As Integer
+        Public EndChar As Integer
+        Public ForeColor As Color
+        Public BackColor As Color
+    End Structure
+
+    Private Function IndexAbsToLined(ByVal ai As AbsoluteIndex) As LinedIndex
+        Dim Chars = Text.ToCharArray
+        Dim StartLine As Integer = 0
+        Dim StartLineStart As Integer = 0
+        For n = 0 To ai.Start - 1
+            Dim c = Chars(n)
+            If AscW(c) = Lf Then
+                StartLine += 1
+                StartLineStart = n + 1
+            End If
+        Next
+        Dim EndLine As Integer = 0
+        Dim EndLineStart As Integer = 0
+        For n = 0 To ai.Start + ai.Length - 1
+            Dim c = Chars(n)
+            If AscW(c) = Lf Then
+                EndLine += 1
+                EndLineStart = n + 1
+            End If
+        Next
+        Return New LinedIndex With {.StartLine = StartLine, .StartChar = ai.Start - StartLineStart, .EndLine = EndLine, .EndChar = ai.Start + ai.Length - EndLineStart, .ForeColor = ai.ForeColor, .BackColor = ai.BackColor}
+    End Function
+    Private Function IndexLinedToAbs(ByVal li As LinedIndex) As AbsoluteIndex
+        Dim Chars = Text.ToCharArray
+        Dim StartLine As Integer = 0
+        Dim StartLineStart As Integer = 0
+        For n = 0 To Chars.Length - 1
+            Dim c = Chars(n)
+            If AscW(c) = Lf Then
+                StartLine += 1
+                StartLineStart = n + 1
+                If StartLine = li.StartLine Then
+                    Exit For
+                End If
+            End If
+        Next
+        Dim EndLine As Integer = 0
+        Dim EndLineStart As Integer = 0
+        For n = 0 To Chars.Length - 1
+            Dim c = Chars(n)
+            If AscW(c) = Lf Then
+                EndLine += 1
+                EndLineStart = n + 1
+                If EndLine = li.EndLine Then
+                    Exit For
+                End If
+            End If
+        Next
+        Dim Start = StartLineStart + li.StartChar
+        Dim Length = EndLineStart + li.EndChar - Start
+        Return New AbsoluteIndex With {.Start = Start, .Length = Length, .ForeColor = li.ForeColor, .BackColor = li.BackColor}
+    End Function
+
     Protected Overrides Sub OnTextChanged(ByVal e As System.EventArgs)
         TextValue = MyBase.Text.Replace(CrLf, Lf).Replace(Cr, Lf).Replace(Lf, CrLf)
         MyBase.OnTextChanged(e)
@@ -205,7 +275,20 @@ Public Class ExtendedRichTextBox
         End If
     End Sub
 
-    Public Shadows Property SelectionStart() As Integer
+    Private Const EM_SETSEL As Integer = &HB1
+    Public Sub SetTextColor(ByVal Start As Integer, ByVal Length As Integer, ByVal ForeColor As Color, ByVal BackColor As Color)
+        If Text Is Nothing Then
+            SendMessage(New HandleRef(Me, Handle), EM_SETSEL, Start, Start + Length)
+        Else
+            Dim FakeStart = Start - (From c In Text.Substring(0, Start) Where AscW(c) = Cr).Count
+            Dim FakeLength = Length - (From c In Text.Substring(Start, Min(Length, Text.Length - Start)) Where AscW(c) = Cr).Count
+            SendMessage(New HandleRef(Me, Handle), EM_SETSEL, FakeStart, FakeStart + FakeLength)
+        End If
+        SelectionColor = ForeColor
+        SelectionBackColor = BackColor
+    End Sub
+
+    Public Shadows ReadOnly Property SelectionStart() As Integer
         Get
             Dim FakeStart = MyBase.SelectionStart
             Dim RealStart = 0
@@ -218,12 +301,9 @@ Public Class ExtendedRichTextBox
             End While
             Return RealStart
         End Get
-        Set(ByVal Value As Integer)
-            [Select](Value, SelectionLength)
-        End Set
     End Property
 
-    Public Shadows Property SelectionLength() As Integer
+    Public Shadows ReadOnly Property SelectionLength() As Integer
         Get
             Dim Start = SelectionStart
             Dim FakeLength = MyBase.SelectionLength
@@ -237,9 +317,6 @@ Public Class ExtendedRichTextBox
             End While
             Return RealLength
         End Get
-        Set(ByVal Value As Integer)
-            [Select](SelectionStart, Value)
-        End Set
     End Property
 
     Public Overrides Property Font() As System.Drawing.Font
@@ -544,7 +621,7 @@ Public Class ExtendedRichTextBox
         ' Deal with nested calls 
         _Updating += 1
         If _Updating > 1 Then
-            Exit Sub
+            Return
         End If
 
         ' Prevent the control from raising any events 
@@ -568,7 +645,7 @@ Public Class ExtendedRichTextBox
         ' Deal with nested calls 
         _Updating -= 1
         If _Updating > 0 Then
-            Exit Sub
+            Return
         End If
 
         If Visible Then
@@ -580,6 +657,10 @@ Public Class ExtendedRichTextBox
         SendMessage(New HandleRef(Me, Handle), EM_SETEVENTMASK, IntPtr.Zero, _OldEventMask)
     End Sub
 
+    Protected Overrides Sub OnSelectionChanged(ByVal e As System.EventArgs)
+        If _Updating > 0 Then Return
+        MyBase.OnSelectionChanged(e)
+    End Sub
 
     ''' <summary> 
     ''' This scrolls the scroll bar down to the bottom of the window. 
@@ -699,7 +780,9 @@ Public Class ExtendedRichTextBox
     ' The vertical resolution at which the control is being displayed 
     Private yDpi As Single
 
-    Private Const WM_USER = &H400
+    Private Const WM_USER As Integer = &H400
+    Private Const WM_REFLECT As Integer = WM_USER + &H1C00
+    Private Const WM_NOTIFY As Integer = &H4E
     Protected Overloads Overrides Sub WndProc(ByRef m As Message)
         Select Case m.Msg
             Case WM_VSCROLL

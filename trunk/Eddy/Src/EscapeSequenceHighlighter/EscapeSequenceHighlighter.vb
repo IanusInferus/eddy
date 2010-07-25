@@ -3,7 +3,7 @@
 '  File:        EscapeSequenceHighlighter.vb
 '  Location:    Eddy.EscapeSequenceHighlighter <Visual Basic .Net>
 '  Description: 文本本地化工具控制符高亮插件
-'  Version:     2009.10.08.
+'  Version:     2010.07.25.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -47,7 +47,7 @@ Public Class EscapeSequenceHighlighter
         Else
             Config = New Config
         End If
-        EscapeSequenceRegex = New Regex(Config.Regex, RegexOptions.ExplicitCapture)
+        EscapeSequenceRegex = New Regex(Config.Regex, RegexOptions.ExplicitCapture Or RegexOptions.Compiled)
         ForeColor = Color.FromArgb(Integer.Parse(Config.ForeColor, Globalization.NumberStyles.HexNumber))
         BackColor = Color.FromArgb(Integer.Parse(Config.BackColor, Globalization.NumberStyles.HexNumber))
 
