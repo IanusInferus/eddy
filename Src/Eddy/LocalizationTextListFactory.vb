@@ -3,7 +3,7 @@
 '  File:        LocalizationTextListFactory.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化文本列表工厂默认实现
-'  Version:     2010.07.25.
+'  Version:     2010.08.04.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -54,7 +54,7 @@ Public Class LocalizationTextListFactory
         Dim Path = GetPath(Directory, TextName & "." & Extension)
         If Encoding Is Nothing Then Encoding = UTF16
         If IO.File.Exists(Path) Then Return Load(ProviderName, Type, Directory, Extension, TextName, IsReadOnly, Encoding)
-        If Not IO.Directory.Exists(Directory) Then IO.Directory.CreateDirectory(Directory)
+        If Not IO.Directory.Exists(GetFileDirectory(Path)) Then IO.Directory.CreateDirectory(GetFileDirectory(Path))
         If Type.Equals("RawText", StringComparison.OrdinalIgnoreCase) Then
             If IsReadOnly Then Throw New InvalidOperationException
             If Template.Count <> 1 Then Throw New InvalidOperationException
