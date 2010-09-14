@@ -3,7 +3,7 @@
 '  File:        ApplicationController.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主控制器
-'  Version:     2010.07.14.
+'  Version:     2010.09.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -19,6 +19,7 @@ Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Setting
 Imports Firefly.Project
+Imports Firefly.GUI
 
 Public Class TextLocalizerData
     Implements ITextLocalizerData
@@ -174,7 +175,7 @@ Public Class ApplicationController
             End If
             If Not p.Enable Then Continue For
             If Not LoadPlugin(Asm) Then
-                ExceptionHandler.PopInfo("{0}中没有任何插件可加载。".Formats(p.AssemblyName))
+                ExceptionHandler.PopupInfo("{0}中没有任何插件可加载。".Formats(p.AssemblyName))
             End If
             PluginDescriptorSet.Add(AsmName.Name)
 #If CONFIG <> "Debug" Then

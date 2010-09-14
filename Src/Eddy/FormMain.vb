@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.07.25.
+'  Version:     2010.09.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -17,6 +17,7 @@ Imports System.Drawing
 Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.Project
+Imports Firefly.GUI
 
 Public Class FormMain
     Implements ITextLocalizerApplicationController
@@ -362,8 +363,7 @@ Public Class FormMain
             If L.TextProvider.ContainsKey(TextName) Then
                 If L.IsGlyphText Then
                     Dim TextListLOC = CType(L.TextProvider.Item(TextName), LOCList)
-                    Dim TextListGlyph = TextListLOC.LOC.GetGlyphText
-                    Dim Image = TextListGlyph.GetBitmap(TextIndex, L.Space)
+                    Dim Image = TextListLOC.GetBitmap(L.FontPixel, L.FontPixel, TextIndex, L.Space)
                     If Image Is Nothing Then
                         Image = New Bitmap(1, 1)
                         Using g = Graphics.FromImage(Image)

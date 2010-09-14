@@ -3,7 +3,7 @@
 '  File:        LocalizationTextBox.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化文本框
-'  Version:     2010.01.14.
+'  Version:     2010.09.15.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -144,6 +144,18 @@ Public Class LocalizationTextBox
         End Set
     End Property
 
+    Private FontPixelValue As Integer = 16
+    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(False)> _
+    Public Shadows Property FontPixel() As Integer
+        Get
+            Return FontPixelValue
+        End Get
+        Set(ByVal Value As Integer)
+            If Value <= 0 Then Throw New ArgumentException
+            FontPixelValue = Value
+        End Set
+    End Property
+
     <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(False)> _
     Public ReadOnly Property TextModified() As Boolean
         Get
@@ -190,7 +202,6 @@ Public Class LocalizationTextBox
 
     Private TextList As ILocalizationTextList
     Private TextListLOC As LOCList
-    Private TextListGlyph As GlyphText
 
     ''' <summary>装载文本</summary>
     Public Sub LoadText(ByVal TextName As String)
@@ -207,8 +218,6 @@ Public Class LocalizationTextBox
         TextListLOC = Nothing
         If IsGlyphTextValue Then
             TextListLOC = CType(TextList, LOCList)
-            TextListGlyph = New GlyphText(TextListLOC.LOC)
-            TextListGlyph.DrawGlyphForAllChar(Font)
         End If
         TextIndexValue = -1
     End Sub
@@ -302,7 +311,7 @@ Public Class LocalizationTextBox
         If TextIndexValue < TextCount Then
             TextBox.Text = TextList.Text(TextIndexValue)
             If IsGlyphTextValue Then
-                PictureBox.Image = TextListGlyph.GetBitmap(TextIndexValue, SpaceValue)
+                PictureBox.Image = TextListLOC.GetBitmap(FontPixel, FontPixel, TextIndexValue, SpaceValue)
             End If
         Else
             TextBox.Text = Nothing

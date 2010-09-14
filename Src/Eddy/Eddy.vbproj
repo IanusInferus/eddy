@@ -68,6 +68,7 @@
     <Compile Include="ExtendedRichTextBox.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="GlyphText.vb" />
     <Compile Include="LocalizationProject.vb" />
     <Compile Include="LocalizationTextBox.vb">
       <SubType>UserControl</SubType>

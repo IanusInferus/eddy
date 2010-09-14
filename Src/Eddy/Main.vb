@@ -3,7 +3,7 @@
 '  File:        Main.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具入口函数
-'  Version:     2010.06.30.
+'  Version:     2010.09.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -13,6 +13,7 @@ Imports System.IO
 Imports System.Diagnostics
 Imports System.Windows.Forms
 Imports Firefly
+Imports Firefly.GUI
 
 Public Module Main
     Public Sub Application_ThreadException(ByVal sender As Object, ByVal e As System.Threading.ThreadExceptionEventArgs)

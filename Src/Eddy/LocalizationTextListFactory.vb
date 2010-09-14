@@ -3,7 +3,7 @@
 '  File:        LocalizationTextListFactory.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化文本列表工厂默认实现
-'  Version:     2010.08.04.
+'  Version:     2010.09.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -13,6 +13,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.Text.RegularExpressions
 Imports System.IO
+Imports System.Drawing
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Texting
@@ -23,7 +24,7 @@ Imports Firefly.Project
 Public Class LocalizationTextListFactory
     Implements ILocalizationTextListFactory
 
-    Public LOCTexter As ITexter(Of LOC) = New LOCTexter
+    Public LOCTexter As ITexter(Of IEnumerable(Of StringCode)()) = New LOCTexter
 
     Private SupportedTypesValue As String() = {"RawText", "PlainText", "AgemoText", "LOC"}
     Public ReadOnly Property SupportedTypes() As IEnumerable(Of String) Implements ILocalizationTextListFactory.SupportedTypes
@@ -311,31 +312,38 @@ Public Class LOCList
     Private IsReadOnlyValue As Boolean
     Private Encoding As System.Text.Encoding
     Private IsModifiedValue As Boolean
-    Private Values As LOC
+    Private Font As IGlyph()
+    Private Values As IEnumerable(Of StringCode)()
 
-    Private LOCTexter As ITexter(Of LOC)
+    Private LOCTexter As ITexter(Of IEnumerable(Of StringCode)())
+    Private Displayer As GlyphText
 
-    Public Sub New(ByVal Path As String, ByVal IsReadOnly As Boolean, ByVal Encoding As System.Text.Encoding, ByVal LOCTexter As ITexter(Of LOC))
+    Public Sub New(ByVal Path As String, ByVal IsReadOnly As Boolean, ByVal Encoding As System.Text.Encoding, ByVal LOCTexter As ITexter(Of IEnumerable(Of StringCode)()))
         Me.Path = Path
         Me.IsReadOnlyValue = IsReadOnly
         Me.IsModifiedValue = False
         Me.Encoding = Encoding
         Using s As New StreamEx(Path, FileMode.Open, FileAccess.Read)
-            Values = New LOC(s)
+            Dim l = LOC.ReadFile(s)
+            Font = l.Font.ToArray
+            Values = l.Text.ToArray
         End Using
         Me.LOCTexter = LOCTexter
+        Me.Displayer = New GlyphText(Font, 18, 18, Values)
     End Sub
-    Public Sub New(ByVal IsReadOnly As Boolean, ByVal Count As Integer, ByVal LOCTexter As ITexter(Of LOC))
+    Public Sub New(ByVal IsReadOnly As Boolean, ByVal Count As Integer, ByVal LOCTexter As ITexter(Of IEnumerable(Of StringCode)()))
         Me.Path = ""
         Me.IsReadOnlyValue = IsReadOnly
         Me.IsModifiedValue = False
-        Values = LOC.GenerateLOC(New FontLib, (From i In Enumerable.Range(0, Count) Select New CharCode() {}).ToArray)
+        Font = New IGlyph() {}
+        Values = (From i In Enumerable.Range(0, Count) Select New StringCode() {}).ToArray
         Me.LOCTexter = LOCTexter
+        Me.Displayer = New GlyphText(Font, 18, 18, Values)
     End Sub
 
     Public ReadOnly Property Count() As Integer Implements ILocalizationTextList.Count
         Get
-            Return Values.Text.Count
+            Return Values.Count
         End Get
     End Property
 
@@ -351,15 +359,15 @@ Public Class LOCList
         End Get
     End Property
 
-    Public Property Item(ByVal Index As Integer) As CharCode()
+    Public Property Item(ByVal Index As Integer) As StringCode()
         Get
-            Return Values.Text(Index)
+            Return Values(Index)
         End Get
-        Set(ByVal Value As CharCode())
+        Set(ByVal Value As StringCode())
             If IsReadOnlyValue Then Throw New InvalidOperationException
             If Index < 0 OrElse Index >= Count Then Throw New ArgumentOutOfRangeException
             IsModifiedValue = True
-            Values.Text(Index) = Value
+            Values(Index) = Value
         End Set
     End Property
 
@@ -372,11 +380,12 @@ Public Class LOCList
         End Set
     End Property
 
-    Public ReadOnly Property LOC() As LOC
-        Get
-            Return Values
-        End Get
-    End Property
+    Public Overridable Function GetBitmap(ByVal GlyphWidth As Integer, ByVal GlyphHeight As Integer, ByVal Index As Integer, Optional ByVal Space As Integer = 0) As Bitmap
+        If Index < 0 OrElse Index >= Values.Length Then Return Nothing
+        If Space < 0 Then Return Nothing
+
+        Return Displayer.GetBitmap(GlyphWidth, GlyphHeight, Index, Space)
+    End Function
 
     Public Sub Flush() Implements ILocalizationTextList.Flush
         If Path = "" Then Return
@@ -392,29 +401,29 @@ Public Interface ITexter(Of T)
 End Interface
 
 Public Class LOCTexter
-    Implements ITexter(Of LOC)
+    Implements ITexter(Of IEnumerable(Of StringCode)())
 
-    Private Function CharCodeToString(ByVal c As CharCode) As String
-        If c.HasUnicode Then Return c.Character
-        Return "{" & c.Code.ToString("X4") & "}"
+    Private Function CharCodeToString(ByVal c As StringCode) As String
+        If c.HasUnicodes Then Return c.UnicodeString
+        Return "{" & c.CodeString & "}"
     End Function
 
-    Private Function StringToCharCode(ByVal m As Match) As CharCode
+    Private Function StringToCharCode(ByVal m As Match) As StringCode
         Dim r = m.Result("${Code}")
         If r <> "" Then
-            Return CharCode.FromCode(Integer.Parse(r, Globalization.NumberStyles.AllowHexSpecifier))
+            Return StringCode.FromCodeString(r)
         Else
-            Return CharCode.FromUniChar(Char32.FromString(m.Value))
+            Return StringCode.FromUnicodeString(m.Value)
         End If
     End Function
 
-    Public Property Text(ByVal Texts As LOC, ByVal Index As Integer) As String Implements ITexter(Of LOC).Text
+    Public Property Text(ByVal Texts As IEnumerable(Of StringCode)(), ByVal Index As Integer) As String Implements ITexter(Of IEnumerable(Of StringCode)()).Text
         Get
-            Return String.Join("", (From c In Texts.Text(Index) Select CharCodeToString(c)).ToArray).Replace(CrLf, Lf).Replace(Cr, Lf).Replace(Lf, CrLf)
+            Return String.Join("", (From c In Texts(Index) Select CharCodeToString(c)).ToArray).Replace(CrLf, Lf).Replace(Cr, Lf).Replace(Lf, CrLf)
         End Get
         Set(ByVal Value As String)
-            Static r As New Regex("\{(?<Code>[0-9A-Fa-f]{4,6})\}|.|\r|\n", RegexOptions.ExplicitCapture)
-            Texts.Text(Index) = (From m As Match In r.Matches(Value) Select StringToCharCode(m)).ToArray
+            Static r As New Regex("\{(?<Code>[0-9A-Fa-f]{2,8})\}|.|\r|\n", RegexOptions.ExplicitCapture)
+            Texts(Index) = (From m As Match In r.Matches(Value) Select StringToCharCode(m)).ToArray
         End Set
     End Property
 End Class
