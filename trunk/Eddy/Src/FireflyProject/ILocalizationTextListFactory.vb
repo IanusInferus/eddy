@@ -3,7 +3,7 @@
 '  File:        ILocalizationTextListFactory.vb
 '  Location:    Firefly.Project <Visual Basic .Net>
 '  Description: 本地化文本列表工厂接口
-'  Version:     2010.01.14.
+'  Version:     2010.09.15.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -78,7 +78,7 @@ Public Class LocalizationTextListFactoryAggregation
                 End Try
             Next
             If FirstNormalException IsNot Nothing Then
-                Throw FirstNormalException
+                Throw New Exception(Nothing, FirstNormalException)
             End If
         End If
         Throw New NotSupportedException
