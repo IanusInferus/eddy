@@ -3,7 +3,7 @@
 '  File:        ApplicationController.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主控制器
-'  Version:     2010.09.14.
+'  Version:     2010.09.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -31,6 +31,7 @@ Public Class TextLocalizerData
     Public CurrentUserFilePath As String
 
     Public Columns As New List(Of LocalizationTextProvider)
+    Public NameToColumn As New Dictionary(Of String, Integer)
     Public TextNames As New List(Of String)
     Public TextNameDict As New Dictionary(Of String, Integer)
 
@@ -56,9 +57,15 @@ Public Class TextLocalizerData
             Return Columns
         End Get
     End Property
-    Private ReadOnly Property MainColumnIndexInterface As Integer Implements ITextLocalizerData.MainColumnIndex
+    Public ReadOnly Property MainColumnIndex As Integer Implements ITextLocalizerData.MainColumnIndex
         Get
-            Return CurrentProject.MainLocalizationTextBox
+            If NameToColumn.ContainsKey(CurrentProject.MainLocalizationTextBox) Then
+                Return NameToColumn(CurrentProject.MainLocalizationTextBox)
+            End If
+            Dim i As Integer
+            If Not Integer.TryParse(CurrentProject.MainLocalizationTextBox, i) Then Throw New InvalidDataException("MainLocalizationTextBox")
+            If i < 0 OrElse i >= Columns.Count Then Throw New InvalidDataException("MainLocalizationTextBox")
+            Return i
         End Get
     End Property
 End Class
@@ -100,8 +107,6 @@ Public Class ApplicationController
 
         Load()
 
-        If ApplicationData.CurrentProject.MainLocalizationTextBox < 0 OrElse ApplicationData.CurrentProject.MainLocalizationTextBox >= ApplicationData.CurrentProject.LocalizationTextBoxDescriptors.Length Then ApplicationData.CurrentProject.MainLocalizationTextBox = 0
-
         If ApplicationData.CurrentProject.LocalizationTextBoxDescriptors Is Nothing OrElse ApplicationData.CurrentProject.LocalizationTextBoxDescriptors.Length < 1 Then
             Throw New InvalidDataException("一栏文本框也没有")
         End If
@@ -127,6 +132,7 @@ Public Class ApplicationController
             End If
             Dim tp As New LocalizationTextProvider(ApplicationData.Factory, Des.Name, Des.DisplayName, Des.Directory, Des.Extension, Des.Type, Not Des.Editable, Encoding)
             ApplicationData.Columns.Add(tp)
+            ApplicationData.NameToColumn.Add(tp.Name, n)
         Next
 
         AddHandler AppDomain.CurrentDomain.AssemblyResolve, AddressOf RedirectBinding
@@ -225,7 +231,7 @@ Public Class ApplicationController
             ApplicationData.Factory.AddFactories(FormatPlugin.GetTextListFactories())
         Next
 
-        ApplicationData.TextNames.AddRange(ApplicationData.Columns(ApplicationData.CurrentProject.MainLocalizationTextBox).Keys)
+        ApplicationData.TextNames.AddRange(ApplicationData.Columns(ApplicationData.MainColumnIndex).Keys)
         ApplicationData.TextNames.Sort(StringComparer.CurrentCultureIgnoreCase)
         ApplicationData.TextNameDict = ApplicationData.TextNames.Select(Function(s, i) New With {.Index = i, .Name = s}).ToDictionary(Function(p) p.Name, Function(p) p.Index)
     End Sub

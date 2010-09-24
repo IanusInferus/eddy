@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.09.14.
+'  Version:     2010.09.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -341,8 +341,8 @@ Public Class FormMain
                 Else
                     Texts(TextColumn) = ""
                     Dim k = TextColumn
-                    Dim tt = Function(Text) TranslateText(ApplicationData.CurrentProject.MainLocalizationTextBox, k, Text)
-                    Dim TextList = L.TextProvider.LoadOrCreateItem(TextName, ApplicationData.Columns(ApplicationData.CurrentProject.MainLocalizationTextBox).Item(TextName), tt)
+                    Dim tt = Function(Text) TranslateText(ApplicationData.MainColumnIndex, k, Text)
+                    Dim TextList = L.TextProvider.LoadOrCreateItem(TextName, ApplicationData.Columns(ApplicationData.MainColumnIndex).Item(TextName), tt)
                     If TextList IsNot Nothing Then
                         If TextIndex < TextList.Count Then
                             Texts(TextColumn) = TextList.Text(TextIndex)
@@ -422,8 +422,7 @@ Public Class FormMain
     Private ReadOnly Property TextCount() As Integer
         Get
             If LocalizationTextBoxes Is Nothing Then Return 0
-            If ApplicationData.CurrentProject.MainLocalizationTextBox < 0 OrElse ApplicationData.CurrentProject.MainLocalizationTextBox >= ApplicationData.Columns.Count Then Return 0
-            Return LocalizationTextBoxes(ApplicationData.CurrentProject.MainLocalizationTextBox).TextCount
+            Return LocalizationTextBoxes(ApplicationData.MainColumnIndex).TextCount
         End Get
     End Property
 
@@ -471,8 +470,8 @@ Public Class FormMain
         Dim k = 0
         For Each L In LocalizationTextBoxes
             If Not L.IsLoaded Then
-                Dim tt = Function(Text) TranslateText(ApplicationData.CurrentProject.MainLocalizationTextBox, k, Text)
-                L.LoadOrCreateText(TextName, ApplicationData.Columns(ApplicationData.CurrentProject.MainLocalizationTextBox).Item(TextName), tt)
+                Dim tt = Function(Text) TranslateText(ApplicationData.MainColumnIndex, k, Text)
+                L.LoadOrCreateText(TextName, ApplicationData.Columns(ApplicationData.MainColumnIndex).Item(TextName), tt)
             End If
             If Not L.IsReadOnly Then
                 If L.TextCount <> MaxCount Then
@@ -486,7 +485,7 @@ Public Class FormMain
 
         Me.SuspendLayout()
         If ApplicationData.CurrentProject.EnableLocalizationGrid Then
-            Dim NumRow = LocalizationTextBoxes(ApplicationData.CurrentProject.MainLocalizationTextBox).TextCount
+            Dim NumRow = LocalizationTextBoxes(ApplicationData.MainColumnIndex).TextCount
             DataGridView_Multiview.CausesValidation = False
             GridRows = New Object(NumRow - 1)() {}
             DataGridView_Multiview.RowCount = NumRow
@@ -903,7 +902,7 @@ Public Class FormMain
         Application.DoEvents()
 
         DataGridView_Multiview.SuspendLayout()
-        Dim NumRow = LocalizationTextBoxes(ApplicationData.CurrentProject.MainLocalizationTextBox).TextCount
+        Dim NumRow = LocalizationTextBoxes(ApplicationData.MainColumnIndex).TextCount
         For TextIndex As Integer = 0 To NumRow - 1
             UpdateGridTextIndex(DataGridView_Multiview.Rows(TextIndex), TextIndex)
         Next

@@ -3,7 +3,7 @@
 '  File:        LocalizationProject.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化项目项目文件
-'  Version:     2010.05.17.
+'  Version:     2010.09.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -23,7 +23,7 @@ Public Class LocalizationProject
     Public WindowWidth As Integer = 800
     Public WindowHeight As Integer = 600
     Public LocalizationTextBoxDescriptors As LocalizationTextBoxDescriptor()
-    Public MainLocalizationTextBox As Integer
+    Public MainLocalizationTextBox As String
 
     Public EnableLocalizationGrid As Boolean = True
     Public LocalizationGridAutoResizeWidth As Boolean = True
