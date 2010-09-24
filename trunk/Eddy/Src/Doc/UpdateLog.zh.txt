@@ -1,4 +1,7 @@
-﻿2010.09.15.0
+﻿2010.09.24
+将配置文件中的MainLocalizationTextBox改为使用LocalizationTextBoxDescriptor的Name。为了向后兼容，仍然支持使用序号。
+
+2010.09.15.0
 从Firefly库接收GlyphText显示。
 按照Firefly库修改LOC文件相关代码。
 
