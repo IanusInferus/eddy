@@ -25,10 +25,11 @@ End Class
 Public Class ComparePair
     Public Source As String
     Public Target As String
-    Public SourceForeColor As String = "FFFF0000"
-    Public SourceBackColor As String = "FFBFFFBF"
-    Public TargetForeColor As String = "FFFF0000"
-    Public TargetBackColor As String = "FFBFFFBF"
+    Public BlankLineBackColor As String = "FF7F7F7F"
+    Public RemoveLineBackColor As String = "FF7F0000"
+    Public AddLineBackColor As String = "FF007F00"
+    Public RemoveBackColor As String = "FFFF0000"
+    Public AddBackColor As String = "FF00FF00"
 End Class
 
 Public Class DifferenceHighlighter
@@ -53,6 +54,27 @@ Public Class DifferenceHighlighter
         MyBase.DisposeManagedResource()
     End Sub
 
+    Private Function SplitToLines(ByVal Text As String) As String()
+        Dim Lines As New List(Of String)
+        Dim Index As Integer = 0
+        While True
+            Dim i = Text.IndexOf(Lf, Index)
+            If i < 0 Then
+                Lines.Add(Text.Substring(Index))
+                Exit While
+            End If
+            Lines.Add(Text.Substring(Index, i + 1 - Index))
+            Index = i + 1
+        End While
+        Return Lines.ToArray
+    End Function
+
+    Private Function GetCharIndexFromLineIndex(ByVal LineStart As Integer(), ByVal TextLength As Integer, ByVal LineIndex As Integer, ByVal ColumnIndex As Integer) As Integer
+        If LineIndex < 0 Then Return 0
+        If LineIndex >= LineStart.Count Then Return TextLength
+        Return LineStart(LineIndex) + ColumnIndex
+    End Function
+
     Public Function GetTextStyles(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As IEnumerable(Of String)) As IEnumerable(Of TextStyle()) Implements Firefly.Project.ITextLocalizerTextHighlighter.GetTextStyles
         Dim TextStyles = (From i In Enumerable.Range(0, Columns.Count) Select New List(Of TextStyle)).ToArray
 
@@ -65,18 +87,31 @@ Public Class DifferenceHighlighter
                 Dim TargetText = FormatedTexts(NameToColumn(p.Target))
                 If SourceText Is Nothing Then SourceText = ""
                 If TargetText Is Nothing Then TargetText = ""
-                Dim SourceForeColor = Color.FromArgb(Integer.Parse(p.SourceForeColor, Globalization.NumberStyles.HexNumber))
-                Dim SourceBackColor = Color.FromArgb(Integer.Parse(p.SourceBackColor, Globalization.NumberStyles.HexNumber))
-                Dim TargetForeColor = Color.FromArgb(Integer.Parse(p.TargetForeColor, Globalization.NumberStyles.HexNumber))
-                Dim TargetBackColor = Color.FromArgb(Integer.Parse(p.TargetBackColor, Globalization.NumberStyles.HexNumber))
-                Dim Diff = StringDiff.Compare(SourceText.ToCharArray, TargetText.ToCharArray)
+                Dim BlankLineBackColor = Color.FromArgb(Integer.Parse(p.BlankLineBackColor, Globalization.NumberStyles.HexNumber))
+                Dim RemoveLineBackColor = Color.FromArgb(Integer.Parse(p.RemoveLineBackColor, Globalization.NumberStyles.HexNumber))
+                Dim AddLineBackColor = Color.FromArgb(Integer.Parse(p.AddLineBackColor, Globalization.NumberStyles.HexNumber))
+                Dim AddBackColor = Color.FromArgb(Integer.Parse(p.AddBackColor, Globalization.NumberStyles.HexNumber))
+                Dim SourceLines = SplitToLines(SourceText)
+                Dim TargetLines = SplitToLines(TargetText)
+                Dim Diff = StringDiff.Compare(SourceLines, TargetLines)
+
+                Dim SourceLineStart = GetSummation(0, SourceLines.Select(Function(s) s.Length).ToArray)
+                Dim TargetLineStart = GetSummation(0, TargetLines.Select(Function(s) s.Length).ToArray)
 
                 Dim Source = TextStyles(NameToColumn(p.Source))
                 Dim Target = TextStyles(NameToColumn(p.Target))
                 For Each d In Diff
                     If d.SourceLength <> d.TargetLength Then
-                        If d.SourceLength <> 0 Then Source.Add(New TextStyle With {.Index = d.SourceIndex, .Length = d.SourceLength, .ForeColor = SourceForeColor, .BackColor = SourceBackColor})
-                        If d.TargetLength <> 0 Then Target.Add(New TextStyle With {.Index = d.TargetIndex, .Length = d.TargetLength, .ForeColor = TargetForeColor, .BackColor = TargetBackColor})
+                        If d.SourceLength <> 0 Then
+                            Dim Index = GetCharIndexFromLineIndex(SourceLineStart, SourceText.Length, d.SourceIndex, 0)
+                            Dim Length = GetCharIndexFromLineIndex(SourceLineStart, SourceText.Length, d.SourceIndex + d.SourceLength, 0) - Index
+                            Source.Add(New TextStyle With {.Index = Index, .Length = Length, .ForeColor = Color.Black, .BackColor = RemoveLineBackColor})
+                        End If
+                        If d.TargetLength <> 0 Then
+                            Dim Index = GetCharIndexFromLineIndex(TargetLineStart, TargetText.Length, d.TargetIndex, 0)
+                            Dim Length = GetCharIndexFromLineIndex(TargetLineStart, TargetText.Length, d.TargetIndex + d.TargetLength, 0) - Index
+                            Target.Add(New TextStyle With {.Index = Index, .Length = Length, .ForeColor = Color.Black, .BackColor = RemoveLineBackColor})
+                        End If
                     End If
                 Next
             Next
