@@ -3,7 +3,7 @@
 '  File:        DifferenceHighlighter.vb
 '  Location:    Eddy.DifferenceHighlighter <Visual Basic .Net>
 '  Description: 文本本地化工具差异比较高亮插件
-'  Version:     2009.10.08.
+'  Version:     2010.09.27.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -25,11 +25,10 @@ End Class
 Public Class ComparePair
     Public Source As String
     Public Target As String
-    Public BlankLineBackColor As String = "FF7F7F7F"
-    Public RemoveLineBackColor As String = "FF7F0000"
-    Public AddLineBackColor As String = "FF007F00"
-    Public RemoveBackColor As String = "FFFF0000"
-    Public AddBackColor As String = "FF00FF00"
+    Public RemoveLineBackColor As String = "FFFFDFDF"
+    Public AddLineBackColor As String = "FFDFFFDF"
+    Public RemoveBackColor As String = "FFFFBFBF"
+    Public AddBackColor As String = "FFBFFFBF"
 End Class
 
 Public Class DifferenceHighlighter
@@ -87,32 +86,86 @@ Public Class DifferenceHighlighter
                 Dim TargetText = FormatedTexts(NameToColumn(p.Target))
                 If SourceText Is Nothing Then SourceText = ""
                 If TargetText Is Nothing Then TargetText = ""
-                Dim BlankLineBackColor = Color.FromArgb(Integer.Parse(p.BlankLineBackColor, Globalization.NumberStyles.HexNumber))
                 Dim RemoveLineBackColor = Color.FromArgb(Integer.Parse(p.RemoveLineBackColor, Globalization.NumberStyles.HexNumber))
                 Dim AddLineBackColor = Color.FromArgb(Integer.Parse(p.AddLineBackColor, Globalization.NumberStyles.HexNumber))
+                Dim RemoveBackColor = Color.FromArgb(Integer.Parse(p.RemoveBackColor, Globalization.NumberStyles.HexNumber))
                 Dim AddBackColor = Color.FromArgb(Integer.Parse(p.AddBackColor, Globalization.NumberStyles.HexNumber))
                 Dim SourceLines = SplitToLines(SourceText)
                 Dim TargetLines = SplitToLines(TargetText)
                 Dim Diff = StringDiff.Compare(SourceLines, TargetLines)
+
+                Dim DiffPairs As New List(Of KeyValuePair(Of TranslatePart, TranslatePart))
+                Dim DiffQueue As New Queue(Of TranslatePart)(Diff)
+                While DiffQueue.Count > 0
+                    Dim a = DiffQueue.Dequeue
+                    If a.SourceLength = a.TargetLength Then Continue While
+                    If (a.SourceLength <> 0) = (a.TargetLength <> 0) Then Throw New InvalidOperationException
+                    If DiffQueue.Count = 0 Then
+                        If a.SourceLength <> 0 Then
+                            DiffPairs.Add(New KeyValuePair(Of TranslatePart, TranslatePart)(a, Nothing))
+                        Else
+                            DiffPairs.Add(New KeyValuePair(Of TranslatePart, TranslatePart)(Nothing, a))
+                        End If
+                        Exit While
+                    End If
+                    Dim b = DiffQueue.Peek
+                    If b.SourceLength = b.TargetLength OrElse ((a.SourceLength <> 0) = (b.SourceLength <> 0)) Then
+                        If a.SourceLength <> 0 Then
+                            DiffPairs.Add(New KeyValuePair(Of TranslatePart, TranslatePart)(a, Nothing))
+                        Else
+                            DiffPairs.Add(New KeyValuePair(Of TranslatePart, TranslatePart)(Nothing, a))
+                        End If
+                        Continue While
+                    End If
+                    DiffQueue.Dequeue()
+                    If a.SourceLength <> 0 Then
+                        DiffPairs.Add(New KeyValuePair(Of TranslatePart, TranslatePart)(a, b))
+                    Else
+                        DiffPairs.Add(New KeyValuePair(Of TranslatePart, TranslatePart)(b, a))
+                    End If
+                End While
 
                 Dim SourceLineStart = GetSummation(0, SourceLines.Select(Function(s) s.Length).ToArray)
                 Dim TargetLineStart = GetSummation(0, TargetLines.Select(Function(s) s.Length).ToArray)
 
                 Dim Source = TextStyles(NameToColumn(p.Source))
                 Dim Target = TextStyles(NameToColumn(p.Target))
-                For Each d In Diff
-                    If d.SourceLength <> d.TargetLength Then
-                        If d.SourceLength <> 0 Then
-                            Dim Index = GetCharIndexFromLineIndex(SourceLineStart, SourceText.Length, d.SourceIndex, 0)
-                            Dim Length = GetCharIndexFromLineIndex(SourceLineStart, SourceText.Length, d.SourceIndex + d.SourceLength, 0) - Index
-                            Source.Add(New TextStyle With {.Index = Index, .Length = Length, .ForeColor = Color.Black, .BackColor = RemoveLineBackColor})
-                        End If
-                        If d.TargetLength <> 0 Then
-                            Dim Index = GetCharIndexFromLineIndex(TargetLineStart, TargetText.Length, d.TargetIndex, 0)
-                            Dim Length = GetCharIndexFromLineIndex(TargetLineStart, TargetText.Length, d.TargetIndex + d.TargetLength, 0) - Index
-                            Target.Add(New TextStyle With {.Index = Index, .Length = Length, .ForeColor = Color.Black, .BackColor = RemoveLineBackColor})
-                        End If
+                For Each Pair In DiffPairs
+                    Dim SourceBlockIndex As Integer = 0
+                    Dim SourceBlockLength As Integer = 0
+                    Dim TargetBlockIndex As Integer = 0
+                    Dim TargetBlockLength As Integer = 0
+                    If Pair.Key IsNot Nothing Then
+                        Dim d = Pair.Key
+                        SourceBlockIndex = GetCharIndexFromLineIndex(SourceLineStart, SourceText.Length, d.SourceIndex, 0)
+                        SourceBlockLength = GetCharIndexFromLineIndex(SourceLineStart, SourceText.Length, d.SourceIndex + d.SourceLength, 0) - SourceBlockIndex
+                        Source.Add(New TextStyle With {.Index = SourceBlockIndex, .Length = SourceBlockLength, .ForeColor = Color.Black, .BackColor = RemoveLineBackColor})
                     End If
+                    If Pair.Value IsNot Nothing Then
+                        Dim d = Pair.Value
+                        TargetBlockIndex = GetCharIndexFromLineIndex(TargetLineStart, TargetText.Length, d.TargetIndex, 0)
+                        TargetBlockLength = GetCharIndexFromLineIndex(TargetLineStart, TargetText.Length, d.TargetIndex + d.TargetLength, 0) - TargetBlockIndex
+                        Target.Add(New TextStyle With {.Index = TargetBlockIndex, .Length = TargetBlockLength, .ForeColor = Color.Black, .BackColor = AddLineBackColor})
+                    End If
+                    If Pair.Key Is Nothing OrElse Pair.Value Is Nothing Then
+                        Continue For
+                    End If
+                    Dim SourceBlock = SourceText.Substring(SourceBlockIndex, SourceBlockLength).ToCharArray
+                    Dim TargetBlock = TargetText.Substring(TargetBlockIndex, TargetBlockLength).ToCharArray
+                    Dim InBlockDiff = StringDiff.Compare(SourceBlock, TargetBlock)
+                    For Each d In InBlockDiff
+                        If d.SourceLength = d.TargetLength Then
+                            'Source.Add(New TextStyle With {.Index = SourceBlockIndex + d.SourceIndex, .Length = d.SourceLength, .ForeColor = Color.Black, .BackColor = RemoveLineBackColor})
+                            'Target.Add(New TextStyle With {.Index = TargetBlockIndex + d.TargetIndex, .Length = d.TargetLength, .ForeColor = Color.Black, .BackColor = AddLineBackColor})
+                        Else
+                            If d.SourceLength <> 0 Then
+                                Source.Add(New TextStyle With {.Index = SourceBlockIndex + d.SourceIndex, .Length = d.SourceLength, .ForeColor = Color.Black, .BackColor = RemoveBackColor})
+                            End If
+                            If d.TargetLength <> 0 Then
+                                Target.Add(New TextStyle With {.Index = TargetBlockIndex + d.TargetIndex, .Length = d.TargetLength, .ForeColor = Color.Black, .BackColor = AddBackColor})
+                            End If
+                        End If
+                    Next
                 Next
             Next
         End If

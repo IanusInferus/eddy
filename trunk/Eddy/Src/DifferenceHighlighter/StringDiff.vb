@@ -3,7 +3,7 @@
 '  File:        StringDiff.vb
 '  Location:    Eddy.DifferenceHighlighter <Visual Basic .Net>
 '  Description: 序列比较
-'  Version:     2010.09.26.
+'  Version:     2010.09.27.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -242,6 +242,7 @@ Public NotInheritable Class StringDiff
             End While
 
             Dim MinDeterminedSolutionCost = (N - xRoot) + (M - yRoot)
+            Dim kMinDeterminedSolution = 0
             Dim k2Lx As New Dictionary(Of Integer, ListNode)
             k2Lx.Add(0, New ListNode With {.x = xRoot, .y = yRoot, .Previous = Nothing})
 
@@ -270,7 +271,7 @@ Public NotInheritable Class StringDiff
                         Dim xAdd = AddReachedPrevious.x
                         Dim yAdd = xAdd - k
                         Dim hMaxAdd = (N - xAdd) + (M - yAdd)
-                        If hMaxRemove <= hMaxAdd Then
+                        If hMaxRemove < hMaxAdd Then
                             Previous = RemoveReachedPrevious
                             x = xRemove
                             y = yRemove
@@ -301,7 +302,7 @@ Public NotInheritable Class StringDiff
                     End If
 
                     Dim hMin = 1
-                    If D + hMin > MinDeterminedSolutionCost Then
+                    If D + hMin > MinDeterminedSolutionCost AndAlso Abs(k - kMinDeterminedSolution) > 1 Then
                         If k2Lx.ContainsKey(k) Then k2Lx.Remove(k)
                         Continue For
                     End If
@@ -316,8 +317,9 @@ Public NotInheritable Class StringDiff
                     End While
 
                     hMax = (N - x) + (M - y)
-                    If D + hMax < MinDeterminedSolutionCost Then
+                    If D + hMax <= MinDeterminedSolutionCost Then
                         MinDeterminedSolutionCost = D + hMax
+                        kMinDeterminedSolution = k
                     End If
 
                     If k2Lx.ContainsKey(k) Then
@@ -329,6 +331,7 @@ Public NotInheritable Class StringDiff
                     If x = N AndAlso y = M Then
                         Success = True
                         Route = k2Lx(k)
+                        Exit For
                     End If
                 Next
             Next
@@ -353,7 +356,7 @@ Public NotInheritable Class StringDiff
                     Dim DotProduct = xDifference * CurrentPart.TargetLength - yDifference * CurrentPart.SourceLength
                     If DotProduct <> 0 Then
                         CurrentRouteReversed.Add(CurrentPart)
-                        CurrentPart = New TranslatePart With {.SourceIndex = CurrentNode.x, .SourceLength = 0, .TargetIndex = CurrentNode.y, .TargetLength = 0}
+                        CurrentPart = New TranslatePart With {.SourceIndex = CurrentNode.x, .SourceLength = xDifference, .TargetIndex = CurrentNode.y, .TargetLength = yDifference}
                     Else
                         CurrentPart = New TranslatePart With {.SourceIndex = CurrentNode.x, .SourceLength = CurrentPart.SourceLength + xDifference, .TargetIndex = CurrentNode.y, .TargetLength = CurrentPart.TargetLength + yDifference}
                     End If
