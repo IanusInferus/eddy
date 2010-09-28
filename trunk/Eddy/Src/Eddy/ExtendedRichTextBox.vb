@@ -5,7 +5,7 @@
 '               此代码是由以下两篇文章中的代码混合而成
 '               David Bennett http://blogs.technet.com/david_bennett/archive/2005/04/06/403402.aspx
 '               John Fisher http://www.codeproject.com/KB/edit/richtextboxplus.aspx?df=100&forumid=16179&exp=0&select=562462
-'  Version:     2010.07.25.
+'  Version:     2010.09.28.
 
 '==========================================================================
 
@@ -362,6 +362,16 @@ Public Class ExtendedRichTextBox
         SendMessage(New HandleRef(Me, Handle), EM_SETUNDOLIMIT, 1024, 0)
     End Sub
 
+    Protected Overrides ReadOnly Property CreateParams As System.Windows.Forms.CreateParams
+        Get
+            Dim Params = MyBase.CreateParams
+            If LoadLibrary("msftedit.dll") <> IntPtr.Zero Then
+                Params.ClassName = "RICHEDIT50W"
+            End If
+            Return Params
+        End Get
+    End Property
+
     Private Const WM_VSCROLL As Integer = &H115
     Private Const WM_HSCROLL As Integer = &H114
     Private Const SB_LINEUP As Integer = 0
@@ -402,14 +412,18 @@ Public Class ExtendedRichTextBox
     Private Const SIF_TRACKPOS As Integer = &H10
     Private Const SIF_ALL As Integer = (SIF_RANGE Or SIF_PAGE Or SIF_POS Or SIF_TRACKPOS)
 
-    <DllImport("user32", CharSet:=CharSet.Auto)> _
+    <DllImport("kernel32.dll", CharSet:=CharSet.Auto)> _
+    Private Shared Function LoadLibrary(ByVal lpFileName As String) As IntPtr
+    End Function
+
+    <DllImport("user32.dll", CharSet:=CharSet.Auto)> _
     Private Shared Function SendMessage(ByVal hWnd As HandleRef, ByVal msg As Integer, ByVal wParam As IntPtr, ByVal lParam As IntPtr) As IntPtr
     End Function
     Private Shared Function SendMessage(ByVal hWnd As HandleRef, ByVal msg As Integer, ByVal wParam As Integer, ByVal lParam As Integer) As IntPtr
         Return SendMessage(hWnd, msg, New IntPtr(wParam), New IntPtr(lParam))
     End Function
 
-    <DllImport("user32", CharSet:=CharSet.Auto)> _
+    <DllImport("user32.dll", CharSet:=CharSet.Auto)> _
     Private Shared Function SendMessage(ByVal hWnd As HandleRef, ByVal msg As Integer, ByVal wParam As IntPtr, ByRef lParam As CHARFORMAT2) As IntPtr
     End Function
     Private Shared Function SendMessage(ByVal hWnd As HandleRef, ByVal msg As Integer, ByVal wParam As Integer, ByRef lParam As CHARFORMAT2) As IntPtr

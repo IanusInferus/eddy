@@ -1,4 +1,7 @@
-﻿2010.09.27
+﻿2010.09.28
+将RichTextBox内部替换为RICHEDIT50W。
+
+2010.09.27
 DifferenceHighlighter:
 添加新的diff算法。
 将diff改为先按行再按字符。
