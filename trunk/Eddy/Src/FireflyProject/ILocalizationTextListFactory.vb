@@ -3,7 +3,7 @@
 '  File:        ILocalizationTextListFactory.vb
 '  Location:    Firefly.Project <Visual Basic .Net>
 '  Description: 本地化文本列表工厂接口
-'  Version:     2010.09.15.
+'  Version:     2010.10.05.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -11,7 +11,6 @@
 Imports System
 Imports System.Collections.Generic
 Imports System.Linq
-Imports Firefly
 
 ''' <summary>本地化文本列表工厂接口。</summary>
 Public Interface ILocalizationTextListFactory

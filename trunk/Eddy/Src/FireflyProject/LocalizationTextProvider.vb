@@ -3,7 +3,7 @@
 '  File:        LocalizationTextProvider.vb
 '  Location:    Firefly.Project <Visual Basic .Net>
 '  Description: 本地化文本数据提供
-'  Version:     2010.01.14.
+'  Version:     2010.10.05.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -12,9 +12,7 @@ Imports System
 Imports System.Collections
 Imports System.Collections.Generic
 Imports System.Linq
-Imports Firefly
-Imports Firefly.TextEncoding
-Imports Firefly.Texting
+Imports System.Text.RegularExpressions
 
 Public Interface ILocalizationTextList
     ReadOnly Property Count() As Integer
@@ -34,7 +32,7 @@ Public Class LocalizationTextProvider
     Private ExtensionValue As String
     Private TypeValue As String
     Private IsReadOnlyValue As Boolean
-    Private EncodingValue As System.Text.Encoding = UTF16
+    Private EncodingValue As System.Text.Encoding = System.Text.Encoding.Unicode
 
     Private FileNamesValue As New List(Of String)
     Private ReadOnly Property FileNames() As List(Of String)
@@ -204,6 +202,11 @@ Public Class LocalizationTextProvider
         Me.EncodingValue = Encoding
     End Sub
 
+    Private Shared Function IsMatchFileMask(ByVal FileName As String, ByVal Mask As String) As Boolean
+        Dim Pattern = "^" & Regex.Escape(Mask).Replace("\?", ".?").Replace("\*", "*?") & "$"
+        Dim r As New Regex(Pattern, RegexOptions.ExplicitCapture Or RegexOptions.IgnoreCase)
+        Return r.Match(FileName).Success
+    End Function
     Private Initialized As Boolean = False
     Public Sub Initialize()
         If Initialized Then Return

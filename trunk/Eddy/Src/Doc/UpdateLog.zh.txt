@@ -1,4 +1,8 @@
-﻿2010.09.28
+﻿2010.10.05
+Firefly.Project:
+去除对Firefly.Core.dll的引用，使得接口更加稳定。
+
+2010.09.28
 将RichTextBox内部替换为RICHEDIT50W。
 
 2010.09.27
