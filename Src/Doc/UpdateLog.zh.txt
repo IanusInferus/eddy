@@ -1,4 +1,8 @@
-﻿2010.10.05
+﻿2010.10.07
+Eddy:
+增加自动加载locproj文件启动时当前文件夹下有多个locproj文件时的错误处理。
+
+2010.10.05
 Firefly.Project:
 去除对Firefly.Core.dll的引用，使得接口更加稳定。
 

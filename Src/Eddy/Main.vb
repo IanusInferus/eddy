@@ -3,7 +3,7 @@
 '  File:        Main.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具入口函数
-'  Version:     2010.09.14.
+'  Version:     2010.10.07.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -51,8 +51,12 @@ Public Module Main
                 If Files.Length = 0 Then
                     MessageBox.Show("当前文件夹下无法找到.locproj项目文件。", My.Application.Info.Description, MessageBoxButtons.OK, MessageBoxIcon.Stop)
                     Return -1
+                ElseIf Files.Length > 1 Then
+                    MessageBox.Show("当前文件夹下找到多个.locproj项目文件。", My.Application.Info.Description, MessageBoxButtons.OK, MessageBoxIcon.Stop)
+                    Return -1
+                Else
+                    CurrentProjectFilePath = Files(0)
                 End If
-                CurrentProjectFilePath = Files(0)
             Case 1
                 CurrentProjectFilePath = Args(0)
             Case Else
