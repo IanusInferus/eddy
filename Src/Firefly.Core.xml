@@ -24,7 +24,7 @@ Firefly.Core
 	<param name="WithByteOrderMarks">如果为真，将为UTF-16(FF FE)、GB18030(84 31 95 33)、UTF-8(EF BB BF)、UTF-32(FF FE 00 00)、UTF-16B(FE FF)、UTF-32B(00 00 FE FF)这六种编码写入BOM。</param>
 </member><member name="M:Firefly.Texting.Txt.WriteFile(System.String,System.Text.Encoding,System.String,System.Boolean)">
 	<param name="WithByteOrderMarks">如果为真，将为UTF-16(FF FE)、GB18030(84 31 95 33)、UTF-8(EF BB BF)、UTF-32(FF FE 00 00)、UTF-16B(FE FF)、UTF-32B(00 00 FE FF)这六种编码写入BOM。</param>
-</member><member name="T:Firefly.UniHanDatabase">
+</member><member name="T:Firefly.Texting.UniHanDatabase">
 	<summary>
  本类用于遍历UniHan数据库。
  </summary>
@@ -1393,28 +1393,28 @@ Firefly.Core
 	<summary>
  获得整数的特定位。
  </summary>
-	<param name="This">Int32</param>
+	<param name="This">UInt32</param>
 	<param name="U">高位索引(31-0)</param>
 	<param name="L">低位索引(31-0)</param>
 </member><member name="M:Firefly.BitOperations.Bits(System.UInt64,System.Int32,System.Int32)">
 	<summary>
  获得整数的特定位。
  </summary>
-	<param name="This">Int32</param>
+	<param name="This">UInt64</param>
 	<param name="U">高位索引(63-0)</param>
 	<param name="L">低位索引(63-0)</param>
 </member><member name="M:Firefly.BitOperations.Bits(System.SByte,System.Int32,System.Int32)">
 	<summary>
  获得整数的特定位。
  </summary>
-	<param name="This">Byte</param>
+	<param name="This">SByte</param>
 	<param name="U">高位索引(7-0)</param>
 	<param name="L">低位索引(7-0)</param>
 </member><member name="M:Firefly.BitOperations.Bits(System.Int16,System.Int32,System.Int32)">
 	<summary>
  获得整数的特定位。
  </summary>
-	<param name="This">UInt16</param>
+	<param name="This">Int16</param>
 	<param name="U">高位索引(15-0)</param>
 	<param name="L">低位索引(15-0)</param>
 </member><member name="M:Firefly.BitOperations.Bits(System.Int32,System.Int32,System.Int32)">
@@ -1428,147 +1428,65 @@ Firefly.Core
 	<summary>
  获得整数的特定位。
  </summary>
-	<param name="This">Int32</param>
+	<param name="This">Int64</param>
 	<param name="U">高位索引(63-0)</param>
 	<param name="L">低位索引(63-0)</param>
-</member><member name="M:Firefly.BitOperations.ComposeBits(System.Byte,System.Int32,System.Int32,System.Byte,System.Int32,System.Int32,System.Byte,System.Int32,System.Int32,System.Byte,System.Int32,System.Int32)">
+</member><member name="M:Firefly.BitOperations.ConcatBits(System.Byte,System.Byte,System.Int32)">
 	<summary>
- 已重载。从位构成整数。
+ 按位连接整数。
  </summary>
-	<param name="H">首字节</param>
-	<param name="HU">首字节高位索引(7-0)</param>
-	<param name="HL">首字节低位索引(7-0)</param>
-	<param name="S">次字节</param>
-	<param name="SU">次字节高位索引(7-0)</param>
-	<param name="SL">次字节低位索引(7-0)</param>
-	<param name="T">第三字节</param>
-	<param name="TU">第三字节高位索引(7-0)</param>
-	<param name="TL">第三字节低位索引(7-0)</param>
-	<param name="Q">第四字节</param>
-	<param name="QU">第四字节高位索引(7-0)</param>
-	<param name="QL">第四字节低位索引(7-0)</param>
-	<returns>由这些字节的这些位依次从高到低连接得到的整数。</returns>
-</member><member name="M:Firefly.BitOperations.ComposeBits(System.Byte,System.Int32,System.Int32,System.Byte,System.Int32,System.Int32,System.Byte,System.Int32,System.Int32)">
+	<param name="This">Byte</param>
+	<param name="Value">欲连接的数</param>
+	<param name="Width">欲连接的数的位数(8-0)</param>
+</member><member name="M:Firefly.BitOperations.ConcatBits(System.UInt16,System.UInt16,System.Int32)">
 	<summary>
- 已重载。从位构成整数。
+ 按位连接整数。
  </summary>
-	<param name="H">首字节</param>
-	<param name="HU">首字节高位索引(7-0)</param>
-	<param name="HL">首字节低位索引(7-0)</param>
-	<param name="S">次字节</param>
-	<param name="SU">次字节高位索引(7-0)</param>
-	<param name="SL">次字节低位索引(7-0)</param>
-	<param name="T">第三字节</param>
-	<param name="TU">第三字节高位索引(7-0)</param>
-	<param name="TL">第三字节低位索引(7-0)</param>
-	<returns>由这些字节的这些位依次从高到低连接得到的整数。</returns>
-</member><member name="M:Firefly.BitOperations.ComposeBits(System.Byte,System.Int32,System.Int32,System.Byte,System.Int32,System.Int32)">
+	<param name="This">UInt16</param>
+	<param name="Value">欲连接的数</param>
+	<param name="Width">欲连接的数的位数(16-0)</param>
+</member><member name="M:Firefly.BitOperations.ConcatBits(System.UInt32,System.UInt32,System.Int32)">
 	<summary>
- 已重载。从位构成整数。
+ 按位连接整数。
  </summary>
-	<param name="H">首字节</param>
-	<param name="HU">首字节高位索引(7-0)</param>
-	<param name="HL">首字节低位索引(7-0)</param>
-	<param name="S">次字节</param>
-	<param name="SU">次字节高位索引(7-0)</param>
-	<param name="SL">次字节低位索引(7-0)</param>
-	<returns>由这些字节的这些位依次从高到低连接得到的整数。</returns>
-</member><member name="M:Firefly.BitOperations.ComposeBits(System.Byte,System.Int32,System.Int32)">
+	<param name="This">UInt32</param>
+	<param name="Value">欲连接的数</param>
+	<param name="Width">欲连接的数的位数(32-0)</param>
+</member><member name="M:Firefly.BitOperations.ConcatBits(System.UInt64,System.UInt64,System.Int32)">
 	<summary>
- 已重载。从位构成整数。
+ 按位连接整数。
  </summary>
-	<param name="H">首字节</param>
-	<param name="HU">首字节高位索引(7-0)</param>
-	<param name="HL">首字节低位索引(7-0)</param>
-	<returns>由这些字节的这些位依次从高到低连接得到的整数。</returns>
-</member><member name="M:Firefly.BitOperations.ComposeBits(System.Int32,System.Int32,System.Int32,System.Int32,System.Int32,System.Int32)">
+	<param name="This">UInt64</param>
+	<param name="Value">欲连接的数</param>
+	<param name="Width">欲连接的数的位数(8-0)</param>
+</member><member name="M:Firefly.BitOperations.ConcatBits(System.SByte,System.SByte,System.Int32)">
 	<summary>
- 已重载。从位构成整数。
+ 按位连接整数。
  </summary>
-	<param name="H">首Int32</param>
-	<param name="HU">首Int32高位索引(31-0)</param>
-	<param name="HL">首Int32低位索引(31-0)</param>
-	<param name="S">次Int32</param>
-	<param name="SU">次Int32高位索引(31-0)</param>
-	<param name="SL">次Int32低位索引(31-0)</param>
-	<returns>由这些Int32的这些位依次从高到低连接得到的整数。</returns>
-</member><member name="M:Firefly.BitOperations.ComposeBits(System.Int32,System.Int32,System.Int32)">
+	<param name="This">SByte</param>
+	<param name="Value">欲连接的数</param>
+	<param name="Width">欲连接的数的位数(8-0)</param>
+</member><member name="M:Firefly.BitOperations.ConcatBits(System.Int16,System.Int16,System.Int32)">
 	<summary>
- 已重载。从位构成整数。
+ 按位连接整数。
  </summary>
-	<param name="H">首Int32</param>
-	<param name="HU">首Int32高位索引(31-0)</param>
-	<param name="HL">首Int32低位索引(31-0)</param>
-	<returns>由这些Int32的这些位依次从高到低连接得到的整数。</returns>
-</member><member name="M:Firefly.BitOperations.DecomposeBits(System.Byte@,System.Int32,System.Int32,System.Byte@,System.Int32,System.Int32,System.Byte@,System.Int32,System.Int32,System.Byte@,System.Int32,System.Int32,System.Int32)">
+	<param name="This">Int16</param>
+	<param name="Value">欲连接的数</param>
+	<param name="Width">欲连接的数的位数(16-0)</param>
+</member><member name="M:Firefly.BitOperations.ConcatBits(System.Int32,System.Int32,System.Int32)">
 	<summary>
- 已重载。将整数分解到位。
+ 按位连接整数。
  </summary>
-	<param name="H">首字节</param>
-	<param name="HU">首字节高位索引(7-0)</param>
-	<param name="HL">首字节低位索引(7-0)</param>
-	<param name="S">次字节</param>
-	<param name="SU">次字节高位索引(7-0)</param>
-	<param name="SL">次字节低位索引(7-0)</param>
-	<param name="T">第三字节</param>
-	<param name="TU">第三字节高位索引(7-0)</param>
-	<param name="TL">第三字节低位索引(7-0)</param>
-	<param name="Q">第四字节</param>
-	<param name="QU">第四字节高位索引(7-0)</param>
-	<param name="QL">第四字节低位索引(7-0)</param>
-	<param name="Value">待分解的整数。</param>
-</member><member name="M:Firefly.BitOperations.DecomposeBits(System.Byte@,System.Int32,System.Int32,System.Byte@,System.Int32,System.Int32,System.Byte@,System.Int32,System.Int32,System.Int32)">
+	<param name="This">Int32</param>
+	<param name="Value">欲连接的数</param>
+	<param name="Width">欲连接的数的位数(32-0)</param>
+</member><member name="M:Firefly.BitOperations.ConcatBits(System.Int64,System.Int64,System.Int32)">
 	<summary>
- 已重载。将整数分解到位。
+ 按位连接整数。
  </summary>
-	<param name="H">首字节</param>
-	<param name="HU">首字节高位索引(7-0)</param>
-	<param name="HL">首字节低位索引(7-0)</param>
-	<param name="S">次字节</param>
-	<param name="SU">次字节高位索引(7-0)</param>
-	<param name="SL">次字节低位索引(7-0)</param>
-	<param name="T">第三字节</param>
-	<param name="TU">第三字节高位索引(7-0)</param>
-	<param name="TL">第三字节低位索引(7-0)</param>
-	<param name="Value">待分解的整数。</param>
-</member><member name="M:Firefly.BitOperations.DecomposeBits(System.Byte@,System.Int32,System.Int32,System.Byte@,System.Int32,System.Int32,System.Int32)">
-	<summary>
- 已重载。将整数分解到位。
- </summary>
-	<param name="H">首字节</param>
-	<param name="HU">首字节高位索引(7-0)</param>
-	<param name="HL">首字节低位索引(7-0)</param>
-	<param name="S">次字节</param>
-	<param name="SU">次字节高位索引(7-0)</param>
-	<param name="SL">次字节低位索引(7-0)</param>
-	<param name="Value">待分解的整数。</param>
-</member><member name="M:Firefly.BitOperations.DecomposeBits(System.Byte@,System.Int32,System.Int32,System.Int32)">
-	<summary>
- 已重载。将整数分解到位。
- </summary>
-	<param name="H">首字节</param>
-	<param name="HU">首字节高位索引(7-0)</param>
-	<param name="HL">首字节低位索引(7-0)</param>
-	<param name="Value">待分解的整数。</param>
-</member><member name="M:Firefly.BitOperations.DecomposeBits(System.Int32@,System.Int32,System.Int32,System.Int32@,System.Int32,System.Int32,System.Int32)">
-	<summary>
- 已重载。将整数分解到位。
- </summary>
-	<param name="H">首Int32</param>
-	<param name="HU">首Int32高位索引(31-0)</param>
-	<param name="HL">首Int32低位索引(31-0)</param>
-	<param name="S">次Int32</param>
-	<param name="SU">次Int32高位索引(31-0)</param>
-	<param name="SL">次Int32低位索引(31-0)</param>
-	<param name="Value">待分解的整数。</param>
-</member><member name="M:Firefly.BitOperations.DecomposeBits(System.Int32@,System.Int32,System.Int32,System.Int32)">
-	<summary>
- 已重载。将整数分解到位。
- </summary>
-	<param name="H">首Int32</param>
-	<param name="HU">首Int32高位索引(31-0)</param>
-	<param name="HL">首Int32低位索引(31-0)</param>
-	<param name="Value">待分解的整数。</param>
+	<param name="This">Int64</param>
+	<param name="Value">欲连接的数</param>
+	<param name="Width">欲连接的数的位数(8-0)</param>
 </member><member name="M:Firefly.BitOperations.ConcatBits(System.Byte,System.Int32,System.Byte,System.Int32,System.Byte,System.Int32,System.Byte,System.Int32)">
 	<summary>
  已重载。从位连接整数。
