@@ -8,11 +8,8 @@
 @if exist Bin (
   @cd Bin
   @for %%a in (*.exe;*.dll) do @(
-    @echo %%a | findstr /R "Firefly\..*\.dll" > nul
-    @if errorlevel 1 @(
-      @del %%~na.pdb /F /Q
-      @del %%~na.xml /F /Q
-    )
+    @del %%~na.pdb /F /Q
+    @del %%~na.xml /F /Q
   )
   @del *.vshost.exe /F /Q
   @del *.manifest /F /Q
