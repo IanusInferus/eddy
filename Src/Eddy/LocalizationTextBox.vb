@@ -18,6 +18,7 @@ Imports Firefly.TextEncoding
 Imports Firefly.Glyphing
 Imports Firefly.Texting
 Imports Eddy.Interfaces
+Imports Eddy.Base
 
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Public Class LocalizationTextBox

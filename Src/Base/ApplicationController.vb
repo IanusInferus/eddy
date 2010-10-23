@@ -160,7 +160,7 @@ Public Class ApplicationController
             NewAsmName.Version = Nothing
             Dim IsOtherMatch = NewAsmName.FullName.Equals(AsmName.FullName, StringComparison.OrdinalIgnoreCase)
             If Not IsOtherMatch Then
-                If MessageBox.Show("插件签名不匹配。\n原始签名：{0}\n实际签名：{1}\n承认该签名吗？".Descape.Formats(p.AssemblyName, FullName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                If MessageDialog.Show("插件签名不匹配。\n原始签名：{0}\n实际签名：{1}\n承认该签名吗？".Descape.Formats(p.AssemblyName, FullName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                     p.AssemblyName = FullName
                     IsVersionMatch = True
                 Else
@@ -169,12 +169,12 @@ Public Class ApplicationController
                 End If
             End If
             If Not IsVersionMatch Then
-                MessageBox.Show("插件版本不匹配。\n原始签名：{0}\n实际签名：{1}\n将采用实际版本。".Descape.Formats(OldFullName, FullName), ApplicationData.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
+                MessageDialog.Show("插件版本不匹配。\n原始签名：{0}\n实际签名：{1}\n将采用实际版本。".Descape.Formats(OldFullName, FullName), ApplicationData.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
                 p.AssemblyName = FullName
             End If
             If Not p.Enable Then
                 If Not IsOtherMatch OrElse Not IsVersionMatch Then
-                    If MessageBox.Show("插件变更但没有启用。\n签名：{0}\n启用插件吗？".Descape.Formats(FullName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                    If MessageDialog.Show("插件变更但没有启用。\n签名：{0}\n启用插件吗？".Descape.Formats(FullName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                         p.Enable = True
                     End If
                 End If
@@ -187,19 +187,29 @@ Public Class ApplicationController
 #If CONFIG <> "Debug" Then
             Catch ex As Exception
                 ExceptionHandler.PopupException(ex)
-                If MessageBox.Show("插件加载出错，程序将关闭。\n签名：{0}\n下次启动是否禁用该插件？".Descape.Formats(p.AssemblyName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                If MessageDialog.Show("插件加载出错，程序将关闭。\n签名：{0}\n下次启动是否禁用该插件？".Descape.Formats(p.AssemblyName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                     p.Enable = False
                     Save()
                 End If
-                End
+                Application.Exit()
+                Return
             End Try
 #End If
         Next
         Dim NewPlugins As New List(Of PluginDescriptor)
         For Each DllPath In Directory.GetFiles(Application.StartupPath, "*.dll", SearchOption.TopDirectoryOnly).OrderBy(Function(f) f, StringComparer.OrdinalIgnoreCase)
-            Dim Asm = Assembly.Load(AssemblyName.GetAssemblyName(GetAbsolutePath(DllPath, Application.StartupPath)))
-            If PluginDescriptorSet.Contains(Asm.GetName.Name) Then Continue For
+            Dim AsmToken As AssemblyName
+            Try
+                AsmToken = AssemblyName.GetAssemblyName(GetAbsolutePath(DllPath, Application.StartupPath))
+            Catch
+                '由于可能遇到非.Net程序集，所以需要作此判断
+                Continue For
+            End Try
+            Dim Asm = Assembly.Load(AsmToken)
             Dim AsmName = Asm.GetName
+            If AsmName.Name.Equals("Eddy.Interfaces", StringComparison.OrdinalIgnoreCase) Then Continue For
+            If AsmName.Name.Equals("Eddy.Base", StringComparison.OrdinalIgnoreCase) Then Continue For
+            If PluginDescriptorSet.Contains(AsmName.Name) Then Continue For
             Dim p = New PluginDescriptor With {.AssemblyName = AsmName.FullName, .Enable = True}
 #If CONFIG <> "Debug" Then
             Try
@@ -210,13 +220,14 @@ Public Class ApplicationController
 #If CONFIG <> "Debug" Then
             Catch ex As Exception
                 ExceptionHandler.PopupException(ex)
-                If MessageBox.Show("{0}加载出错，程序将关闭。下次启动是否禁用该插件？".Formats(p.AssemblyName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                If MessageDialog.Show("{0}加载出错，程序将关闭。下次启动是否禁用该插件？".Formats(p.AssemblyName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
                     p.Enable = False
                     NewPlugins.Add(p)
                     ApplicationData.CurrentProject.Plugins = ApplicationData.CurrentProject.Plugins.Concat(NewPlugins).ToArray
                     Save()
                 End If
-                End
+                Application.Exit()
+                Return
             End Try
 #End If
         Next

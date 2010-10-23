@@ -13,6 +13,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.Text.RegularExpressions
 Imports System.Windows.Forms
+Imports Firefly.GUI
 Imports Eddy.Interfaces
 
 Public Class FormTemplateTranslate
@@ -115,11 +116,11 @@ Public Class FormTemplateTranslate
             Next
         End If
         If (CheckBox_SourceCurrent.Checked OrElse CheckBox_TargetCurrent.Checked) AndAlso (SourceNameSet.Contains(CurrentName) OrElse TargetNameSet.Contains(CurrentName)) Then
-            MessageBox.Show("源和目标中有相同的文件。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageDialog.Show("源和目标中有相同的文件。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End If
         If SourceNameSet.Intersect(TargetNameSet).Count > 0 Then
-            MessageBox.Show("源和目标中有相同的文件。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            MessageDialog.Show("源和目标中有相同的文件。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error)
             Return
         End If
 
@@ -196,6 +197,6 @@ Public Class FormTemplateTranslate
         Controller.RefreshMainPanel()
         Controller.RefreshGrid()
 
-        MessageBox.Show("成功执行按模板翻译。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
+        MessageDialog.Show("成功执行按模板翻译。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 End Class

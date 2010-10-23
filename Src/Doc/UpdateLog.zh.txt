@@ -1,8 +1,10 @@
 ﻿2010.10.24
 Firefly.Project:
 改名为Eddy.Interfaces。
-Eddy.*:
+Eddy.*, Examples:
 按照Eddy.Interfaces进行修改。
+Eddy.Base:
+增加Eddy.Base为基础库。将主程序中部分代码移入。
 
 2010.10.11.0
 
