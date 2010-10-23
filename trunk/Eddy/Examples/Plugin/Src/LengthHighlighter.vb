@@ -3,7 +3,7 @@
 '  File:        LengthHighlighter.vb
 '  Location:    Firefly.Examples <Visual Basic .Net>
 '  Description: 长度检查高亮器
-'  Version:     2010.06.29.
+'  Version:     2010.10.24.
 '  Author:      F.R.C.
 '  Copyright(C) Public Domain
 '
@@ -16,7 +16,7 @@ Imports System.Drawing
 Imports System.Text.RegularExpressions
 Imports System.Linq
 Imports Firefly
-Imports Firefly.Project
+Imports Eddy.Interfaces
 Imports Eddy.WQSGPlugin
 
 Public Class Main
@@ -51,7 +51,7 @@ Public Class Main
         Next
         Return Nothing
     End Function
-    Public Function GetTextStyles(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As System.Collections.Generic.IEnumerable(Of String)) As System.Collections.Generic.IEnumerable(Of Firefly.Project.TextStyle()) Implements Firefly.Project.ITextLocalizerTextHighlighter.GetTextStyles
+    Public Function GetTextStyles(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As System.Collections.Generic.IEnumerable(Of String)) As System.Collections.Generic.IEnumerable(Of TextStyle()) Implements ITextLocalizerTextHighlighter.GetTextStyles
         Return From i In Enumerable.Range(0, Columns.Count) Select GetTextStylesForColumn(TextName, TextIndex, i, FormatedTexts(i))
     End Function
 
