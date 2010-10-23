@@ -16,6 +16,7 @@ Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Setting
+Imports Firefly.GUI
 Imports Eddy.Interfaces
 
 Public Class FormSearch
@@ -119,7 +120,7 @@ Public Class FormSearch
             Controller.ScrollToCaret(Result.ColumnIndex)
             RaiseEvent FindOrReplacePerformed(TextFind, FindReplace.GetFindRegex(TextFind))
         Else
-            MessageBox.Show("未找到下一条匹配文本。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageDialog.Show("未找到下一条匹配文本。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
         End If
     End Sub
 
@@ -164,7 +165,7 @@ Public Class FormSearch
             Controller.ScrollToCaret(Result.ColumnIndex)
             RaiseEvent FindOrReplacePerformed(TextFind, FindReplace.GetFindRegex(TextFind))
         Else
-            MessageBox.Show("未找到下一条匹配文本。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageDialog.Show("未找到下一条匹配文本。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
         End If
     End Sub
 
@@ -194,6 +195,6 @@ Public Class FormSearch
         Dim Input As New FindIndex With {.ColumnIndex = ColumnIndex, .TextName = Controller.TextName, .TextIndex = Controller.TextIndex, .Start = Controller.SelectionStart, .Length = Controller.SelectionLength}
         Dim Count = FindReplace.ReplaceAll(tps, MainColumnIndex, Input, TextFind, TextReplace)
         Controller.RefreshMainPanel()
-        MessageBox.Show("替换了{0}处搜索项。".Formats(Count), Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
+        MessageDialog.Show("替换了{0}处搜索项。".Formats(Count), Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 End Class

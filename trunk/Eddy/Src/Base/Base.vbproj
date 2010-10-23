@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5393F298-F37A-466C-B8A9-493ECA1C4BD0}</ProjectGuid>
+    <ProjectGuid>{5255F02C-092C-4DAB-9E7A-DF3F79F9D3F8}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Eddy.FindReplace</RootNamespace>
-    <AssemblyName>Eddy.FindReplace</AssemblyName>
+    <RootNamespace>Eddy.Base</RootNamespace>
+    <AssemblyName>Eddy.Base</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
@@ -29,7 +29,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>..\..\Bin\</OutputPath>
-    <DocumentationFile>Eddy.FindReplace.xml</DocumentationFile>
+    <DocumentationFile>Eddy.Base.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -38,7 +38,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>..\..\Bin\</OutputPath>
-    <DocumentationFile>Eddy.FindReplace.xml</DocumentationFile>
+    <DocumentationFile>Eddy.Base.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <ItemGroup>
@@ -54,14 +54,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FindReplace.vb" />
-    <Compile Include="FormSearch.Designer.vb">
-      <DependentUpon>FormSearch.vb</DependentUpon>
-    </Compile>
-    <Compile Include="FormSearch.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Plugin.vb" />
+    <Compile Include="ApplicationController.vb" />
+    <Compile Include="GlyphText.vb" />
+    <Compile Include="LocalizationProject.vb" />
+    <Compile Include="LocalizationTextListFactory.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -79,9 +75,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="FormSearch.resx">
-      <DependentUpon>FormSearch.vb</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
@@ -103,11 +96,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Interfaces\Interfaces.vbproj">
       <Project>{A1BD62D2-75AA-4E48-B2F8-E91CF9AEBBB8}</Project>
-      <Name>FireflyProject</Name>
+      <Name>Interfaces</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="FindReplace.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

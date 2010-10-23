@@ -21,6 +21,8 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TemplateTranslate", "Templa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomoe", "Tomoe\Tomoe.csproj", "{0665E65A-4395-4323-8595-F0B1AA61E297}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Base", "Base\Base.vbproj", "{5255F02C-092C-4DAB-9E7A-DF3F79F9D3F8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +69,10 @@ Global
 		{0665E65A-4395-4323-8595-F0B1AA61E297}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0665E65A-4395-4323-8595-F0B1AA61E297}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0665E65A-4395-4323-8595-F0B1AA61E297}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5255F02C-092C-4DAB-9E7A-DF3F79F9D3F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5255F02C-092C-4DAB-9E7A-DF3F79F9D3F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5255F02C-092C-4DAB-9E7A-DF3F79F9D3F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5255F02C-092C-4DAB-9E7A-DF3F79F9D3F8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

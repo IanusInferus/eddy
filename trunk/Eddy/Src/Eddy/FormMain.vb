@@ -18,6 +18,7 @@ Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.GUI
 Imports Eddy.Interfaces
+Imports Eddy.Base
 
 Public Class FormMain
     Implements ITextLocalizerApplicationController
@@ -1048,7 +1049,7 @@ Public Class FormMain
             If ApplicationData.Columns.Count = 0 Then Throw New InvalidOperationException
             Dim l = LocalizationTextBoxes(CurrentColumnIndex)
             If l.IsReadOnly Then
-                MessageBox.Show("无法修改只读文本。", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageDialog.Show("无法修改只读文本。", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
                 l.Text = Value
             End If
