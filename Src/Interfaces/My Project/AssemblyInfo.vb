@@ -8,10 +8,10 @@ Imports System.Runtime.InteropServices
 
 ' 查看程序集属性的值
 
-<Assembly: AssemblyTitle("Firefly.Project")> 
-<Assembly: AssemblyDescription("漩涡文本本地化工具项目库")> 
+<Assembly: AssemblyTitle("Eddy.Interfaces")> 
+<Assembly: AssemblyDescription("漩涡文本本地化工具接口库")> 
 <Assembly: AssemblyCompany("")> 
-<Assembly: AssemblyProduct("Firefly.Project")> 
+<Assembly: AssemblyProduct("Eddy.Interfaces")> 
 <Assembly: AssemblyCopyright("Copyright(C) F.R.C., under BSD license")> 
 <Assembly: AssemblyTrademark("")> 
 
@@ -31,4 +31,4 @@ Imports System.Runtime.InteropServices
 ' 方法是按如下所示使用“*”:
 ' <Assembly: AssemblyVersion("1.0.*")> 
 
-<Assembly: System.Reflection.AssemblyVersion("2010.10.05.0")> 
+<Assembly: AssemblyVersion("2010.10.24.0")> 

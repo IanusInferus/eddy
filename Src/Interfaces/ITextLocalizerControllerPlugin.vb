@@ -1,7 +1,7 @@
 ﻿'==========================================================================
 '
 '  File:        ITextLocalizerControllerPlugin.vb
-'  Location:    Firefly.Project <Visual Basic .Net>
+'  Location:    Eddy.Interfaces <Visual Basic .Net>
 '  Description: 文本本地化工具使用Controller的插件接口
 '  Version:     2010.05.17.
 '  Copyright(C) F.R.C.

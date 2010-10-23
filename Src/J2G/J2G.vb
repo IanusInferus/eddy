@@ -3,7 +3,7 @@
 '  File:        J2G.vb
 '  Location:    Eddy.J2G <Visual Basic .Net>
 '  Description: 文本本地化工具日汉转换插件
-'  Version:     2010.01.13.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -18,7 +18,7 @@ Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Texting
 Imports Firefly.Setting
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 Public Class J2GPlugin
     Inherits TextLocalizerBase
@@ -54,11 +54,11 @@ Public Class J2GPlugin
         Controller.SelectionLength = SelectedText.Length
     End Sub
 
-    Public Function GetControlDescriptors() As System.Collections.Generic.IEnumerable(Of Firefly.Project.ControlDescriptor) Implements Firefly.Project.ITextLocalizerControlPlugin.GetControlDescriptors
+    Public Function GetControlDescriptors() As System.Collections.Generic.IEnumerable(Of Eddy.Interfaces.ControlDescriptor) Implements Eddy.Interfaces.ITextLocalizerControlPlugin.GetControlDescriptors
         Return New ControlDescriptor() {New ControlDescriptor With {.Control = ToolStripButton_Translate, .Target = ControlId.ToolStrip}}
     End Function
 
-    Public Function TranslateText(ByVal SourceColumn As Integer, ByVal TargeColumn As Integer, ByVal Text As String) As String Implements Firefly.Project.ITextLocalizerTranslatorPlugin.TranslateText
+    Public Function TranslateText(ByVal SourceColumn As Integer, ByVal TargeColumn As Integer, ByVal Text As String) As String Implements Eddy.Interfaces.ITextLocalizerTranslatorPlugin.TranslateText
         Return HanziConverter.J2G(Text)
     End Function
 End Class

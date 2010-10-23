@@ -3,7 +3,7 @@
 '  File:        WQSGTextListFactory.vb
 '  Location:    Eddy.WQSG <Visual Basic .Net>
 '  Description: 本地化文本列表工厂接口与默认实现的WQSG文本支持
-'  Version:     2010.04.04.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -15,7 +15,7 @@ Imports System.IO
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Texting
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 Partial Public Class WQSGPlugin
     Implements ILocalizationTextListFactory

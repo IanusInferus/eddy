@@ -3,7 +3,7 @@
 '  File:        FormTemplateTranslate.vb
 '  Location:    Eddy.TemplateTranslate <Visual Basic .Net>
 '  Description: 文本本地化工具模板翻译插件窗体
-'  Version:     2010.06.29.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -13,8 +13,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.Text.RegularExpressions
 Imports System.Windows.Forms
-Imports Firefly
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 Public Class FormTemplateTranslate
     Public WithEvents Controller As ITextLocalizerApplicationController

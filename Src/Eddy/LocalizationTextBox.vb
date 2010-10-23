@@ -3,7 +3,7 @@
 '  File:        LocalizationTextBox.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化文本框
-'  Version:     2010.09.15.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -17,7 +17,7 @@ Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Glyphing
 Imports Firefly.Texting
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 <Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
 Public Class LocalizationTextBox

@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.TemplateTranslate <Visual Basic .Net>
 '  Description: 文本本地化工具模板翻译插件
-'  Version:     2010.06.29.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -15,8 +15,7 @@ Imports System.Drawing
 Imports System.IO
 Imports System.Text.RegularExpressions
 Imports System.Windows.Forms
-Imports Firefly
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 Public Class Plugin
     Inherits TextLocalizerBase

@@ -3,7 +3,7 @@
 '  File:        Voice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具控制符高亮插件
-'  Version:     2010.07.25.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -19,7 +19,7 @@ Imports System.Speech.Synthesis
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Setting
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 Public Class Config
     Public IgnoreSequence As String = "\{.*?\}"

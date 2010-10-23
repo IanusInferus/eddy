@@ -3,7 +3,7 @@
 '  File:        DifferenceHighlighter.vb
 '  Location:    Eddy.DifferenceHighlighter <Visual Basic .Net>
 '  Description: 文本本地化工具差异比较高亮插件
-'  Version:     2010.09.27.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -16,7 +16,7 @@ Imports System.IO
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Setting
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 Public Class Config
     Public ComparePairs As ComparePair()
@@ -74,7 +74,7 @@ Public Class DifferenceHighlighter
         Return LineStart(LineIndex) + ColumnIndex
     End Function
 
-    Public Function GetTextStyles(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As IEnumerable(Of String)) As IEnumerable(Of TextStyle()) Implements Firefly.Project.ITextLocalizerTextHighlighter.GetTextStyles
+    Public Function GetTextStyles(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As IEnumerable(Of String)) As IEnumerable(Of TextStyle()) Implements Eddy.Interfaces.ITextLocalizerTextHighlighter.GetTextStyles
         Dim TextStyles = (From i In Enumerable.Range(0, Columns.Count) Select New List(Of TextStyle)).ToArray
 
         If Config.ComparePairs IsNot Nothing Then
