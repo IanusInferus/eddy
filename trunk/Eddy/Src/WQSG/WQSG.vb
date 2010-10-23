@@ -3,7 +3,7 @@
 '  File:        WQSG.vb
 '  Location:    Eddy.WQSG <Visual Basic .Net>
 '  Description: 文本本地化工具WQSG文本插件
-'  Version:     2010.01.13.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -17,7 +17,7 @@ Imports System.Text.RegularExpressions
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Setting
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 Public Class WQSGPlugin
     Inherits TextLocalizerBase
@@ -61,11 +61,11 @@ Public Class WQSGPlugin
         Controller.RefreshGrid()
     End Sub
 
-    Public Function GetTextListFactories() As System.Collections.Generic.IEnumerable(Of ILocalizationTextListFactory) Implements Firefly.Project.ITextLocalizerFormatPlugin.GetTextListFactories
+    Public Function GetTextListFactories() As System.Collections.Generic.IEnumerable(Of ILocalizationTextListFactory) Implements Eddy.Interfaces.ITextLocalizerFormatPlugin.GetTextListFactories
         Return New ILocalizationTextListFactory() {Me}
     End Function
 
-    Public Function GetControlDescriptors() As System.Collections.Generic.IEnumerable(Of Firefly.Project.ControlDescriptor) Implements Firefly.Project.ITextLocalizerControlPlugin.GetControlDescriptors
+    Public Function GetControlDescriptors() As System.Collections.Generic.IEnumerable(Of Eddy.Interfaces.ControlDescriptor) Implements Eddy.Interfaces.ITextLocalizerControlPlugin.GetControlDescriptors
         If (From c In Columns Where c.Type = "WQSGText").Count = 0 Then
             Return New ControlDescriptor() {}
         Else

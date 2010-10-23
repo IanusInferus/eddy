@@ -1,7 +1,7 @@
 ﻿'==========================================================================
 '
 '  File:        TextLocalizerBase.vb
-'  Location:    Firefly.Project <Visual Basic .Net>
+'  Location:    Eddy.Interfaces <Visual Basic .Net>
 '  Description: 文本本地化工具插件默认基类实现
 '  Version:     2010.05.17.
 '  Copyright(C) F.R.C.

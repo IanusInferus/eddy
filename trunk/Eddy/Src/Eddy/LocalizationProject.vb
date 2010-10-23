@@ -3,7 +3,7 @@
 '  File:        LocalizationProject.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化项目项目文件
-'  Version:     2010.09.24.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -14,7 +14,7 @@ Imports System.Linq
 Imports System.IO
 Imports Firefly
 Imports Firefly.Setting
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 Public Class LocalizationProject
     Public TextName As String

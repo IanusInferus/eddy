@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.09.24.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -16,8 +16,8 @@ Imports System.IO
 Imports System.Drawing
 Imports System.Windows.Forms
 Imports Firefly
-Imports Firefly.Project
 Imports Firefly.GUI
+Imports Eddy.Interfaces
 
 Public Class FormMain
     Implements ITextLocalizerApplicationController

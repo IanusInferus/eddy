@@ -3,7 +3,7 @@
 '  File:        ApplicationController.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主控制器
-'  Version:     2010.09.24.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -18,8 +18,8 @@ Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Setting
-Imports Firefly.Project
 Imports Firefly.GUI
+Imports Eddy.Interfaces
 
 Public Class TextLocalizerData
     Implements ITextLocalizerData

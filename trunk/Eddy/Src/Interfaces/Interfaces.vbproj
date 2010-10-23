@@ -7,8 +7,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{A1BD62D2-75AA-4E48-B2F8-E91CF9AEBBB8}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Firefly.Project</RootNamespace>
-    <AssemblyName>Firefly.Project</AssemblyName>
+    <RootNamespace>Eddy.Interfaces</RootNamespace>
+    <AssemblyName>Eddy.Interfaces</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
@@ -29,7 +29,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>..\..\Bin\</OutputPath>
-    <DocumentationFile>Firefly.Project.xml</DocumentationFile>
+    <DocumentationFile>Eddy.Interfaces.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -38,7 +38,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>..\..\Bin\</OutputPath>
-    <DocumentationFile>Firefly.Project.xml</DocumentationFile>
+    <DocumentationFile>Eddy.Interfaces.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <ItemGroup>

@@ -1,7 +1,7 @@
 ﻿'==========================================================================
 '
 '  File:        ILocalizationTextListFactory.vb
-'  Location:    Firefly.Project <Visual Basic .Net>
+'  Location:    Eddy.Interfaces <Visual Basic .Net>
 '  Description: 本地化文本列表工厂接口
 '  Version:     2010.10.05.
 '  Copyright(C) F.R.C.

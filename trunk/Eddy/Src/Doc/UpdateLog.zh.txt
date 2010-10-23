@@ -1,4 +1,10 @@
-﻿2010.10.11.0
+﻿2010.10.24
+Firefly.Project:
+改名为Eddy.Interfaces。
+Eddy.*:
+按照Eddy.Interfaces进行修改。
+
+2010.10.11.0
 
 2010.10.07
 Eddy:

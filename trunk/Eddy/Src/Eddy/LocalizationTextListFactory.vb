@@ -3,7 +3,7 @@
 '  File:        LocalizationTextListFactory.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化文本列表工厂默认实现
-'  Version:     2010.09.14.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -18,7 +18,7 @@ Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Texting
 Imports Firefly.Glyphing
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 ''' <summary>本地化文本列表工厂接口的默认实现，支持PlainText、AgemoText、LOC这五种格式。</summary>
 Public Class LocalizationTextListFactory

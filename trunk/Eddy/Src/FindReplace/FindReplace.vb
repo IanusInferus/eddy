@@ -3,7 +3,7 @@
 '  File:        FindReplace.vb
 '  Location:    Eddy.FindReplace <Visual Basic .Net>
 '  Description: 文本查找替换
-'  Version:     2010.05.17.
+'  Version:     2010.10.24.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -15,7 +15,7 @@ Imports System.Text.RegularExpressions
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Texting
-Imports Firefly.Project
+Imports Eddy.Interfaces
 
 Public Class FindIndex
     Public ColumnIndex As Integer
