@@ -45,8 +45,8 @@
     <Reference Include="Firefly.Core">
       <HintPath>..\..\..\Bin\Firefly.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Firefly.Project">
-      <HintPath>..\..\..\Bin\Firefly.Project.dll</HintPath>
+    <Reference Include="Eddy.Interfaces">
+      <HintPath>..\..\..\Bin\Eddy.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="Eddy.WQSG">
       <HintPath>..\..\..\Bin\Eddy.WQSG.dll</HintPath>
