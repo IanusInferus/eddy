@@ -6,7 +6,11 @@ Firefly.Core
 </name>
 </assembly>
 <members>
-<member name="M:Firefly.Texting.Txt.GetEncoding(Firefly.ZeroPositionStreamPasser,System.Text.Encoding)">
+<member name="M:Firefly.Texting.Txt.GetEncodingByBOM(Firefly.ZeroPositionStreamPasser)">
+	<summary>已重载。检查UTF-16(FF FE)、GB18030(84 31 95 33)、UTF-8(EF BB BF)、UTF-32(FF FE 00 00)、UTF-16B(FE FF)、UTF-32B(00 00 FE FF)这六种编码的BOM，如果失败，返回空。</summary>
+</member><member name="M:Firefly.Texting.Txt.GetEncodingByBOM(System.String)">
+	<summary>已重载。检查UTF-16(FF FE)、GB18030(84 31 95 33)、UTF-8(EF BB BF)、UTF-32(FF FE 00 00)、UTF-16B(FE FF)、UTF-32B(00 00 FE FF)这六种编码的BOM，如果失败，返回空。</summary>
+</member><member name="M:Firefly.Texting.Txt.GetEncoding(Firefly.ZeroPositionStreamPasser,System.Text.Encoding)">
 	<summary>已重载。检查UTF-16(FF FE)、GB18030(84 31 95 33)、UTF-8(EF BB BF)、UTF-32(FF FE 00 00)、UTF-16B(FE FF)、UTF-32B(00 00 FE FF)这六种编码的BOM，如果失败，返回默认编码。</summary>
 </member><member name="M:Firefly.Texting.Txt.GetEncoding(System.String,System.Text.Encoding)">
 	<summary>已重载。检查UTF-16(FF FE)、GB18030(84 31 95 33)、UTF-8(EF BB BF)、UTF-32(FF FE 00 00)、UTF-16B(FE FF)、UTF-32B(00 00 FE FF)这六种编码的BOM，如果失败，返回默认编码。</summary>
@@ -317,96 +321,6 @@ Firefly.Core
 	<summary>已重载。初始化新实例。</summary>
 </member><member name="M:Firefly.StreamEx.#ctor(System.IO.Stream)">
 	<summary>已重载。初始化新实例。</summary>
-</member><member name="M:Firefly.StreamEx.ReadByte">
-	<summary>读取Byte。</summary>
-</member><member name="M:Firefly.StreamEx.WriteByte(System.Byte)">
-	<summary>写入Byte。</summary>
-</member><member name="M:Firefly.StreamEx.ReadInt16">
-	<summary>读取Int16。</summary>
-</member><member name="M:Firefly.StreamEx.ReadInt32">
-	<summary>读取Int32。</summary>
-</member><member name="M:Firefly.StreamEx.ReadInt64">
-	<summary>读取Int64。</summary>
-</member><member name="M:Firefly.StreamEx.WriteInt16(System.Int16)">
-	<summary>写入Int16。</summary>
-</member><member name="M:Firefly.StreamEx.WriteInt32(System.Int32)">
-	<summary>写入Int32。</summary>
-</member><member name="M:Firefly.StreamEx.WriteInt64(System.Int64)">
-	<summary>写入Int64。</summary>
-</member><member name="M:Firefly.StreamEx.ReadInt16B">
-	<summary>读取Int16，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.ReadInt32B">
-	<summary>读取Int32，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.ReadInt64B">
-	<summary>读取Int64，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.WriteInt16B(System.Int16)">
-	<summary>写入Int16，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.WriteInt32B(System.Int32)">
-	<summary>写入Int32，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.WriteInt64B(System.Int64)">
-	<summary>写入Int64，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.ReadInt8">
-	<summary>读取Int8。</summary>
-</member><member name="M:Firefly.StreamEx.WriteInt8(System.SByte)">
-	<summary>写入Int8。</summary>
-</member><member name="M:Firefly.StreamEx.ReadUInt8">
-	<summary>读取UInt8。</summary>
-</member><member name="M:Firefly.StreamEx.WriteUInt8(System.Byte)">
-	<summary>写入UInt8。</summary>
-</member><member name="M:Firefly.StreamEx.ReadUInt16">
-	<summary>读取UInt16。</summary>
-</member><member name="M:Firefly.StreamEx.WriteUInt16(System.UInt16)">
-	<summary>写入UInt16。</summary>
-</member><member name="M:Firefly.StreamEx.ReadUInt16B">
-	<summary>读取UInt16，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.WriteUInt16B(System.UInt16)">
-	<summary>写入UInt16，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.ReadUInt32">
-	<summary>读取UInt32。</summary>
-</member><member name="M:Firefly.StreamEx.WriteUInt32(System.UInt32)">
-	<summary>写入UInt32。</summary>
-</member><member name="M:Firefly.StreamEx.ReadUInt32B">
-	<summary>读取UInt32，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.WriteUInt32B(System.UInt32)">
-	<summary>写入UInt32，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.ReadUInt64">
-	<summary>读取UInt64。</summary>
-</member><member name="M:Firefly.StreamEx.WriteUInt64(System.UInt64)">
-	<summary>写入UInt64。</summary>
-</member><member name="M:Firefly.StreamEx.ReadUInt64B">
-	<summary>读取UInt64，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.WriteUInt64B(System.UInt64)">
-	<summary>写入UInt64，高位优先字节序。</summary>
-</member><member name="M:Firefly.StreamEx.ReadString(System.Int32,System.Text.Encoding)">
-	<summary>读取\0字节结尾的字符串(UTF-16等不适用)。</summary>
-</member><member name="M:Firefly.StreamEx.WriteString(System.String,System.Int32,System.Text.Encoding)">
-	<summary>写入\0字节结尾的字符串(UTF-16等不适用)。</summary>
-</member><member name="M:Firefly.StreamEx.ReadStringWithNull(System.Int32,System.Text.Encoding)">
-	<summary>读取包括\0字节的字符串(如UTF-16)。</summary>
-</member><member name="M:Firefly.StreamEx.ReadSimpleString(System.Int32)">
-	<summary>读取ASCII字符串。</summary>
-</member><member name="M:Firefly.StreamEx.WriteSimpleString(System.String,System.Int32)">
-	<summary>写入ASCII字符串。</summary>
-</member><member name="M:Firefly.StreamEx.WriteSimpleString(System.String)">
-	<summary>写入ASCII字符串。</summary>
-</member><member name="M:Firefly.StreamEx.ReadSimpleStringWithNull(System.Int32)">
-	<summary>读取ASCII字符串(包括\0)。</summary>
-</member><member name="M:Firefly.StreamEx.ReadSingle">
-	<summary>读取单精度浮点数。</summary>
-</member><member name="M:Firefly.StreamEx.WriteSingle(System.Single)">
-	<summary>写入单精度浮点数。</summary>
-</member><member name="M:Firefly.StreamEx.ReadFloat32">
-	<summary>读取单精度浮点数。</summary>
-</member><member name="M:Firefly.StreamEx.WriteFloat32(System.Single)">
-	<summary>写入单精度浮点数。</summary>
-</member><member name="M:Firefly.StreamEx.ReadDouble">
-	<summary>读取双精度浮点数。</summary>
-</member><member name="M:Firefly.StreamEx.WriteDouble(System.Double)">
-	<summary>写入双精度浮点数。</summary>
-</member><member name="M:Firefly.StreamEx.ReadFloat64">
-	<summary>读取双精度浮点数。</summary>
-</member><member name="M:Firefly.StreamEx.WriteFloat64(System.Double)">
-	<summary>写入双精度浮点数。</summary>
 </member><member name="P:Firefly.StreamEx.CanRead">
 	<summary>指示当前流是否支持读取。</summary>
 </member><member name="P:Firefly.StreamEx.CanSeek">
@@ -426,28 +340,16 @@ Firefly.Core
 	<summary>设置流的当前位置。</summary>
 </member><member name="M:Firefly.StreamEx.SetLength(System.Int64)">
 	<summary>设置流的长度。</summary>
+</member><member name="M:Firefly.StreamEx.ReadByte">
+	<summary>读取Byte。</summary>
+</member><member name="M:Firefly.StreamEx.WriteByte(System.Byte)">
+	<summary>写入Byte。</summary>
 </member><member name="M:Firefly.StreamEx.Read(System.Byte[],System.Int32,System.Int32)">
 	<summary>已重载。读取到字节数组。</summary>
 	<param name="Offset">Buffer 中的从零开始的字节偏移量，从此处开始存储从当前流中读取的数据。</param>
-</member><member name="M:Firefly.StreamEx.Read(System.Byte[])">
-	<summary>已重载。读取到字节数组。</summary>
-</member><member name="M:Firefly.StreamEx.Read(System.Int32)">
-	<summary>已重载。读取字节数组。</summary>
 </member><member name="M:Firefly.StreamEx.Write(System.Byte[],System.Int32,System.Int32)">
 	<summary>已重载。写入字节数组。</summary>
 	<param name="Offset">Buffer 中的从零开始的字节偏移量，从此处开始将字节复制到当前流。</param>
-</member><member name="M:Firefly.StreamEx.Write(System.Byte[])">
-	<summary>已重载。写入字节数组。</summary>
-</member><member name="M:Firefly.StreamEx.ReadInt32Array(System.Int32)">
-	<summary>读取Int32数组。</summary>
-</member><member name="M:Firefly.StreamEx.WriteInt32Array(System.Int32[])">
-	<summary>写入Int32数组。</summary>
-</member><member name="M:Firefly.StreamEx.ReadToStream(Firefly.StreamEx,System.Int64)">
-	<summary>读取到外部流。</summary>
-</member><member name="M:Firefly.StreamEx.WriteFromStream(Firefly.StreamEx,System.Int64)">
-	<summary>从外部流写入。</summary>
-</member><member name="M:Firefly.StreamEx.SaveAs(System.String)">
-	<summary>保存到文件。</summary>
 </member><member name="M:Firefly.StreamEx.DisposeManagedResource">
 	<summary>释放托管对象或间接非托管对象(Stream等)。可在这里将大型字段设置为 null。</summary>
 </member><member name="M:Firefly.StreamEx.DisposeUnmanagedResource">
@@ -458,12 +360,6 @@ Firefly.Core
 	<summary>释放流的资源。</summary>
 </member><member name="M:Firefly.StreamEx.Finalize">
 	<summary>析构。</summary>
-</member><member name="T:Firefly.StreamEx.StreamAdapter">
-	<summary>扩展流适配器类</summary>
-	<remarks>用于安全保存StreamEx的Stream形式。</remarks>
-</member><member name="T:Firefly.StreamEx.UnsafeStreamAdapter">
-	<summary>扩展流适配器类-适配非安全流</summary>
-	<remarks>用于安全保存StreamEx的Stream形式。</remarks>
 </member><member name="T:Firefly.StreamEx">
 	<summary>
  扩展流类
@@ -939,10 +835,23 @@ Firefly.Core
  Xml
  
  用于将对象格式化到Xml文件及从Xml文件恢复数据
- 简单对象能够直接格式化
- 所谓的简单对象，包括String、基元类型、Enum、1维数组、实现ICollection(Of T)的简单对象元素的集合、简单对象构成的类和结构
- 所有的简单对象的类需要有公共的不带参数的构造函数
- 不能有交叉引用
+ 简单类型能够直接格式化
+ 对于非简单类型，应提供自定义序列化器
+ 简单类型 ::= 简单类型
+           | Byte(UInt8) | UInt16 | UInt32 | UInt64 | Int8(SByte) | Int16 | Int32 | Int64 | Float32(Single) | Float64(Double)
+           | Boolean
+           | String | Decimal
+           | 枚举
+           | 数组(简单类型)
+           | ICollection(简单类型)
+           | 简单类或结构
+ 简单类或结构 ::= 
+               ( 类或结构(构造函数(参数(简单类型)*), 公共只读字段(简单类型)*, 公共可写属性{0}) AND (参数(简单类型)* = 公共只读字段(简单类型)*)
+               | 类或结构(构造函数(参数(简单类型)*), 公共可写字段{0}, 公共只读属性(简单类型)*) AND (参数(简单类型)* = 公共只读属性(简单类型)*)
+               | 类或结构(无参构造函数, 公共可读写字段(简单类型)*, 公共可写属性{0})
+               | 类或结构(无参构造函数, 公共可写字段{0}, 公共可读写属性(简单类型)*)
+               ) AND 类型结构为树状
+ 对于类对象，允许出现null。
  允许使用继承，但所有不直接出现在根类型的类型声明的类型树中的类型必须添加到ExternalTypes中
  ExternalTypes中不应有命名冲突
  
@@ -1098,6 +1007,16 @@ Firefly.Core
  应提供一个返回"ISO(*.ISO)|*.ISO"形式字符串的Filter属性，
  并按照PackageRegister中的委托类型提供一个Open函数、一个Create函数(如果支持创建)。
  </summary>
+</member><member name="M:Firefly.Mapping.MetaProgramming.TryGetImmutableRecordInfo(System.Type)">
+	<remarks>
+ 不变记录 ::= 类或结构(构造函数(参数(简单类型)*), 公共只读字段(简单类型)*, 公共可写属性{0}) AND (参数(简单类型)* = 公共只读字段(简单类型)*)
+            | 类或结构(构造函数(参数(简单类型)*), 公共可写字段{0}, 公共只读属性(简单类型)*) AND (参数(简单类型)* = 公共只读属性(简单类型)*)
+ </remarks>
+</member><member name="M:Firefly.Mapping.MetaProgramming.TryGetMutableRecordInfo(System.Type)">
+	<remarks>
+ 可变记录 ::= 类或结构(无参构造函数, 公共可读写字段(简单类型)*, 公共可写属性{0})
+            | 类或结构(无参构造函数, 公共可写字段{0}, 公共可读写属性(简单类型)*)
+ </remarks>
 </member><member name="M:Firefly.Imaging.Quantizer.QuantizeOnPalette(System.Int32,System.Int32[],Firefly.Imaging.ColorSpace.ColorDistance)">
 	<summary>按调色板量化，使用自定义颜色距离函数。</summary>
 </member><member name="M:Firefly.Imaging.Quantizer.QuantizeOnPalette(System.Int32,System.Int32[])">
@@ -1188,6 +1107,60 @@ Firefly.Core
 	<summary>虚拟包围盒，字符的显示相对位置为此包围盒。</summary>
 </member><member name="T:Firefly.Glyphing.BmpGlyph">
 	<summary>位于位图中的字形信息</summary>
+</member><member name="T:Firefly.Mapping.XmlSerializer">
+	<remarks>
+ 对于非简单类型，应提供自定义序列化器
+ 简单类型 ::= 简单类型
+           | Byte(UInt8) | UInt16 | UInt32 | UInt64 | Int8(SByte) | Int16 | Int32 | Int64 | Float32(Single) | Float64(Double)
+           | Boolean
+           | String | Decimal
+           | 枚举
+           | 数组(简单类型)
+           | ICollection(简单类型)
+           | 简单类或结构
+ 简单类或结构 ::= 
+               ( 类或结构(构造函数(参数(简单类型)*), 公共只读字段(简单类型)*, 公共可写属性{0}) AND (参数(简单类型)* = 公共只读字段(简单类型)*)
+               | 类或结构(构造函数(参数(简单类型)*), 公共可写字段{0}, 公共只读属性(简单类型)*) AND (参数(简单类型)* = 公共只读属性(简单类型)*)
+               | 类或结构(无参构造函数, 公共可读写字段(简单类型)*, 公共可写属性{0})
+               | 类或结构(无参构造函数, 公共可写字段{0}, 公共可读写属性(简单类型)*)
+               ) AND 类型结构为树状
+ 对于类对象，允许出现null。
+ </remarks>
+</member><member name="T:Firefly.Mapping.IProjectorToProjectorDomainTranslator`2">
+	<remarks>实现带泛型约束的接口会导致代码分析无效。</remarks>
+</member><member name="T:Firefly.Mapping.IAggregatorToAggregatorDomainTranslator`2">
+	<remarks>实现带泛型约束的接口会导致代码分析无效。</remarks>
+</member><member name="T:Firefly.Mapping.IProjectorToProjectorRangeTranslator`2">
+	<remarks>实现带泛型约束的接口会导致代码分析无效。</remarks>
+</member><member name="T:Firefly.Mapping.IProjectorToAggregatorRangeTranslator`2">
+	<remarks>实现带泛型约束的接口会导致代码分析无效。</remarks>
+</member><member name="T:Firefly.Mapping.IAggregatorToProjectorRangeTranslator`2">
+	<remarks>实现带泛型约束的接口会导致代码分析无效。</remarks>
+</member><member name="T:Firefly.Mapping.IAggregatorToAggregatorRangeTranslator`2">
+	<remarks>实现带泛型约束的接口会导致代码分析无效。</remarks>
+</member><member name="T:Firefly.Mapping.TranslatorResolver">
+	<summary>映射分解器</summary>
+	<remarks>
+ IProjectorToProjectorDomainTranslator(D, M) = Projector(M, R) -&gt; Projector(D, R)
+ IAggregatorToAggregatorDomainTranslator(D, M) = Aggregator(M, R) -&gt; Aggregator(D, R)
+ IAggregatorToProjectorRangeTranslator(R, M) = Aggregator(D, M) -&gt; Projector(D, R)
+ IProjectorToAggregatorRangeTranslator(R, M) = Projector(D, M) -&gt; Aggregator(D, R)
+ 这样就能把(D, R)的映射器转换为(M, R)或者(D, M)的映射器，是一种化简。
+ 不过使用的前提是(D, M)或者(R, M)静态已知。
+ 本解析器应小心放置，以防止死递归导致无法解析。
+ </remarks>
+</member><member name="T:Firefly.Mapping.IGenericListProjectorResolver`1">
+	<remarks>实现带泛型约束的接口会导致代码分析无效。</remarks>
+</member><member name="T:Firefly.Mapping.IGenericListAggregatorResolver`1">
+	<remarks>实现带泛型约束的接口会导致代码分析无效。</remarks>
+</member><member name="M:Firefly.Mapping.IFieldOrPropertyProjectorResolver`1.ResolveProjector(Firefly.Mapping.MetaProgramming.FieldOrPropertyInfo)">
+	<returns>返回Func(Of ${DomainType}, ${FieldOrPropertyType})</returns>
+</member><member name="T:Firefly.Mapping.IFieldOrPropertyProjectorResolver`1">
+	<remarks>实现带泛型约束的接口会导致代码分析无效。</remarks>
+</member><member name="M:Firefly.Mapping.IFieldOrPropertyAggregatorResolver`1.ResolveAggregator(Firefly.Mapping.MetaProgramming.FieldOrPropertyInfo)">
+	<returns>返回Action(Of ${FieldOrPropertyType}, ${RangeType})</returns>
+</member><member name="T:Firefly.Mapping.IFieldOrPropertyAggregatorResolver`1">
+	<remarks>实现带泛型约束的接口会导致代码分析无效。</remarks>
 </member><member name="M:Firefly.ListStringEx`1.#ctor(System.Collections.Generic.IList{`0})">
 	<summary>考虑到效率原因，不会复制数据，而是直接引用数据，因此传入的数组不得改变</summary>
 </member><member name="M:Firefly.ListStringEx`1.#ctor(System.Collections.Generic.IList{`0},System.Int32)">
@@ -1439,6 +1412,54 @@ Firefly.Core
 	<param name="This">Int64</param>
 	<param name="U">高位索引(63-0)</param>
 	<param name="L">低位索引(63-0)</param>
+</member><member name="M:Firefly.BitOperations.Bit(System.Byte,System.Int32)">
+	<summary>
+ 获得整数的特定位。
+ </summary>
+	<param name="This">Byte</param>
+	<param name="B">索引(7-0)</param>
+</member><member name="M:Firefly.BitOperations.Bit(System.UInt16,System.Int32)">
+	<summary>
+ 获得整数的特定位。
+ </summary>
+	<param name="This">UInt16</param>
+	<param name="B">索引(15-0)</param>
+</member><member name="M:Firefly.BitOperations.Bit(System.UInt32,System.Int32)">
+	<summary>
+ 获得整数的特定位。
+ </summary>
+	<param name="This">UInt32</param>
+	<param name="B">索引(31-0)</param>
+</member><member name="M:Firefly.BitOperations.Bit(System.UInt64,System.Int32)">
+	<summary>
+ 获得整数的特定位。
+ </summary>
+	<param name="This">UInt64</param>
+	<param name="B">索引(63-0)</param>
+</member><member name="M:Firefly.BitOperations.Bit(System.SByte,System.Int32)">
+	<summary>
+ 获得整数的特定位。
+ </summary>
+	<param name="This">SByte</param>
+	<param name="B">索引(7-0)</param>
+</member><member name="M:Firefly.BitOperations.Bit(System.Int16,System.Int32)">
+	<summary>
+ 获得整数的特定位。
+ </summary>
+	<param name="This">Int16</param>
+	<param name="B">索引(15-0)</param>
+</member><member name="M:Firefly.BitOperations.Bit(System.Int32,System.Int32)">
+	<summary>
+ 获得整数的特定位。
+ </summary>
+	<param name="This">Int32</param>
+	<param name="B">索引(31-0)</param>
+</member><member name="M:Firefly.BitOperations.Bit(System.Int64,System.Int32)">
+	<summary>
+ 获得整数的特定位。
+ </summary>
+	<param name="This">Int64</param>
+	<param name="B">索引(63-0)</param>
 </member><member name="M:Firefly.BitOperations.ConcatBits(System.Byte,System.Byte,System.Int32)">
 	<summary>
  按位连接整数。
@@ -1626,6 +1647,171 @@ Firefly.Core
 	<summary>
  泛型串，特性类似于字符串，但是类型参数不是字符，创建后不可改变，可作为容器类的键使用
  </summary>
+</member><member name="M:Firefly.StreamEx.ReadString(System.Int32,System.Text.Encoding)">
+	<summary>读取\0字节结尾的字符串(UTF-16等不适用)。</summary>
+</member><member name="M:Firefly.StreamEx.WriteString(System.String,System.Int32,System.Text.Encoding)">
+	<summary>写入\0字节结尾的字符串(UTF-16等不适用)。</summary>
+</member><member name="M:Firefly.StreamEx.ReadStringWithNull(System.Int32,System.Text.Encoding)">
+	<summary>读取包括\0字节的字符串(如UTF-16)。</summary>
+</member><member name="M:Firefly.StreamEx.ReadSimpleString(System.Int32)">
+	<summary>读取ASCII字符串。</summary>
+</member><member name="M:Firefly.StreamEx.WriteSimpleString(System.String,System.Int32)">
+	<summary>写入ASCII字符串。</summary>
+</member><member name="M:Firefly.StreamEx.WriteSimpleString(System.String)">
+	<summary>写入ASCII字符串。</summary>
+</member><member name="M:Firefly.StreamEx.ReadSimpleStringWithNull(System.Int32)">
+	<summary>读取ASCII字符串(包括\0)。</summary>
+</member><member name="M:Firefly.StreamEx.PeekSimpleString(System.Int32)">
+	<summary>查看ASCII字符串。</summary>
+</member><member name="M:Firefly.StreamEx.PeekByte">
+	<summary>查看Byte。</summary>
+</member><member name="M:Firefly.StreamEx.ReadInt8">
+	<summary>读取Int8。</summary>
+</member><member name="M:Firefly.StreamEx.ReadInt16">
+	<summary>读取Int16。</summary>
+</member><member name="M:Firefly.StreamEx.ReadInt32">
+	<summary>读取Int32。</summary>
+</member><member name="M:Firefly.StreamEx.ReadInt64">
+	<summary>读取Int64。</summary>
+</member><member name="M:Firefly.StreamEx.ReadInt16B">
+	<summary>读取Int16，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.ReadInt32B">
+	<summary>读取Int32，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.ReadInt64B">
+	<summary>读取Int64，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.WriteInt8(System.SByte)">
+	<summary>写入Int8。</summary>
+</member><member name="M:Firefly.StreamEx.WriteInt16(System.Int16)">
+	<summary>写入Int16。</summary>
+</member><member name="M:Firefly.StreamEx.WriteInt32(System.Int32)">
+	<summary>写入Int32。</summary>
+</member><member name="M:Firefly.StreamEx.WriteInt64(System.Int64)">
+	<summary>写入Int64。</summary>
+</member><member name="M:Firefly.StreamEx.WriteInt16B(System.Int16)">
+	<summary>写入Int16，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.WriteInt32B(System.Int32)">
+	<summary>写入Int32，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.WriteInt64B(System.Int64)">
+	<summary>写入Int64，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.PeekInt8">
+	<summary>查看Int8。</summary>
+</member><member name="M:Firefly.StreamEx.PeekInt16">
+	<summary>查看Int16。</summary>
+</member><member name="M:Firefly.StreamEx.PeekInt32">
+	<summary>查看Int32。</summary>
+</member><member name="M:Firefly.StreamEx.PeekInt64">
+	<summary>查看Int64。</summary>
+</member><member name="M:Firefly.StreamEx.PeekInt16B">
+	<summary>查看Int16，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.PeekInt32B">
+	<summary>查看Int32，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.PeekInt64B">
+	<summary>查看Int64，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.ReadUInt8">
+	<summary>读取UInt8。</summary>
+</member><member name="M:Firefly.StreamEx.ReadUInt16">
+	<summary>读取UInt16。</summary>
+</member><member name="M:Firefly.StreamEx.ReadUInt32">
+	<summary>读取UInt32。</summary>
+</member><member name="M:Firefly.StreamEx.ReadUInt64">
+	<summary>读取UInt64。</summary>
+</member><member name="M:Firefly.StreamEx.ReadUInt16B">
+	<summary>读取UInt16，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.ReadUInt32B">
+	<summary>读取UInt32，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.ReadUInt64B">
+	<summary>读取UInt64，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.WriteUInt8(System.Byte)">
+	<summary>写入UInt8。</summary>
+</member><member name="M:Firefly.StreamEx.WriteUInt16(System.UInt16)">
+	<summary>写入UInt16。</summary>
+</member><member name="M:Firefly.StreamEx.WriteUInt32(System.UInt32)">
+	<summary>写入UInt32。</summary>
+</member><member name="M:Firefly.StreamEx.WriteUInt64(System.UInt64)">
+	<summary>写入UInt64。</summary>
+</member><member name="M:Firefly.StreamEx.WriteUInt16B(System.UInt16)">
+	<summary>写入UInt16，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.WriteUInt32B(System.UInt32)">
+	<summary>写入UInt32，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.WriteUInt64B(System.UInt64)">
+	<summary>写入UInt64，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.PeekUInt8">
+	<summary>查看UInt8。</summary>
+</member><member name="M:Firefly.StreamEx.PeekUInt16">
+	<summary>查看UInt16。</summary>
+</member><member name="M:Firefly.StreamEx.PeekUInt32">
+	<summary>查看UInt32。</summary>
+</member><member name="M:Firefly.StreamEx.PeekUInt64">
+	<summary>查看UInt64。</summary>
+</member><member name="M:Firefly.StreamEx.PeekUInt16B">
+	<summary>查看UInt16，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.PeekUInt32B">
+	<summary>查看UInt32，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.PeekUInt64B">
+	<summary>查看UInt64，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.ReadFloat32">
+	<summary>读取单精度浮点数。</summary>
+</member><member name="M:Firefly.StreamEx.WriteFloat32(System.Single)">
+	<summary>写入单精度浮点数。</summary>
+</member><member name="M:Firefly.StreamEx.ReadFloat64">
+	<summary>读取双精度浮点数。</summary>
+</member><member name="M:Firefly.StreamEx.WriteFloat64(System.Double)">
+	<summary>写入双精度浮点数。</summary>
+</member><member name="M:Firefly.StreamEx.ReadFloat32B">
+	<summary>读取单精度浮点数，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.WriteFloat32B(System.Single)">
+	<summary>写入单精度浮点数，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.ReadFloat64B">
+	<summary>读取双精度浮点数，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.WriteFloat64B(System.Double)">
+	<summary>写入双精度浮点数，高位优先字节序。</summary>
+</member><member name="M:Firefly.StreamEx.ReadSingle">
+	<summary>读取单精度浮点数。</summary>
+</member><member name="M:Firefly.StreamEx.WriteSingle(System.Single)">
+	<summary>写入单精度浮点数。</summary>
+</member><member name="M:Firefly.StreamEx.ReadDouble">
+	<summary>读取双精度浮点数。</summary>
+</member><member name="M:Firefly.StreamEx.WriteDouble(System.Double)">
+	<summary>写入双精度浮点数。</summary>
+</member><member name="M:Firefly.StreamEx.Read(System.Byte[])">
+	<summary>已重载。读取到字节数组。</summary>
+</member><member name="M:Firefly.StreamEx.Read(System.Int32)">
+	<summary>已重载。读取字节数组。</summary>
+</member><member name="M:Firefly.StreamEx.Write(System.Byte[])">
+	<summary>已重载。写入字节数组。</summary>
+</member><member name="M:Firefly.StreamEx.ReadInt32Array(System.Int32)">
+	<summary>读取Int32数组。</summary>
+</member><member name="M:Firefly.StreamEx.WriteInt32Array(System.Int32[])">
+	<summary>写入Int32数组。</summary>
+</member><member name="M:Firefly.StreamEx.ReadToStream(Firefly.StreamEx,System.Int64)">
+	<summary>读取到外部流。</summary>
+</member><member name="M:Firefly.StreamEx.WriteFromStream(Firefly.StreamEx,System.Int64)">
+	<summary>从外部流写入。</summary>
+</member><member name="M:Firefly.StreamEx.SaveAs(System.String)">
+	<summary>保存到文件。</summary>
+</member><member name="T:Firefly.StreamAdapter">
+	<summary>扩展流适配器类</summary>
+	<remarks>用于安全保存StreamEx的Stream形式。</remarks>
+</member><member name="T:Firefly.UnsafeStreamAdapter">
+	<summary>扩展流适配器类-适配非安全流</summary>
+	<remarks>用于安全保存StreamEx的Stream形式。</remarks>
+</member><member name="M:Firefly.Mapping.IObjectProjectorResolver.TryResolveProjector(System.Collections.Generic.KeyValuePair{System.Type,System.Type})">
+	<param name="TypePair">(DomainType, RangeType)</param>
+	<returns>返回Func(Of ${DomainType}, ${RangeType})</returns>
+</member><member name="M:Firefly.Mapping.IObjectAggregatorResolver.TryResolveAggregator(System.Collections.Generic.KeyValuePair{System.Type,System.Type})">
+	<returns>返回Action(Of ${DomainType}, ${RangeType})</returns>
+</member><member name="T:Firefly.Mapping.AbsoluteResolver">
+	<remarks>解析器适配器，用于在无法解析时抛出异常。</remarks>
+</member><member name="T:Firefly.Mapping.NoncircularResolver">
+	<remarks>不循环解析器，用于在出现循环引用时抛出异常。</remarks>
+</member><member name="T:Firefly.Mapping.AlternativeResolver">
+	<remarks>选择解析器</remarks>
+</member><member name="T:Firefly.Mapping.PrimitiveResolver">
+	<remarks>基元解析器</remarks>
+</member><member name="T:Firefly.Mapping.CachedResolver">
+	<remarks>缓存解析器</remarks>
+</member><member name="T:Firefly.Mapping.ObjectMapper">
+	<summary>Object映射器</summary>
 </member><member name="T:Firefly.MappedEnumerator`2">
 	<summary>映射式枚举器</summary>
 </member><member name="T:Firefly.ZippedEnumerator`3">
@@ -1693,6 +1879,24 @@ Firefly.Core
  </summary>
 	<remarks>
  请显式调用Close或Dispose来关闭流。
+ </remarks>
+</member><member name="T:Firefly.Mapping.BinarySerializer">
+	<remarks>
+ 对于非简单类型，应提供自定义序列化器
+ 简单类型 ::= 简单类型
+           | Byte(UInt8) | UInt16 | UInt32 | UInt64 | Int8(SByte) | Int16 | Int32 | Int64 | Float32(Single) | Float64(Double)
+           | Boolean
+           | 枚举
+           | 数组(简单类型)
+           | ICollection(简单类型)
+           | 简单类或结构
+ 简单类或结构 ::= 
+               ( 类或结构(构造函数(参数(简单类型)*), 公共只读字段(简单类型)*, 公共可写属性{0}) AND (参数(简单类型)* = 公共只读字段(简单类型)*)
+               | 类或结构(构造函数(参数(简单类型)*), 公共可写字段{0}, 公共只读属性(简单类型)*) AND (参数(简单类型)* = 公共只读属性(简单类型)*)
+               | 类或结构(无参构造函数, 公共可读写字段(简单类型)*, 公共可写属性{0})
+               | 类或结构(无参构造函数, 公共可写字段{0}, 公共可读写属性(简单类型)*)
+               ) AND 类型结构为树状
+ 此外，对象树中不应有空引用，否则应提供自定义序列化器
  </remarks>
 </member><member name="P:Firefly.Compressing.RLE.OriginalData">
 	<summary>原始数据</summary>
