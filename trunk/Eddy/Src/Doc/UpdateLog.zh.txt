@@ -1,4 +1,8 @@
-﻿2010.10.24.0
+﻿2010.11.15
+Eddy:
+更新Firefly引用。
+
+2010.10.24.0
 Firefly.Project:
 改名为Eddy.Interfaces。
 Eddy.*, Examples:
