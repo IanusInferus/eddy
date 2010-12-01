@@ -3,7 +3,7 @@
 '  File:        ApplicationController.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主控制器
-'  Version:     2010.10.24.
+'  Version:     2010.12.01.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -269,7 +269,7 @@ Public Class ApplicationController
                 End Try
             End Try
             Dim LoadedName = New AssemblyName(Asm.FullName)
-            If Not (AsmName.GetPublicKeyToken Is Nothing OrElse ArrayEqual(LoadedName.GetPublicKeyToken, AsmName.GetPublicKeyToken)) Then Return Nothing
+            If Not (AsmName.GetPublicKeyToken Is Nothing OrElse Enumerable.SequenceEqual(LoadedName.GetPublicKeyToken, AsmName.GetPublicKeyToken)) Then Return Nothing
             Return Asm
         Finally
             BlockRedirectBinding = False

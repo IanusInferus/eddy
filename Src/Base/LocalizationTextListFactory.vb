@@ -3,7 +3,7 @@
 '  File:        LocalizationTextListFactory.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化文本列表工厂默认实现
-'  Version:     2010.10.24.
+'  Version:     2010.12.01.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -15,6 +15,7 @@ Imports System.Text.RegularExpressions
 Imports System.IO
 Imports System.Drawing
 Imports Firefly
+Imports Firefly.Streaming
 Imports Firefly.TextEncoding
 Imports Firefly.Texting
 Imports Firefly.Glyphing
@@ -323,8 +324,8 @@ Public Class LOCList
         Me.IsReadOnlyValue = IsReadOnly
         Me.IsModifiedValue = False
         Me.Encoding = Encoding
-        Using s As New StreamEx(Path, FileMode.Open, FileAccess.Read)
-            Dim l = LOC.ReadFile(s)
+        Using s = StreamEx.Create(Path, FileMode.Open)
+            Dim l = LOC.ReadFile(s.AsNewReading)
             Font = l.Font.ToArray
             Values = l.Text.ToArray
         End Using
