@@ -3,6 +3,8 @@ Interfaces:
 增加ITextLocalizerToolStripButtonPlugin，用于使得工具条按钮与界面无关，为主界面插件化做准备。(breaking change)
 *:
 按照Interfaces的变换进行变更。
+Voice:
+将界面由提示Label变更为工具条按钮。
 
 2010.12.09.0
 
