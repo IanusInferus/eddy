@@ -48,6 +48,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ITextLocalizerToolStripButtonPlugin.vb" />
     <Compile Include="ITextLocalizerControllerPlugin.vb" />
     <Compile Include="ITextLocalizerControlPlugin.vb" />
     <Compile Include="ITextLocalizerDataPlugin.vb" />

@@ -3,7 +3,7 @@
 '  File:        ILocalizationTextListFactory.vb
 '  Location:    Eddy.Interfaces <Visual Basic .Net>
 '  Description: 本地化文本列表工厂接口
-'  Version:     2010.10.05.
+'  Version:     2010.12.10.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -46,7 +46,7 @@ Public Class LocalizationTextListFactoryAggregation
         Next
     End Sub
 
-    Public ReadOnly Property SupportedTypes() As System.Collections.Generic.IEnumerable(Of String) Implements ILocalizationTextListFactory.SupportedTypes
+    Public ReadOnly Property SupportedTypes() As IEnumerable(Of String) Implements ILocalizationTextListFactory.SupportedTypes
         Get
             Return TypeToFactory.Keys
         End Get

@@ -1,4 +1,10 @@
-﻿2010.12.09.0
+﻿2010.12.10
+Interfaces:
+增加ITextLocalizerToolStripButtonPlugin，用于使得工具条按钮与界面无关，为主界面插件化做准备。(breaking change)
+*:
+按照Interfaces的变换进行变更。
+
+2010.12.09.0
 
 2010.12.01
 Eddy:

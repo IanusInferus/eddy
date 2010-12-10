@@ -3,7 +3,7 @@
 '  File:        J2G.vb
 '  Location:    Eddy.J2G <Visual Basic .Net>
 '  Description: 文本本地化工具日汉转换插件
-'  Version:     2010.10.24.
+'  Version:     2010.12.10.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -22,25 +22,13 @@ Imports Eddy.Interfaces
 
 Public Class J2GPlugin
     Inherits TextLocalizerBase
-    Implements ITextLocalizerControlPlugin
+    Implements ITextLocalizerToolStripButtonPlugin
     Implements ITextLocalizerTranslatorPlugin
 
-    Friend WithEvents ToolStripButton_Translate As System.Windows.Forms.ToolStripButton
-
     Public Sub New()
-        Me.ToolStripButton_Translate = New System.Windows.Forms.ToolStripButton
-        '
-        'ToolStripButton_Translate
-        '
-        Me.ToolStripButton_Translate.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton_Translate.Image = My.Resources.Translate
-        Me.ToolStripButton_Translate.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton_Translate.Name = "ToolStripButton_Translate"
-        Me.ToolStripButton_Translate.Size = New System.Drawing.Size(23, 22)
-        Me.ToolStripButton_Translate.Text = "日汉转换"
     End Sub
 
-    Private Sub ToolStripButton_Translate_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripButton_Translate.Click
+    Private Sub ToolStripButton_Click()
         Dim Text = Controller.Text(Controller.ColumnIndex)
         Dim s = Controller.SelectionStart
         Dim l = Controller.SelectionLength
@@ -54,11 +42,11 @@ Public Class J2GPlugin
         Controller.SelectionLength = SelectedText.Length
     End Sub
 
-    Public Function GetControlDescriptors() As System.Collections.Generic.IEnumerable(Of Eddy.Interfaces.ControlDescriptor) Implements Eddy.Interfaces.ITextLocalizerControlPlugin.GetControlDescriptors
-        Return New ControlDescriptor() {New ControlDescriptor With {.Control = ToolStripButton_Translate, .Target = ControlId.ToolStrip}}
+    Public Function GetToolStripButtonDescriptors() As IEnumerable(Of ToolStripButtonDescriptor) Implements ITextLocalizerToolStripButtonPlugin.GetToolStripButtonDescriptors
+        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.Translate, .Text = "日汉转换", .Click = AddressOf ToolStripButton_Click}}
     End Function
 
-    Public Function TranslateText(ByVal SourceColumn As Integer, ByVal TargeColumn As Integer, ByVal Text As String) As String Implements Eddy.Interfaces.ITextLocalizerTranslatorPlugin.TranslateText
+    Public Function TranslateText(ByVal SourceColumn As Integer, ByVal TargeColumn As Integer, ByVal Text As String) As String Implements ITextLocalizerTranslatorPlugin.TranslateText
         Return HanziConverter.J2G(Text)
     End Function
 End Class

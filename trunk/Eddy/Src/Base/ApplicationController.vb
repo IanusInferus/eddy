@@ -38,6 +38,7 @@ Public Class TextLocalizerData
     Public Plugins As New List(Of ITextLocalizerPlugin)
     Public TextHighlighters As New List(Of ITextLocalizerTextHighlighter)
     Public GridTextFormatters As New List(Of ITextLocalizerGridTextFormatter)
+    Public ToolStripButtonPlugins As New List(Of ITextLocalizerToolStripButtonPlugin)
     Public ControlPlugins As New List(Of ITextLocalizerControlPlugin)
     Public FormatPlugins As New List(Of ITextLocalizerFormatPlugin)
     Public TranslatorPlugins As New List(Of ITextLocalizerTranslatorPlugin)
@@ -297,6 +298,11 @@ Public Class ApplicationController
                 ApplicationData.GridTextFormatters.Add(GridTextFormatter)
             End If
 
+            Dim ToolStripButtonPlugin = TryCast(Obj, ITextLocalizerToolStripButtonPlugin)
+            If ToolStripButtonPlugin IsNot Nothing Then
+                ApplicationData.ToolStripButtonPlugins.Add(ToolStripButtonPlugin)
+            End If
+
             Dim ControlPlugin = TryCast(Obj, ITextLocalizerControlPlugin)
             If ControlPlugin IsNot Nothing Then
                 ApplicationData.ControlPlugins.Add(ControlPlugin)
@@ -323,6 +329,7 @@ Public Class ApplicationController
 
         ApplicationData.TextHighlighters.Clear()
         ApplicationData.GridTextFormatters.Clear()
+        ApplicationData.ToolStripButtonPlugins.Clear()
         ApplicationData.ControlPlugins.Clear()
         ApplicationData.FormatPlugins.Clear()
         ApplicationData.TranslatorPlugins.Clear()

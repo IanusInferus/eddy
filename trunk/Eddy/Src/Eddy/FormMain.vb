@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.10.24.
+'  Version:     2010.12.10.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -169,6 +169,20 @@ Public Class FormMain
                 End If
             Next
 
+            For Each ToolStripButtonPlugin In ApplicationData.ToolStripButtonPlugins
+                Dim ButtonDescriptors = ToolStripButtonPlugin.GetToolStripButtonDescriptors()
+                For Each ButtonDescriptor In ButtonDescriptors
+                    Dim bd = ButtonDescriptor
+                    Dim b As New ToolStripButton
+                    b.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
+                    b.Image = ButtonDescriptor.Image
+                    b.Size = New System.Drawing.Size(23, 22)
+                    b.Text = ButtonDescriptor.Text
+                    AddHandler b.Click, Sub(o, e) bd.Click()
+                    Me.ToolStrip_Tools.Items.Add(b)
+                Next
+            Next
+
             For Each ControlPlugin In ApplicationData.ControlPlugins
                 Dim ControlDescriptors = ControlPlugin.GetControlDescriptors()
                 If ControlDescriptors IsNot Nothing Then
@@ -189,8 +203,6 @@ Public Class FormMain
                                 Me.SplitContainer_Main.Panel1.Controls.Add(d.Control)
                                 d.Control.BringToFront()
                                 Me.SplitContainer_Main.Panel1.ResumeLayout(False)
-                            Case ControlId.ToolStrip
-                                Me.ToolStrip_Tools.Items.Add(d.Control)
                         End Select
                     Next
                 End If

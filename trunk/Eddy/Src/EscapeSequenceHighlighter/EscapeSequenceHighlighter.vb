@@ -3,7 +3,7 @@
 '  File:        EscapeSequenceHighlighter.vb
 '  Location:    Eddy.EscapeSequenceHighlighter <Visual Basic .Net>
 '  Description: 文本本地化工具控制符高亮插件
-'  Version:     2010.10.24.
+'  Version:     2010.12.10.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -78,7 +78,7 @@ Public Class EscapeSequenceHighlighter
         Return (From m As Match In EscapeSequenceRegex.Matches(Text) Select (New TextStyle With {.Index = m.Index, .Length = m.Length, .ForeColor = ForeColor, .BackColor = BackColor})).ToArray
     End Function
 
-    Public Function GetTextStyles(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As IEnumerable(Of String)) As IEnumerable(Of TextStyle()) Implements Eddy.Interfaces.ITextLocalizerTextHighlighter.GetTextStyles
+    Public Function GetTextStyles(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As IEnumerable(Of String)) As IEnumerable(Of TextStyle()) Implements ITextLocalizerTextHighlighter.GetTextStyles
         Return (From i In Enumerable.Range(0, Columns.Count) Select GetTextStylesForText(FormatedTexts(i))).ToArray
     End Function
 
