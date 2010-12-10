@@ -59,7 +59,7 @@ Public Class Voice
     End Sub
 
     Public Function GetToolStripButtonDescriptors() As IEnumerable(Of ToolStripButtonDescriptor) Implements ITextLocalizerToolStripButtonPlugin.GetToolStripButtonDescriptors
-        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = Nothing, .Text = "朗读(F1)", .Click = AddressOf ToolStripButton_Click}}
+        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.Voice, .Text = "朗读(F1)", .Click = AddressOf ToolStripButton_Click}}
     End Function
 
     Private Synth As SpeechSynthesizer
