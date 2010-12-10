@@ -3,7 +3,7 @@
 '  File:        ITextLocalizerControlPlugin.vb
 '  Location:    Eddy.Interfaces <Visual Basic .Net>
 '  Description: 文本本地化工具控件插件接口
-'  Version:     2010.05.17.
+'  Version:     2010.12.10.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -18,7 +18,6 @@ Public Enum ControlId
     MainWindow = 1
     MainPanel = 2
     Grid = 3
-    ToolStrip = 4
 End Enum
 
 ''' <summary>控件描述</summary>

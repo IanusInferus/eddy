@@ -3,7 +3,7 @@
 '  File:        WQSG.vb
 '  Location:    Eddy.WQSG <Visual Basic .Net>
 '  Description: 文本本地化工具WQSG文本插件
-'  Version:     2010.10.24.
+'  Version:     2010.12.10.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -22,24 +22,12 @@ Imports Eddy.Interfaces
 Public Class WQSGPlugin
     Inherits TextLocalizerBase
     Implements ITextLocalizerFormatPlugin
-    Implements ITextLocalizerControlPlugin
-
-    Friend WithEvents ToolStripButton_Delete As System.Windows.Forms.ToolStripButton
+    Implements ITextLocalizerToolStripButtonPlugin
 
     Public Sub New()
-        Me.ToolStripButton_Delete = New System.Windows.Forms.ToolStripButton
-        '
-        'ToolStripButton_Delete
-        '
-        Me.ToolStripButton_Delete.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton_Delete.Image = My.Resources.Delete
-        Me.ToolStripButton_Delete.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton_Delete.Name = "ToolStripButton_Delete"
-        Me.ToolStripButton_Delete.Size = New System.Drawing.Size(23, 22)
-        Me.ToolStripButton_Delete.Text = "删除选中文本"
     End Sub
 
-    Private Sub ToolStripButton_Delete_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripButton_Delete.Click
+    Private Sub ToolStripButton_Delete_Click()
         Dim TextIndices = Controller.TextIndices.ToArray
         For Each Column In Columns
             If Column.IsReadOnly Then Continue For
@@ -61,15 +49,15 @@ Public Class WQSGPlugin
         Controller.RefreshGrid()
     End Sub
 
-    Public Function GetTextListFactories() As System.Collections.Generic.IEnumerable(Of ILocalizationTextListFactory) Implements Eddy.Interfaces.ITextLocalizerFormatPlugin.GetTextListFactories
+    Public Function GetTextListFactories() As IEnumerable(Of ILocalizationTextListFactory) Implements ITextLocalizerFormatPlugin.GetTextListFactories
         Return New ILocalizationTextListFactory() {Me}
     End Function
 
-    Public Function GetControlDescriptors() As System.Collections.Generic.IEnumerable(Of Eddy.Interfaces.ControlDescriptor) Implements Eddy.Interfaces.ITextLocalizerControlPlugin.GetControlDescriptors
+    Public Function GetToolStripButtonDescriptors() As IEnumerable(Of ToolStripButtonDescriptor) Implements ITextLocalizerToolStripButtonPlugin.GetToolStripButtonDescriptors
         If (From c In Columns Where c.Type = "WQSGText").Count = 0 Then
-            Return New ControlDescriptor() {}
+            Return New ToolStripButtonDescriptor() {}
         Else
-            Return New ControlDescriptor() {New ControlDescriptor With {.Control = ToolStripButton_Delete, .Target = ControlId.ToolStrip}}
+            Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.Delete, .Text = "删除选中文本", .Click = AddressOf ToolStripButton_Delete_Click}}
         End If
     End Function
 End Class

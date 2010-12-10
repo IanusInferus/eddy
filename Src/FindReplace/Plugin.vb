@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.FindReplace <Visual Basic .Net>
 '  Description: 文本本地化工具查找替换插件
-'  Version:     2010.10.24.
+'  Version:     2010.12.10.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -29,7 +29,7 @@ End Class
 Public Class Plugin
     Inherits TextLocalizerBase
     Implements ITextLocalizerTextHighlighter
-    Implements ITextLocalizerControlPlugin
+    Implements ITextLocalizerToolStripButtonPlugin
 
     Private SettingPath As String = "FindReplace.locplugin"
     Private Config As Config
@@ -37,7 +37,6 @@ Public Class Plugin
     Private BackColor As Color
 
     Private WithEvents FormSearch As FormSearch
-    Private WithEvents ToolStripButton_FindReplace As System.Windows.Forms.ToolStripButton
 
     Public Sub New()
         If File.Exists(SettingPath) Then
@@ -49,17 +48,6 @@ Public Class Plugin
         BackColor = Color.FromArgb(Integer.Parse(Config.BackColor, Globalization.NumberStyles.HexNumber))
 
         FormSearch = New FormSearch
-
-        Me.ToolStripButton_FindReplace = New System.Windows.Forms.ToolStripButton
-        '
-        'ToolStripButton_FindReplace
-        '
-        Me.ToolStripButton_FindReplace.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image
-        Me.ToolStripButton_FindReplace.Image = My.Resources.FindReplace
-        Me.ToolStripButton_FindReplace.ImageTransparentColor = System.Drawing.Color.Magenta
-        Me.ToolStripButton_FindReplace.Name = "ToolStripButton_FindReplace"
-        Me.ToolStripButton_FindReplace.Size = New System.Drawing.Size(23, 22)
-        Me.ToolStripButton_FindReplace.Text = "查找替换(Ctrl+F)"
     End Sub
     Protected Overrides Sub DisposeManagedResource()
         Try
@@ -69,26 +57,26 @@ Public Class Plugin
         MyBase.DisposeManagedResource()
     End Sub
 
-    Public Function GetControlDescriptors() As IEnumerable(Of ControlDescriptor) Implements ITextLocalizerControlPlugin.GetControlDescriptors
+    Public Function GetToolStripButtonDescriptors() As IEnumerable(Of ToolStripButtonDescriptor) Implements ITextLocalizerToolStripButtonPlugin.GetToolStripButtonDescriptors
         FormSearch.Controller = Controller
         FormSearch.TextNames = TextNames
         FormSearch.Columns = Columns
         FormSearch.MainColumnIndex = MainColumnIndex
 
-        Return New ControlDescriptor() {New ControlDescriptor With {.Control = ToolStripButton_FindReplace, .Target = ControlId.ToolStrip}}
+        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.FindReplace, .Text = "查找替换(Ctrl+F)", .Click = AddressOf ToolStripButton_Click}}
     End Function
 
     Public Sub Application_KeyDown(ByVal ControlId As ControlId, ByVal e As KeyEventArgs) Handles Controller.KeyDown
         Select Case e.KeyData
             Case Keys.Control Or Keys.F, Keys.Control Or Keys.H, Keys.Control Or Keys.R
-                ToolStripButton_FindReplace_Click(Nothing, e)
+                ToolStripButton_Click()
             Case Else
                 Return
         End Select
         e.Handled = True
     End Sub
 
-    Private Sub ToolStripButton_FindReplace_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles ToolStripButton_FindReplace.Click
+    Private Sub ToolStripButton_Click()
         If FormSearch.Visible Then
             FormSearch.Focus()
         Else
@@ -116,7 +104,7 @@ Public Class Plugin
     Private Function GetTextStylesForText(ByVal Text As String) As TextStyle()
         Return (From m As Match In CurrentFindTextRegex.Matches(Text) Select (New TextStyle With {.Index = m.Index, .Length = m.Length, .ForeColor = ForeColor, .BackColor = BackColor})).ToArray
     End Function
-    Public Function GetTextStyles(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As IEnumerable(Of String)) As IEnumerable(Of TextStyle()) Implements Eddy.Interfaces.ITextLocalizerTextHighlighter.GetTextStyles
+    Public Function GetTextStyles(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As IEnumerable(Of String)) As IEnumerable(Of TextStyle()) Implements ITextLocalizerTextHighlighter.GetTextStyles
         If CurrentFindTextRegex Is Nothing Then Return Nothing
         Return (From i In Enumerable.Range(0, Columns.Count) Select GetTextStylesForText(FormatedTexts(i))).ToArray
     End Function
