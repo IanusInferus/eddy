@@ -3,7 +3,7 @@
 '  File:        FindReplace.vb
 '  Location:    Eddy.FindReplace <Visual Basic .Net>
 '  Description: 文本查找替换
-'  Version:     2010.10.24.
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -84,6 +84,15 @@ Public Class FindReplace
         If SearchUp Then Options = Options Or RegexOptions.RightToLeft
         If Not CaseSensitive Then Options = Options Or RegexOptions.IgnoreCase Or RegexOptions.CultureInvariant
         Return New Regex(Pattern, Options)
+    End Function
+    Public Function GetReplacePattern(ByVal TextReplace As String) As String
+        Dim Pattern As String
+        If UseRegex Then
+            Pattern = TextReplace.Descape
+        Else
+            Pattern = TextReplace.Replace("$", "$$")
+        End If
+        Return Pattern
     End Function
 
     Private Delegate Function Action(ByVal ColumnIndex As Integer, ByVal TextName As String, ByVal TextIndex As Integer, ByVal t As String, ByVal Start As Integer) As Boolean
@@ -279,6 +288,7 @@ Public Class FindReplace
     Public Function Replace(ByVal Columns As IEnumerable(Of LocalizationTextProvider), ByVal MainColumnIndex As Integer, ByVal Input As FindIndex, ByVal TextFind As String, ByVal TextReplace As String) As FindIndex
         Dim MainColumn = Columns(MainColumnIndex)
         Dim r = GetFindRegex(TextFind)
+        Dim ReplacePattern = GetReplacePattern(TextReplace)
         Dim tp = Columns(Input.ColumnIndex)
         If Not tp.IsReadOnly Then
             Dim tl = tp.TryGetValue(Input.TextName)
@@ -294,13 +304,7 @@ Public Class FindReplace
             Dim m = r.Match(t, Start)
             If m.Success Then
                 If m.Index = Input.Start AndAlso m.Length = Input.Length Then
-                    Dim Replaced As String
-                    If UseRegex Then
-                        Replaced = m.Result(TextReplace)
-                    Else
-                        Replaced = TextReplace
-                    End If
-                    t = t.Substring(0, m.Index) & Replaced & t.Substring(m.Index + m.Length)
+                    t = t.Substring(0, m.Index) & m.Result(ReplacePattern) & t.Substring(m.Index + m.Length)
                     tl.Text(Input.TextIndex) = t
                     Return New FindIndex With {.ColumnIndex = Input.ColumnIndex, .TextName = Input.TextName, .TextIndex = Input.TextIndex, .Start = m.Index, .Length = m.Length}
                 End If
@@ -312,12 +316,7 @@ Public Class FindReplace
     Public Function ReplaceAll(ByVal Columns As IEnumerable(Of LocalizationTextProvider), ByVal MainColumnIndex As Integer, ByVal Input As FindIndex, ByVal TextFind As String, ByVal TextReplace As String) As Integer
         Dim MainColumn = Columns(MainColumnIndex)
         Dim r = GetFindRegex(TextFind)
-        Dim ReplacePattern As String
-        If UseRegex Then
-            ReplacePattern = TextReplace
-        Else
-            ReplacePattern = TextReplace.Replace("$", "$$")
-        End If
+        Dim ReplacePattern = GetReplacePattern(TextReplace)
         Dim tp = Columns(Input.ColumnIndex)
         Dim tl = tp.TryGetValue(Input.TextName)
         Dim t As String

@@ -12,6 +12,14 @@ Imports System
 Imports System.Collections.Generic
 Imports System.Windows.Forms
 
+''' <summary>控件编号</summary>
+Public Enum ControlId
+    None = 0
+    MainWindow = 1
+    MainPanel = 2
+    Grid = 3
+End Enum
+
 ''' <summary>TextLocalizer的使用Controller的插件接口</summary>
 Public Interface ITextLocalizerControllerPlugin
     Inherits ITextLocalizerPlugin

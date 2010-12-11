@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.12.10.
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -179,33 +179,10 @@ Public Class FormMain
                     b.Size = New System.Drawing.Size(23, 22)
                     b.Text = ButtonDescriptor.Text
                     AddHandler b.Click, Sub(o, e) bd.Click()
+                    AddHandler bd.ImageChanged.Value, Sub(i) b.Image = i
+                    AddHandler bd.TextChanged.Value, Sub(t) b.Text = t
                     Me.ToolStrip_Tools.Items.Add(b)
                 Next
-            Next
-
-            For Each ControlPlugin In ApplicationData.ControlPlugins
-                Dim ControlDescriptors = ControlPlugin.GetControlDescriptors()
-                If ControlDescriptors IsNot Nothing Then
-                    For Each d In ControlDescriptors
-                        Select Case d.Target
-                            Case ControlId.MainWindow
-                                Me.SuspendLayout()
-                                Me.Controls.Add(d.Control)
-                                d.Control.BringToFront()
-                                Me.ResumeLayout(False)
-                            Case ControlId.MainPanel
-                                Me.Panel_Work.SuspendLayout()
-                                Me.Panel_Work.Controls.Add(d.Control)
-                                d.Control.BringToFront()
-                                Me.Panel_Work.ResumeLayout(False)
-                            Case ControlId.Grid
-                                Me.SplitContainer_Main.Panel1.SuspendLayout()
-                                Me.SplitContainer_Main.Panel1.Controls.Add(d.Control)
-                                d.Control.BringToFront()
-                                Me.SplitContainer_Main.Panel1.ResumeLayout(False)
-                        End Select
-                    Next
-                End If
             Next
 
             Dim DisplayLOCBoxTip = False

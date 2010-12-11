@@ -3,7 +3,7 @@
 '  File:        EscapeSequenceHighlighter.vb
 '  Location:    Eddy.EscapeSequenceHighlighter <Visual Basic .Net>
 '  Description: 文本本地化工具控制符高亮插件
-'  Version:     2010.12.10.
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -30,7 +30,7 @@ Public Class EscapeSequenceHighlighter
     Inherits TextLocalizerBase
     Implements ITextLocalizerTextHighlighter
     Implements ITextLocalizerGridTextFormatter
-    Implements ITextLocalizerControlPlugin
+    Implements ITextLocalizerToolStripButtonPlugin
 
     Private SettingPath As String = "EscapeSequenceHighlighter.locplugin"
     Private Config As Config
@@ -38,9 +38,6 @@ Public Class EscapeSequenceHighlighter
     Private ForeColor As Color
     Private BackColor As Color
 
-    Private WithEvents CheckBox_Multiview_HideEscapeSequence As System.Windows.Forms.CheckBox
-
-    Private Initialized As Boolean = False
     Public Sub New()
         If File.Exists(SettingPath) Then
             Config = Xml.ReadFile(Of Config)(SettingPath)
@@ -50,21 +47,6 @@ Public Class EscapeSequenceHighlighter
         EscapeSequenceRegex = New Regex(Config.Regex, RegexOptions.ExplicitCapture Or RegexOptions.Compiled)
         ForeColor = Color.FromArgb(Integer.Parse(Config.ForeColor, Globalization.NumberStyles.HexNumber))
         BackColor = Color.FromArgb(Integer.Parse(Config.BackColor, Globalization.NumberStyles.HexNumber))
-
-        Me.CheckBox_Multiview_HideEscapeSequence = New System.Windows.Forms.CheckBox
-        '
-        'CheckBox_Multiview_HideEscapeSequence
-        '
-        Me.CheckBox_Multiview_HideEscapeSequence.Anchor = CType((System.Windows.Forms.AnchorStyles.Bottom Or System.Windows.Forms.AnchorStyles.Right), System.Windows.Forms.AnchorStyles)
-        Me.CheckBox_Multiview_HideEscapeSequence.AutoSize = True
-        Me.CheckBox_Multiview_HideEscapeSequence.Location = New System.Drawing.Point(172, 548)
-        Me.CheckBox_Multiview_HideEscapeSequence.Name = "CheckBox_Multiview_HideEscapeSequence"
-        Me.CheckBox_Multiview_HideEscapeSequence.Size = New System.Drawing.Size(96, 16)
-        Me.CheckBox_Multiview_HideEscapeSequence.TabIndex = 1
-        Me.CheckBox_Multiview_HideEscapeSequence.Text = "隐藏转义序列"
-        Me.CheckBox_Multiview_HideEscapeSequence.UseVisualStyleBackColor = True
-        Me.CheckBox_Multiview_HideEscapeSequence.Checked = Config.HideInGrid
-        Initialized = True
     End Sub
     Protected Overrides Sub DisposeManagedResource()
         Try
@@ -90,13 +72,28 @@ Public Class EscapeSequenceHighlighter
         End If
     End Function
 
-    Public Function GetControlDescriptors() As IEnumerable(Of ControlDescriptor) Implements ITextLocalizerControlPlugin.GetControlDescriptors
-        Return New ControlDescriptor() {New ControlDescriptor With {.Control = CheckBox_Multiview_HideEscapeSequence, .Target = ControlId.Grid}}
+    Private HideInGridDescriptor As ToolStripButtonDescriptor
+    Public Function GetToolStripButtonDescriptors() As IEnumerable(Of ToolStripButtonDescriptor) Implements ITextLocalizerToolStripButtonPlugin.GetToolStripButtonDescriptors
+        If Config.HideInGrid Then
+            HideInGridDescriptor = New ToolStripButtonDescriptor With {.Image = My.Resources.Show, .Text = "显示预览框中转义序列", .Click = AddressOf HideInGridChanged}
+        Else
+            HideInGridDescriptor = New ToolStripButtonDescriptor With {.Image = My.Resources.Hide, .Text = "隐藏预览框中转义序列", .Click = AddressOf HideInGridChanged}
+        End If
+        Return New ToolStripButtonDescriptor() {HideInGridDescriptor}
     End Function
 
-    Private Sub CheckBox_Multiview_HideEscapeSequence_CheckedChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles CheckBox_Multiview_HideEscapeSequence.CheckedChanged
-        If Not Initialized Then Return
-        Config.HideInGrid = CheckBox_Multiview_HideEscapeSequence.Checked
-        Controller.RefreshGrid()
+    Private Sub HideInGridChanged()
+        Config.HideInGrid = Not Config.HideInGrid
+        Try
+            Controller.RefreshGrid()
+        Finally
+            If Config.HideInGrid Then
+                HideInGridDescriptor.ImageChanged.Raise(My.Resources.Show)
+                HideInGridDescriptor.TextChanged.Raise("显示预览框中转义序列")
+            Else
+                HideInGridDescriptor.ImageChanged.Raise(My.Resources.Hide)
+                HideInGridDescriptor.TextChanged.Raise("隐藏预览框中转义序列")
+            End If
+        End Try
     End Sub
 End Class
