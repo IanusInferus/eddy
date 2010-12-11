@@ -36,7 +36,7 @@ Public Class TextLocalizerData
     Public KeyListenerPlugins As New List(Of ITextLocalizerKeyListenerPlugin)
     Public UserInterfacePlugins As New List(Of ITextLocalizerUserInterfacePlugin)
 
-    Public Factory As New LocalizationTextListFactoryAggregation(New ILocalizationTextListFactory() {New LocalizationTextListFactory()})
+    Public Factory As ILocalizationTextListFactory
 
     Public Sub New()
     End Sub
