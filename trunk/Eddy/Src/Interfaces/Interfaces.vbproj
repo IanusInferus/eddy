@@ -50,7 +50,6 @@
   <ItemGroup>
     <Compile Include="ITextLocalizerToolStripButtonPlugin.vb" />
     <Compile Include="ITextLocalizerControllerPlugin.vb" />
-    <Compile Include="ITextLocalizerControlPlugin.vb" />
     <Compile Include="ITextLocalizerDataPlugin.vb" />
     <Compile Include="ITextLocalizerPlugin.vb" />
     <Compile Include="ILocalizationTextListFactory.vb" />

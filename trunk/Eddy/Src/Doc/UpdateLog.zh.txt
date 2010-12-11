@@ -1,4 +1,12 @@
-﻿2010.12.10
+﻿2010.12.11
+EscapeSequenceHighlighter:
+将界面的隐藏转义序列的选项变更为工具条按钮。
+Eddy:
+增加Eddy_x86版本，以解决TTS语音合成无法使用32位语音Misaki的问题。
+Interfaces, Base, Eddy:
+删除控件插件。
+
+2010.12.10
 Interfaces:
 增加ITextLocalizerToolStripButtonPlugin，用于使得工具条按钮与界面无关，为主界面插件化做准备。(breaking change)
 *:

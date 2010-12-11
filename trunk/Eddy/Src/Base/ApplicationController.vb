@@ -3,7 +3,7 @@
 '  File:        ApplicationController.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主控制器
-'  Version:     2010.12.01.
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -39,7 +39,6 @@ Public Class TextLocalizerData
     Public TextHighlighters As New List(Of ITextLocalizerTextHighlighter)
     Public GridTextFormatters As New List(Of ITextLocalizerGridTextFormatter)
     Public ToolStripButtonPlugins As New List(Of ITextLocalizerToolStripButtonPlugin)
-    Public ControlPlugins As New List(Of ITextLocalizerControlPlugin)
     Public FormatPlugins As New List(Of ITextLocalizerFormatPlugin)
     Public TranslatorPlugins As New List(Of ITextLocalizerTranslatorPlugin)
 
@@ -303,11 +302,6 @@ Public Class ApplicationController
                 ApplicationData.ToolStripButtonPlugins.Add(ToolStripButtonPlugin)
             End If
 
-            Dim ControlPlugin = TryCast(Obj, ITextLocalizerControlPlugin)
-            If ControlPlugin IsNot Nothing Then
-                ApplicationData.ControlPlugins.Add(ControlPlugin)
-            End If
-
             Dim FormatPlugin = TryCast(Obj, ITextLocalizerFormatPlugin)
             If FormatPlugin IsNot Nothing Then
                 ApplicationData.FormatPlugins.Add(FormatPlugin)
@@ -330,7 +324,6 @@ Public Class ApplicationController
         ApplicationData.TextHighlighters.Clear()
         ApplicationData.GridTextFormatters.Clear()
         ApplicationData.ToolStripButtonPlugins.Clear()
-        ApplicationData.ControlPlugins.Clear()
         ApplicationData.FormatPlugins.Clear()
         ApplicationData.TranslatorPlugins.Clear()
 

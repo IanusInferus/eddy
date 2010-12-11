@@ -19,6 +19,7 @@ Imports System.Speech.Synthesis
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Setting
+Imports Firefly.GUI
 Imports Eddy.Interfaces
 
 Public Class Config
@@ -66,14 +67,10 @@ Public Class Voice
     Private InstalledVoices As Dictionary(Of String, VoiceInfo)
     Private Sub ToolStripButton_Click()
         If Synth Is Nothing Then
-            Try
-                Synth = New SpeechSynthesizer()
-            Catch
-                Return
-            End Try
+            Synth = New SpeechSynthesizer()
             InstalledVoices = (From v In Synth.GetInstalledVoices Select v.VoiceInfo).ToDictionary(Function(v) v.Name, Function(v) v)
         End If
-        If InstalledVoices.Count = 0 Then Return
+        If InstalledVoices.Count = 0 Then Throw New InvalidOperationException("没有找到已安装的TTS引擎")
         Dim ColumnIndex = Controller.ColumnIndex
         Dim tp = Columns(ColumnIndex)
         Dim Text As String
@@ -98,6 +95,11 @@ Public Class Voice
             p.EndVoice()
             Synth.SpeakAsync(p)
         Else
+            Static Flag As Boolean = True
+            If Flag AndAlso NameToVoiceName.ContainsKey(tp.Name) Then
+                ExceptionHandler.PopupInfo("无法找到TTS引擎: {0}".Formats(NameToVoiceName(tp.Name)))
+                Flag = False
+            End If
             Synth.SpeakAsync(Text)
         End If
     End Sub

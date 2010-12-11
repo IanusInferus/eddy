@@ -3,7 +3,7 @@
 '  File:        TextLocalizerBase.vb
 '  Location:    Eddy.Interfaces <Visual Basic .Net>
 '  Description: 文本本地化工具插件默认基类实现
-'  Version:     2010.05.17.
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -87,5 +87,9 @@ Public MustInherit Class TextLocalizerBase
         ' 不要更改此代码。请将清理代码放入上面的 Dispose(ByVal disposing As Boolean) 中。
         Dispose(True)
         GC.SuppressFinalize(Me)
+    End Sub
+
+    Protected Overrides Sub Finalize()
+        Dispose(False)
     End Sub
 End Class

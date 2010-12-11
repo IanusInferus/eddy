@@ -3,7 +3,7 @@
 '  File:        FormSearch.vb
 '  Location:    Eddy.FindReplace <Visual Basic .Net>
 '  Description: 文本本地化工具查找替换插件窗体
-'  Version:     2010.10.24.
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -195,6 +195,7 @@ Public Class FormSearch
         Dim Input As New FindIndex With {.ColumnIndex = ColumnIndex, .TextName = Controller.TextName, .TextIndex = Controller.TextIndex, .Start = Controller.SelectionStart, .Length = Controller.SelectionLength}
         Dim Count = FindReplace.ReplaceAll(tps, MainColumnIndex, Input, TextFind, TextReplace)
         Controller.RefreshMainPanel()
+        Controller.RefreshGrid()
         MessageDialog.Show("替换了{0}处搜索项。".Formats(Count), Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
     End Sub
 End Class
