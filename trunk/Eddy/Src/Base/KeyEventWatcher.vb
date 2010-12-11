@@ -65,9 +65,9 @@ Public Class KeyEventWatcher
     Public Sub KeyDown(ByVal Key As VirtualKeys)
         If Not CurrentKeySet.Contains(Key) Then
             CurrentKeySet.Add(Key)
-            If KeyDownDict.ContainsKey(CurrentKeySet) Then
-                KeyDownDict(CurrentKeySet)()
-            End If
+        End If
+        If KeyDownDict.ContainsKey(CurrentKeySet) Then
+            KeyDownDict(CurrentKeySet)()
         End If
     End Sub
 
@@ -81,5 +81,9 @@ Public Class KeyEventWatcher
                 CurrentKeySet.Remove(Key)
             End Try
         End If
+    End Sub
+
+    Public Sub KeyClear()
+        CurrentKeySet.Clear()
     End Sub
 End Class
