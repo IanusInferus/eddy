@@ -70,7 +70,6 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.XML" />
     <Reference Include="Firefly.Core">
       <HintPath>..\Firefly.Core.dll</HintPath>
     </Reference>
@@ -79,19 +78,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControlDrawPauser.vb" />
-    <Compile Include="DataGridViewImageColumnEx.vb">
-    </Compile>
-    <Compile Include="DataGridViewRowIndexHeaderCell.vb" />
-    <Compile Include="DataGridViewRichTextBoxColumn.vb">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="ExtendedRichTextBox.vb">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="LocalizationTextBox.vb">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="ApplicationController.vb" />
     <Compile Include="Main.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
@@ -108,26 +95,12 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="FormMain.designer.vb">
-      <DependentUpon>FormMain.vb</DependentUpon>
-    </Compile>
-    <Compile Include="FormMain.vb">
-      <SubType>Form</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="LocalizationTextBox.resx">
-      <DependentUpon>LocalizationTextBox.vb</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="FormMain.resx">
-      <DependentUpon>FormMain.vb</DependentUpon>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
@@ -149,7 +122,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Interfaces\Interfaces.vbproj">
       <Project>{A1BD62D2-75AA-4E48-B2F8-E91CF9AEBBB8}</Project>
-      <Name>FireflyProject</Name>
+      <Name>Interfaces</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

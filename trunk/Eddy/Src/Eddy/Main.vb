@@ -9,6 +9,8 @@
 '==========================================================================
 
 Imports System
+Imports System.Collections.Generic
+Imports System.Linq
 Imports System.IO
 Imports System.Diagnostics
 Imports System.Windows.Forms
@@ -66,11 +68,15 @@ Public Module Main
         End Select
 
         Using Controller As New ApplicationController(CurrentProjectFilePath)
-            Dim Form = My.Forms.FormMain
+            Dim UserInterfacePlugins = Controller.ApplicationData.UserInterfacePlugins
+            If UserInterfacePlugins.Count = 0 Then
+                MessageDialog.Show("没有用户界面插件。", ExceptionInfo.AssemblyDescriptionOrTitle, MessageBoxButtons.OK, MessageBoxIcon.Stop)
+                Return -1
+            End If
+            Dim UserInterface = UserInterfacePlugins.First
 
-            Form.Initialize(Controller.ApplicationData)
-
-            Application.Run(Form)
+            UserInterface.Initialize(Controller.ApplicationData)
+            UserInterface.Run()
         End Using
 
         Return 0

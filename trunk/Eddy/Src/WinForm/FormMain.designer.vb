@@ -33,8 +33,11 @@ Partial Class FormMain
         Me.Label_TextName = New System.Windows.Forms.Label()
         Me.Label_LOCBoxTip = New System.Windows.Forms.Label()
         Me.Panel_LocalizationBoxes = New System.Windows.Forms.Panel()
+        Me.LocalizationTextBox3 = New Eddy.WinForm.LocalizationTextBox()
         Me.Splitter2 = New System.Windows.Forms.Splitter()
+        Me.LocalizationTextBox2 = New Eddy.WinForm.LocalizationTextBox()
         Me.Splitter1 = New System.Windows.Forms.Splitter()
+        Me.LocalizationTextBox1 = New Eddy.WinForm.LocalizationTextBox()
         Me.ComboBox_TextName = New System.Windows.Forms.ComboBox()
         Me.Button_Open = New System.Windows.Forms.Button()
         Me.Button_NextFile = New System.Windows.Forms.Button()
@@ -44,9 +47,6 @@ Partial Class FormMain
         Me.Label_PreviousFile = New System.Windows.Forms.Label()
         Me.Label_Bar = New System.Windows.Forms.Label()
         Me.Panel_Background = New System.Windows.Forms.Panel()
-        Me.LocalizationTextBox3 = New Eddy.LocalizationTextBox()
-        Me.LocalizationTextBox2 = New Eddy.LocalizationTextBox()
-        Me.LocalizationTextBox1 = New Eddy.LocalizationTextBox()
         CType(Me.SplitContainer_Main, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.SplitContainer_Main.Panel1.SuspendLayout()
         Me.SplitContainer_Main.Panel2.SuspendLayout()
@@ -151,7 +151,7 @@ Partial Class FormMain
         Me.ToolStrip_Tools.Location = New System.Drawing.Point(4, 538)
         Me.ToolStrip_Tools.Name = "ToolStrip_Tools"
         Me.ToolStrip_Tools.RenderMode = System.Windows.Forms.ToolStripRenderMode.System
-        Me.ToolStrip_Tools.Size = New System.Drawing.Size(43, 25)
+        Me.ToolStrip_Tools.Size = New System.Drawing.Size(111, 25)
         Me.ToolStrip_Tools.TabIndex = 13
         Me.ToolStrip_Tools.Text = "ToolStrip_Tools"
         '
@@ -188,6 +188,15 @@ Partial Class FormMain
         Me.Panel_LocalizationBoxes.Size = New System.Drawing.Size(422, 470)
         Me.Panel_LocalizationBoxes.TabIndex = 9
         '
+        'LocalizationTextBox3
+        '
+        Me.LocalizationTextBox3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.LocalizationTextBox3.Dock = System.Windows.Forms.DockStyle.Fill
+        Me.LocalizationTextBox3.Location = New System.Drawing.Point(0, 260)
+        Me.LocalizationTextBox3.Name = "LocalizationTextBox3"
+        Me.LocalizationTextBox3.Size = New System.Drawing.Size(422, 210)
+        Me.LocalizationTextBox3.TabIndex = 4
+        '
         'Splitter2
         '
         Me.Splitter2.BackColor = System.Drawing.SystemColors.InactiveBorder
@@ -198,6 +207,15 @@ Partial Class FormMain
         Me.Splitter2.TabIndex = 3
         Me.Splitter2.TabStop = False
         '
+        'LocalizationTextBox2
+        '
+        Me.LocalizationTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.LocalizationTextBox2.Dock = System.Windows.Forms.DockStyle.Top
+        Me.LocalizationTextBox2.Location = New System.Drawing.Point(0, 137)
+        Me.LocalizationTextBox2.Name = "LocalizationTextBox2"
+        Me.LocalizationTextBox2.Size = New System.Drawing.Size(422, 120)
+        Me.LocalizationTextBox2.TabIndex = 2
+        '
         'Splitter1
         '
         Me.Splitter1.BackColor = System.Drawing.SystemColors.InactiveBorder
@@ -207,6 +225,15 @@ Partial Class FormMain
         Me.Splitter1.Size = New System.Drawing.Size(422, 3)
         Me.Splitter1.TabIndex = 1
         Me.Splitter1.TabStop = False
+        '
+        'LocalizationTextBox1
+        '
+        Me.LocalizationTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
+        Me.LocalizationTextBox1.Dock = System.Windows.Forms.DockStyle.Top
+        Me.LocalizationTextBox1.Location = New System.Drawing.Point(0, 0)
+        Me.LocalizationTextBox1.Name = "LocalizationTextBox1"
+        Me.LocalizationTextBox1.Size = New System.Drawing.Size(422, 134)
+        Me.LocalizationTextBox1.TabIndex = 0
         '
         'ComboBox_TextName
         '
@@ -300,33 +327,6 @@ Partial Class FormMain
         Me.Panel_Background.Size = New System.Drawing.Size(792, 566)
         Me.Panel_Background.TabIndex = 0
         '
-        'LocalizationTextBox3
-        '
-        Me.LocalizationTextBox3.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.LocalizationTextBox3.Dock = System.Windows.Forms.DockStyle.Fill
-        Me.LocalizationTextBox3.Location = New System.Drawing.Point(0, 260)
-        Me.LocalizationTextBox3.Name = "LocalizationTextBox3"
-        Me.LocalizationTextBox3.Size = New System.Drawing.Size(422, 210)
-        Me.LocalizationTextBox3.TabIndex = 4
-        '
-        'LocalizationTextBox2
-        '
-        Me.LocalizationTextBox2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.LocalizationTextBox2.Dock = System.Windows.Forms.DockStyle.Top
-        Me.LocalizationTextBox2.Location = New System.Drawing.Point(0, 137)
-        Me.LocalizationTextBox2.Name = "LocalizationTextBox2"
-        Me.LocalizationTextBox2.Size = New System.Drawing.Size(422, 120)
-        Me.LocalizationTextBox2.TabIndex = 2
-        '
-        'LocalizationTextBox1
-        '
-        Me.LocalizationTextBox1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D
-        Me.LocalizationTextBox1.Dock = System.Windows.Forms.DockStyle.Top
-        Me.LocalizationTextBox1.Location = New System.Drawing.Point(0, 0)
-        Me.LocalizationTextBox1.Name = "LocalizationTextBox1"
-        Me.LocalizationTextBox1.Size = New System.Drawing.Size(422, 134)
-        Me.LocalizationTextBox1.TabIndex = 0
-        '
         'FormMain
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 12.0!)
@@ -358,11 +358,11 @@ Partial Class FormMain
     Friend WithEvents Label_TextName As System.Windows.Forms.Label
     Friend WithEvents Label_LOCBoxTip As System.Windows.Forms.Label
     Friend WithEvents Panel_LocalizationBoxes As System.Windows.Forms.Panel
-    Friend WithEvents LocalizationTextBox3 As Eddy.LocalizationTextBox
+    Friend WithEvents LocalizationTextBox3 As LocalizationTextBox
     Friend WithEvents Splitter2 As System.Windows.Forms.Splitter
-    Friend WithEvents LocalizationTextBox2 As Eddy.LocalizationTextBox
+    Friend WithEvents LocalizationTextBox2 As LocalizationTextBox
     Friend WithEvents Splitter1 As System.Windows.Forms.Splitter
-    Friend WithEvents LocalizationTextBox1 As Eddy.LocalizationTextBox
+    Friend WithEvents LocalizationTextBox1 As LocalizationTextBox
     Friend WithEvents ComboBox_TextName As System.Windows.Forms.ComboBox
     Friend WithEvents Button_Open As System.Windows.Forms.Button
     Friend WithEvents Button_NextFile As System.Windows.Forms.Button
