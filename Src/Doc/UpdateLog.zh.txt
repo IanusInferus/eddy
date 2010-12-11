@@ -9,6 +9,8 @@ Interfaces, *:
 去除Interfaces中对WinForm的引用。
 Base, Eddy:
 修改按键事件的实现方式。
+Base, Eddy, WinForm:
+将界面作为插件分离为WinForm项目。
 
 2010.12.10
 Interfaces:

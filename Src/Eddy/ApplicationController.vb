@@ -2,7 +2,7 @@
 '
 '  File:        ApplicationController.vb
 '  Location:    Eddy <Visual Basic .Net>
-'  Description: 文本本地化工具主控制器
+'  Description: 主控制器
 '  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
@@ -20,56 +20,7 @@ Imports Firefly.TextEncoding
 Imports Firefly.Setting
 Imports Firefly.GUI
 Imports Eddy.Interfaces
-
-Public Class TextLocalizerData
-    Implements ITextLocalizerData
-
-    Public ApplicationName As String = "漩涡文本本地化工具(Firefly.Eddy)"
-
-    Public CurrentProject As LocalizationProject
-    Public CurrentProjectFilePath As String
-    Public CurrentUserFilePath As String
-
-    Public Columns As New List(Of LocalizationTextProvider)
-    Public NameToColumn As New Dictionary(Of String, Integer)
-    Public TextNames As New List(Of String)
-    Public TextNameDict As New Dictionary(Of String, Integer)
-
-    Public Plugins As New List(Of ITextLocalizerPlugin)
-    Public TextHighlighters As New List(Of ITextLocalizerTextHighlighter)
-    Public GridTextFormatters As New List(Of ITextLocalizerGridTextFormatter)
-    Public ToolStripButtonPlugins As New List(Of ITextLocalizerToolStripButtonPlugin)
-    Public FormatPlugins As New List(Of ITextLocalizerFormatPlugin)
-    Public TranslatorPlugins As New List(Of ITextLocalizerTranslatorPlugin)
-    Public KeyListenerPlugins As New List(Of ITextLocalizerKeyListenerPlugin)
-
-    Public Factory As New LocalizationTextListFactoryAggregation(New ILocalizationTextListFactory() {New LocalizationTextListFactory()})
-
-    Public Sub New()
-    End Sub
-
-    Private ReadOnly Property TextNamesInterface As IEnumerable(Of String) Implements ITextLocalizerData.TextNames
-        Get
-            Return TextNames
-        End Get
-    End Property
-    Private ReadOnly Property ColumnsInterface As IEnumerable(Of LocalizationTextProvider) Implements ITextLocalizerData.Columns
-        Get
-            Return Columns
-        End Get
-    End Property
-    Public ReadOnly Property MainColumnIndex As Integer Implements ITextLocalizerData.MainColumnIndex
-        Get
-            If NameToColumn.ContainsKey(CurrentProject.MainLocalizationTextBox) Then
-                Return NameToColumn(CurrentProject.MainLocalizationTextBox)
-            End If
-            Dim i As Integer
-            If Not Integer.TryParse(CurrentProject.MainLocalizationTextBox, i) Then Throw New InvalidDataException("MainLocalizationTextBox")
-            If i < 0 OrElse i >= Columns.Count Then Throw New InvalidDataException("MainLocalizationTextBox")
-            Return i
-        End Get
-    End Property
-End Class
+Imports Eddy.Base
 
 Public Class ApplicationController
     Implements IDisposable
@@ -161,7 +112,7 @@ Public Class ApplicationController
             NewAsmName.Version = Nothing
             Dim IsOtherMatch = NewAsmName.FullName.Equals(AsmName.FullName, StringComparison.OrdinalIgnoreCase)
             If Not IsOtherMatch Then
-                If MessageDialog.Show("插件签名不匹配。\n原始签名：{0}\n实际签名：{1}\n承认该签名吗？".Descape.Formats(p.AssemblyName, FullName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                If MessageDialog.Show("插件签名不匹配。\n原始签名：{0}\n实际签名：{1}\n承认该签名吗？".Descape.Formats(p.AssemblyName, FullName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
                     p.AssemblyName = FullName
                     IsVersionMatch = True
                 Else
@@ -175,7 +126,7 @@ Public Class ApplicationController
             End If
             If Not p.Enable Then
                 If Not IsOtherMatch OrElse Not IsVersionMatch Then
-                    If MessageDialog.Show("插件变更但没有启用。\n签名：{0}\n启用插件吗？".Descape.Formats(FullName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                    If MessageDialog.Show("插件变更但没有启用。\n签名：{0}\n启用插件吗？".Descape.Formats(FullName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
                         p.Enable = True
                     End If
                 End If
@@ -188,7 +139,7 @@ Public Class ApplicationController
 #If CONFIG <> "Debug" Then
             Catch ex As Exception
                 ExceptionHandler.PopupException(ex)
-                If MessageDialog.Show("插件加载出错，程序将关闭。\n签名：{0}\n下次启动是否禁用该插件？".Descape.Formats(p.AssemblyName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                If MessageDialog.Show("插件加载出错，程序将关闭。\n签名：{0}\n下次启动是否禁用该插件？".Descape.Formats(p.AssemblyName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
                     p.Enable = False
                     Save()
                 End If
@@ -221,7 +172,7 @@ Public Class ApplicationController
 #If CONFIG <> "Debug" Then
             Catch ex As Exception
                 ExceptionHandler.PopupException(ex)
-                If MessageDialog.Show("{0}加载出错，程序将关闭。下次启动是否禁用该插件？".Formats(p.AssemblyName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = Windows.Forms.DialogResult.Yes Then
+                If MessageDialog.Show("{0}加载出错，程序将关闭。下次启动是否禁用该插件？".Formats(p.AssemblyName), ApplicationData.ApplicationName, MessageBoxButtons.YesNo, MessageBoxIcon.Question) = DialogResult.Yes Then
                     p.Enable = False
                     NewPlugins.Add(p)
                     ApplicationData.CurrentProject.Plugins = ApplicationData.CurrentProject.Plugins.Concat(NewPlugins).ToArray
@@ -236,7 +187,9 @@ Public Class ApplicationController
 
         For Each Plugin In ApplicationData.Plugins
             Dim DataPlugin = TryCast(Plugin, ITextLocalizerDataPlugin)
-            DataPlugin.InitializeData(ApplicationData)
+            If DataPlugin IsNot Nothing Then
+                DataPlugin.InitializeData(ApplicationData)
+            End If
         Next
 
         For Each FormatPlugin In ApplicationData.FormatPlugins
@@ -317,6 +270,11 @@ Public Class ApplicationController
             If KeyListenerPlugin IsNot Nothing Then
                 ApplicationData.KeyListenerPlugins.Add(KeyListenerPlugin)
             End If
+
+            Dim UserInterfacePlugin = TryCast(Obj, ITextLocalizerUserInterfacePlugin)
+            If UserInterfacePlugin IsNot Nothing Then
+                ApplicationData.UserInterfacePlugins.Add(UserInterfacePlugin)
+            End If
         Next
         Return k <> 0
     End Function
@@ -333,6 +291,7 @@ Public Class ApplicationController
         ApplicationData.FormatPlugins.Clear()
         ApplicationData.TranslatorPlugins.Clear()
         ApplicationData.KeyListenerPlugins.Clear()
+        ApplicationData.UserInterfacePlugins.Clear()
 
         For Each p In ApplicationData.Plugins
             Try

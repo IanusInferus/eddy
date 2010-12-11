@@ -54,8 +54,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationController.vb" />
     <Compile Include="GlyphText.vb" />
+    <Compile Include="ITextLocalizerUserInterfacePlugin.vb" />
     <Compile Include="KeyEventWatcher.vb" />
     <Compile Include="LocalizationProject.vb" />
     <Compile Include="LocalizationTextListFactory.vb" />
@@ -75,6 +75,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="TextLocalizerData.vb" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">

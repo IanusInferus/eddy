@@ -22,6 +22,7 @@ Imports Eddy.Base
 
 Public Class FormMain
     Implements ITextLocalizerApplicationController
+    Implements ITextLocalizerUserInterfacePlugin
 
     Private ApplicationData As New TextLocalizerData
 
@@ -29,11 +30,15 @@ Public Class FormMain
 
     Private KeyEventWatcher As New KeyEventWatcher
 
-    Public Sub Initialize(ByVal ApplicationData As TextLocalizerData)
+    Public Sub Run() Implements ITextLocalizerUserInterfacePlugin.Run
+        Application.Run(Me)
+    End Sub
+
+    Public Sub Initialize(ByVal ApplicationData As TextLocalizerData) Implements ITextLocalizerUserInterfacePlugin.Initialize
         Me.ApplicationData = ApplicationData
         Me.Text = ApplicationData.ApplicationName
 
-        Application.AddMessageFilter(New Intercepter)
+        Application.AddMessageFilter(New Intercepter With {.Form = Me})
 
         DataGridView_Multiview.SuspendDraw()
         Try
@@ -269,7 +274,7 @@ Public Class FormMain
 #If CONFIG <> "Debug" Then
         Catch ex As Exception
             ExceptionHandler.PopupException(ex)
-            End
+            Me.Dispose()
         End Try
 #End If
     End Sub
@@ -281,7 +286,7 @@ Public Class FormMain
 #If CONFIG <> "Debug" Then
         Catch ex As Exception
             ExceptionHandler.PopupException(ex)
-            End
+            Me.Dispose()
         End Try
 #End If
     End Sub
@@ -301,7 +306,7 @@ Public Class FormMain
 #If CONFIG <> "Debug" Then
         Catch ex As Exception
             ExceptionHandler.PopupException(ex)
-            End
+            Me.Dispose()
         End Try
 #End If
     End Sub
@@ -693,6 +698,7 @@ Public Class FormMain
     Public Class Intercepter
         Implements IMessageFilter
 
+        Public Form As FormMain
         Public Handled As Boolean = True
 
         Private Function DirectToInt32(ByVal i As IntPtr) As Int32
@@ -708,14 +714,14 @@ Public Class FormMain
         Public Function PreFilterMessage(ByRef m As System.Windows.Forms.Message) As Boolean Implements System.Windows.Forms.IMessageFilter.PreFilterMessage
             Select Case m.Msg
                 Case WM_MOUSEWHEEL
-                    My.Forms.FormMain.TextLocalizer_MouseWheel(Me, New MouseEventArgs(DirectToInt32(m.WParam) And &HFFFF, 0, DirectToInt32(m.LParam) And &HFFFF, (DirectToInt32(m.LParam.ToInt64) >> 16) And &HFFFF, CUS(CUShort((DirectToInt32(m.WParam) >> 16) And &HFFFF))))
+                    Form.TextLocalizer_MouseWheel(Me, New MouseEventArgs(DirectToInt32(m.WParam) And &HFFFF, 0, DirectToInt32(m.LParam) And &HFFFF, (DirectToInt32(m.LParam.ToInt64) >> 16) And &HFFFF, CUS(CUShort((DirectToInt32(m.WParam) >> 16) And &HFFFF))))
                     Dim h = Handled
                     Handled = True
                     Return h
                 Case WM_IME_STARTCOMPOSITION
-                    System.Threading.Interlocked.Exchange(My.Forms.FormMain.IMECompositing, -1)
+                    System.Threading.Interlocked.Exchange(Form.IMECompositing, -1)
                 Case WM_IME_ENDCOMPOSITION
-                    System.Threading.Interlocked.Exchange(My.Forms.FormMain.IMECompositing, 0)
+                    System.Threading.Interlocked.Exchange(Form.IMECompositing, 0)
                 Case WM_IME_NOTIFY
 
             End Select

@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2BC483BF-A179-4922-9203-A1DB86BF40BA}</ProjectGuid>
+    <ProjectGuid>{2441B29F-12ED-435B-BC9D-A576A588A4C1}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Eddy.DifferenceHighlighter</RootNamespace>
-    <AssemblyName>Eddy.DifferenceHighlighter</AssemblyName>
+    <RootNamespace>Eddy.WinForm</RootNamespace>
+    <AssemblyName>Eddy.WinForm</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
@@ -29,7 +29,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>..\..\Bin\</OutputPath>
-    <DocumentationFile>Eddy.DifferenceHighlighter.xml</DocumentationFile>
+    <DocumentationFile>Eddy.Base.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -38,19 +38,40 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>..\..\Bin\</OutputPath>
-    <DocumentationFile>Eddy.DifferenceHighlighter.xml</DocumentationFile>
+    <DocumentationFile>Eddy.Base.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="Firefly.Core">
       <HintPath>..\Firefly.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Firefly.GUI">
+      <HintPath>..\Firefly.GUI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DifferenceHighlighter.vb" />
+    <Compile Include="ControlDrawPauser.vb" />
+    <Compile Include="DataGridViewImageColumnEx.vb" />
+    <Compile Include="DataGridViewRichTextBoxColumn.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="DataGridViewRowIndexHeaderCell.vb" />
+    <Compile Include="ExtendedRichTextBox.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FormMain.designer.vb">
+      <DependentUpon>FormMain.vb</DependentUpon>
+    </Compile>
+    <Compile Include="FormMain.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="LocalizationTextBox.vb">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -66,9 +87,14 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="StringDiff.vb" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="FormMain.resx">
+      <DependentUpon>FormMain.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="LocalizationTextBox.resx">
+      <DependentUpon>LocalizationTextBox.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
@@ -88,10 +114,17 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Base\Base.vbproj">
+      <Project>{5255F02C-092C-4DAB-9E7A-DF3F79F9D3F8}</Project>
+      <Name>Base</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Interfaces\Interfaces.vbproj">
       <Project>{A1BD62D2-75AA-4E48-B2F8-E91CF9AEBBB8}</Project>
       <Name>Interfaces</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Eddy.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
