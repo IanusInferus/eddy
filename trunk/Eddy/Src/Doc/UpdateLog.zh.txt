@@ -1,4 +1,10 @@
-﻿2010.12.11
+﻿2010.12.12.0
+Base, Eddy:
+移动LocalizationTextListFactoryAggregation到主程序。
+WQSG:
+完善WQSG格式文件自动修复的提示。
+
+2010.12.11
 EscapeSequenceHighlighter:
 将界面的隐藏转义序列的选项变更为工具条按钮。
 Eddy:

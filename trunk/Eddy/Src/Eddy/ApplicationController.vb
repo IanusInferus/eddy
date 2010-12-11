@@ -192,9 +192,11 @@ Public Class ApplicationController
             End If
         Next
 
+        Dim Factory As New LocalizationTextListFactoryAggregation(New ILocalizationTextListFactory() {New LocalizationTextListFactory()})
         For Each FormatPlugin In ApplicationData.FormatPlugins
-            ApplicationData.Factory.AddFactories(FormatPlugin.GetTextListFactories())
+            Factory.AddFactories(FormatPlugin.GetTextListFactories())
         Next
+        ApplicationData.Factory = Factory
 
         ApplicationData.TextNames.AddRange(ApplicationData.Columns(ApplicationData.MainColumnIndex).Keys)
         ApplicationData.TextNames.Sort(StringComparer.CurrentCultureIgnoreCase)
