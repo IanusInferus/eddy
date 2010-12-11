@@ -193,6 +193,7 @@ Public Class FormMain
                     KeyEventWatcher.Register(kl.KeyCombination, kl.EventType, kl.Handler)
                 Next
             Next
+            KeyEventWatcher.Register(New VirtualKeys() {VirtualKeys.F}, KeyEventType.Down, Sub() System.Diagnostics.Debug.WriteLine("F"))
 
             Dim DisplayLOCBoxTip = False
             For Each L In LocalizationTextBoxes
@@ -259,6 +260,7 @@ Public Class FormMain
     End Sub
 
 #Region " 设置 "
+
     Private Sub TextLocalizer_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 #If CONFIG <> "Debug" Then
         Try
@@ -754,7 +756,11 @@ Public Class FormMain
         If Not LocalizerEnable Then Return
         TextNumber = CInt(VScrollBar_Bar.Value - e.Delta / 120)
     End Sub
+    Private CurrentKeyFirstPress As Boolean = False
+    Private CurrentKeyCode As Keys
     Private Sub TextLocalizer_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
+        CurrentKeyFirstPress = True
+        CurrentKeyCode = e.KeyCode
         KeyEventWatcher.KeyDown(e.KeyCode)
         If e.Handled Then Return
         Select Case e.KeyData
@@ -780,8 +786,16 @@ Public Class FormMain
         End Select
         e.Handled = True
     End Sub
+    Private Sub TextLocalizer_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles Me.KeyPress
+        If CurrentKeyFirstPress Then
+            CurrentKeyFirstPress = False
+        Else
+            KeyEventWatcher.KeyDown(CurrentKeyCode)
+        End If
+    End Sub
     Private Sub TextLocalizer_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyUp
         KeyEventWatcher.KeyUp(e.KeyCode)
+        KeyEventWatcher.KeyClear()
     End Sub
     Private Sub VScrollBar_Bar_ValueChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles VScrollBar_Bar.ValueChanged
         If Not LocalizerEnable Then Return
