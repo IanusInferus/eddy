@@ -3,7 +3,7 @@
 '  File:        ApplicationController.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 主控制器
-'  Version:     2010.12.11.
+'  Version:     2010.12.12.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -63,6 +63,9 @@ Public Class ApplicationController
             Throw New InvalidDataException("一栏文本框也没有")
         End If
 
+        Dim Factory As New LocalizationTextListFactoryAggregation(New ILocalizationTextListFactory() {New LocalizationTextListFactory()})
+        ApplicationData.Factory = Factory
+
         For n = 0 To ApplicationData.CurrentProject.LocalizationTextBoxDescriptors.Length - 1
             Dim Des = ApplicationData.CurrentProject.LocalizationTextBoxDescriptors(n)
             Dim Encoding As Encoding
@@ -82,7 +85,7 @@ Public Class ApplicationController
             Else
                 Encoding = TextEncoding.Default
             End If
-            Dim tp As New LocalizationTextProvider(ApplicationData.Factory, Des.Name, Des.DisplayName, Des.Directory, Des.Extension, Des.Type, Not Des.Editable, Encoding)
+            Dim tp As New LocalizationTextProvider(Factory, Des.Name, Des.DisplayName, Des.Directory, Des.Extension, Des.Type, Not Des.Editable, Encoding)
             ApplicationData.Columns.Add(tp)
             ApplicationData.NameToColumn.Add(tp.Name, n)
         Next
@@ -192,11 +195,9 @@ Public Class ApplicationController
             End If
         Next
 
-        Dim Factory As New LocalizationTextListFactoryAggregation(New ILocalizationTextListFactory() {New LocalizationTextListFactory()})
         For Each FormatPlugin In ApplicationData.FormatPlugins
             Factory.AddFactories(FormatPlugin.GetTextListFactories())
         Next
-        ApplicationData.Factory = Factory
 
         ApplicationData.TextNames.AddRange(ApplicationData.Columns(ApplicationData.MainColumnIndex).Keys)
         ApplicationData.TextNames.Sort(StringComparer.CurrentCultureIgnoreCase)
