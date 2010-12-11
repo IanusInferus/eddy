@@ -41,6 +41,7 @@ Public Class TextLocalizerData
     Public ToolStripButtonPlugins As New List(Of ITextLocalizerToolStripButtonPlugin)
     Public FormatPlugins As New List(Of ITextLocalizerFormatPlugin)
     Public TranslatorPlugins As New List(Of ITextLocalizerTranslatorPlugin)
+    Public KeyListenerPlugins As New List(Of ITextLocalizerKeyListenerPlugin)
 
     Public Factory As New LocalizationTextListFactoryAggregation(New ILocalizationTextListFactory() {New LocalizationTextListFactory()})
 
@@ -311,6 +312,11 @@ Public Class ApplicationController
             If TranslatorPlugin IsNot Nothing Then
                 ApplicationData.TranslatorPlugins.Add(TranslatorPlugin)
             End If
+
+            Dim KeyListenerPlugin = TryCast(Obj, ITextLocalizerKeyListenerPlugin)
+            If KeyListenerPlugin IsNot Nothing Then
+                ApplicationData.KeyListenerPlugins.Add(KeyListenerPlugin)
+            End If
         Next
         Return k <> 0
     End Function
@@ -326,6 +332,7 @@ Public Class ApplicationController
         ApplicationData.ToolStripButtonPlugins.Clear()
         ApplicationData.FormatPlugins.Clear()
         ApplicationData.TranslatorPlugins.Clear()
+        ApplicationData.KeyListenerPlugins.Clear()
 
         For Each p In ApplicationData.Plugins
             Try

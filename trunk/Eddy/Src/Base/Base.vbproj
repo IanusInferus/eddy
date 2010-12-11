@@ -56,8 +56,10 @@
   <ItemGroup>
     <Compile Include="ApplicationController.vb" />
     <Compile Include="GlyphText.vb" />
+    <Compile Include="KeyEventWatcher.vb" />
     <Compile Include="LocalizationProject.vb" />
     <Compile Include="LocalizationTextListFactory.vb" />
+    <Compile Include="LocalizationTextListFactoryAggregation.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>

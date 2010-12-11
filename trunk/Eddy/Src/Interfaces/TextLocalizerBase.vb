@@ -2,7 +2,7 @@
 '
 '  File:        TextLocalizerBase.vb
 '  Location:    Eddy.Interfaces <Visual Basic .Net>
-'  Description: 文本本地化工具插件默认基类实现
+'  Description: 插件默认基类实现
 '  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
@@ -10,9 +10,8 @@
 
 Imports System
 Imports System.Collections.Generic
-Imports System.Windows.Forms
 
-''' <summary>TextLocalizer的插件的默认基类实现</summary>
+''' <summary>插件的默认基类实现</summary>
 Public MustInherit Class TextLocalizerBase
     Implements ITextLocalizerDataPlugin
     Implements ITextLocalizerControllerPlugin

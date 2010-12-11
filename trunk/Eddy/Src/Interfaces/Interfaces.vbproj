@@ -45,9 +45,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InputDevice.vb" />
+    <Compile Include="ITextLocalizerKeyListenerPlugin.vb" />
     <Compile Include="ITextLocalizerToolStripButtonPlugin.vb" />
     <Compile Include="ITextLocalizerControllerPlugin.vb" />
     <Compile Include="ITextLocalizerDataPlugin.vb" />
