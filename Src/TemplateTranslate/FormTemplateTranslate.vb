@@ -3,7 +3,7 @@
 '  File:        FormTemplateTranslate.vb
 '  Location:    Eddy.TemplateTranslate <Visual Basic .Net>
 '  Description: 文本本地化工具模板翻译插件窗体
-'  Version:     2010.10.24.
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -46,12 +46,12 @@ Public Class FormTemplateTranslate
         End If
     End Sub
 
-    Private Sub Controller_TextNameChanged(ByVal e As System.EventArgs) Handles Controller.TextNameChanged
+    Private Sub Controller_TextNameChanged() Handles Controller.TextNameChanged
         Label_CurrentFileValue.Text = Controller.TextName
         Label_CurrentItemValue.Text = Controller.TextIndex + 1
     End Sub
 
-    Private Sub Controller_TextIndexChanged(ByVal e As System.EventArgs) Handles Controller.TextIndexChanged
+    Private Sub Controller_TextIndexChanged() Handles Controller.TextIndexChanged
         Label_CurrentItemValue.Text = Controller.TextIndex + 1
     End Sub
 

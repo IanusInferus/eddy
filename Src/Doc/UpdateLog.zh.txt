@@ -5,6 +5,8 @@ Eddy:
 增加Eddy_x86版本，以解决TTS语音合成无法使用32位语音Misaki的问题。
 Interfaces, Base, Eddy:
 删除控件插件。
+Interfaces, *:
+去除Interfaces中对WinForm的引用。
 
 2010.12.10
 Interfaces:

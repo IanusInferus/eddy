@@ -3,7 +3,7 @@
 '  File:        Voice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具控制符高亮插件
-'  Version:     2010.12.10.
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -35,6 +35,7 @@ End Class
 Public Class Voice
     Inherits TextLocalizerBase
     Implements ITextLocalizerToolStripButtonPlugin
+    Implements ITextLocalizerKeyListenerPlugin
 
     Private SettingPath As String = "Voice.locplugin"
     Private Config As Config
@@ -104,17 +105,16 @@ Public Class Voice
         End If
     End Sub
 
-    Private Sub Application_KeyDown(ByVal ControlId As ControlId, ByVal e As KeyEventArgs) Handles Controller.KeyDown
-        Select Case e.KeyData
-            Case Keys.F1
-                ToolStripButton_Click()
-            Case Keys.Escape
-                If Synth IsNot Nothing Then
-                    Synth.SpeakAsyncCancelAll()
-                End If
-            Case Else
-                Return
-        End Select
-        e.Handled = True
-    End Sub
+    Public Function GetKeyListeners() As IEnumerable(Of KeyListener) Implements ITextLocalizerKeyListenerPlugin.GetKeyListeners
+        Return New KeyListener() {
+            New KeyListener With {.Source = ControlId.MainWindow, .KeyCombination = {VirtualKeys.F1}, .EventType = KeyEventType.Up, .Handler = AddressOf ToolStripButton_Click},
+            New KeyListener With {.Source = ControlId.MainWindow, .KeyCombination = {VirtualKeys.Escape}, .EventType = KeyEventType.Up, .Handler =
+                Sub()
+                    If Synth IsNot Nothing Then
+                        Synth.SpeakAsyncCancelAll()
+                    End If
+                End Sub
+            }
+        }
+    End Function
 End Class

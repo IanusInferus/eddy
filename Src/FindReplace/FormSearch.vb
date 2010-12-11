@@ -32,7 +32,7 @@ Public Class FormSearch
         MyBase.Hide()
     End Sub
 
-    Private Sub LocalizationTextBoxes_GotFocus(ByVal e As System.EventArgs) Handles Controller.ColumnSelectionChanged
+    Private Sub LocalizationTextBoxes_GotFocus() Handles Controller.ColumnSelectionChanged
         Dim ColumnIndex = Controller.ColumnIndex
         NumericUpDown_Column.Text = Columns(ColumnIndex).DisplayName
         If Not CBool(Mode And FindReplaceMode.MultiColumn) AndAlso Columns(ColumnIndex).IsReadOnly Then

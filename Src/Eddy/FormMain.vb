@@ -27,6 +27,8 @@ Public Class FormMain
 
     Private LocalizationTextBoxes As New List(Of LocalizationTextBox)
 
+    Private KeyEventWatcher As New KeyEventWatcher
+
     Public Sub Initialize(ByVal ApplicationData As TextLocalizerData)
         Me.ApplicationData = ApplicationData
         Me.Text = ApplicationData.ApplicationName
@@ -182,6 +184,13 @@ Public Class FormMain
                     AddHandler bd.ImageChanged.Value, Sub(i) b.Image = i
                     AddHandler bd.TextChanged.Value, Sub(t) b.Text = t
                     Me.ToolStrip_Tools.Items.Add(b)
+                Next
+            Next
+
+            For Each KeyListenerPlugin In ApplicationData.KeyListenerPlugins
+                Dim KeyListeners = KeyListenerPlugin.GetKeyListeners()
+                For Each kl In KeyListeners
+                    KeyEventWatcher.Register(kl.KeyCombination, kl.EventType, kl.Handler)
                 Next
             Next
 
@@ -489,7 +498,7 @@ Public Class FormMain
         LocalizerEnable = True
         Me.ResumeLayout(False)
 
-        RaiseEvent TextNameChanged(Nothing)
+        RaiseEvent TextNameChanged()
     End Sub
     Public Property TextName() As String
         Get
@@ -575,7 +584,7 @@ Public Class FormMain
             End If
             BlockCell = False
         End If
-        RaiseEvent TextIndexChanged(Nothing)
+        RaiseEvent TextIndexChanged()
     End Sub
 
     Private Sub RePositionBoxScrollBars()
@@ -746,7 +755,7 @@ Public Class FormMain
         TextNumber = CInt(VScrollBar_Bar.Value - e.Delta / 120)
     End Sub
     Private Sub TextLocalizer_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyDown
-        RaiseEvent Application_KeyDown(ControlId.MainWindow, e)
+        KeyEventWatcher.KeyDown(e.KeyCode)
         If e.Handled Then Return
         Select Case e.KeyData
             Case Keys.PageUp
@@ -770,6 +779,9 @@ Public Class FormMain
                 Return
         End Select
         e.Handled = True
+    End Sub
+    Private Sub TextLocalizer_KeyUp(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles Me.KeyUp
+        KeyEventWatcher.KeyUp(e.KeyCode)
     End Sub
     Private Sub VScrollBar_Bar_ValueChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles VScrollBar_Bar.ValueChanged
         If Not LocalizerEnable Then Return
@@ -921,16 +933,13 @@ Public Class FormMain
         FlushLocalizedText()
     End Sub
 
-    Public Event TextIndexChanged(ByVal e As System.EventArgs) Implements ITextLocalizerApplicationController.TextIndexChanged
-    Public Event TextNameChanged(ByVal e As System.EventArgs) Implements ITextLocalizerApplicationController.TextNameChanged
-    Public Event Application_ColumnSelectionChanged(ByVal e As System.EventArgs) Implements ITextLocalizerApplicationController.ColumnSelectionChanged
-    Public Event Application_KeyDown(ByVal ControlId As ControlId, ByVal e As System.Windows.Forms.KeyEventArgs) Implements ITextLocalizerApplicationController.KeyDown
-    Public Event Application_KeyPress(ByVal ControlId As ControlId, ByVal e As System.Windows.Forms.KeyPressEventArgs) Implements ITextLocalizerApplicationController.KeyPress
-    Public Event Application_KeyUp(ByVal ControlId As ControlId, ByVal e As System.Windows.Forms.KeyEventArgs) Implements ITextLocalizerApplicationController.KeyUp
+    Public Event TextIndexChanged() Implements ITextLocalizerApplicationController.TextIndexChanged
+    Public Event TextNameChanged() Implements ITextLocalizerApplicationController.TextNameChanged
+    Public Event Application_ColumnSelectionChanged() Implements ITextLocalizerApplicationController.ColumnSelectionChanged
 
-    Public ReadOnly Property Form() As System.Windows.Forms.Form Implements ITextLocalizerApplicationController.Form
+    Public ReadOnly Property MainWindow() As WindowReference Implements ITextLocalizerApplicationController.MainWindow
         Get
-            Return Me
+            Return New WindowReference With {.Handle = Me.Handle}
         End Get
     End Property
     Public ReadOnly Property Application_ApplicationName() As String Implements ITextLocalizerApplicationController.ApplicationName
@@ -982,7 +991,7 @@ Public Class FormMain
         For n = 0 To ApplicationData.Columns.Count - 1
             If LocalizationTextBoxes(n).Focused Then
                 CurrentColumnIndex = n
-                RaiseEvent Application_ColumnSelectionChanged(e)
+                RaiseEvent Application_ColumnSelectionChanged()
                 Return
             End If
         Next

@@ -2,8 +2,8 @@
 '
 '  File:        ITextLocalizerPlugin.vb
 '  Location:    Eddy.Interfaces <Visual Basic .Net>
-'  Description: 文本本地化工具插件接口
-'  Version:     2010.05.17.
+'  Description: 插件接口
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -12,11 +12,27 @@ Imports System
 Imports System.Collections.Generic
 Imports System.Drawing
 
-''' <summary>TextLocalizer的所有插件的接口</summary>
+''' <summary>所有插件的接口</summary>
 Public Interface ITextLocalizerPlugin
     Inherits IDisposable
 
 End Interface
+
+''' <summary>事件源</summary>
+Public Class EventSource
+    Public Event Value()
+    Public Sub Raise()
+        RaiseEvent Value()
+    End Sub
+End Class
+
+''' <summary>事件源</summary>
+Public Class EventSource(Of T)
+    Public Event Value(ByVal Parameters As T)
+    Public Sub Raise(ByVal Parameters As T)
+        RaiseEvent Value(Parameters)
+    End Sub
+End Class
 
 ''' <summary>文本风格</summary>
 Public Class TextStyle
@@ -26,28 +42,28 @@ Public Class TextStyle
     Public BackColor As Color
 End Class
 
-''' <summary>TextLocalizer的高亮插件接口</summary>
+''' <summary>高亮插件接口</summary>
 Public Interface ITextLocalizerTextHighlighter
     Inherits ITextLocalizerPlugin
 
     Function GetTextStyles(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As IEnumerable(Of String)) As IEnumerable(Of TextStyle())
 End Interface
 
-''' <summary>TextLocalizer的预览框文本格式化插件接口</summary>
+''' <summary>预览框文本格式化插件接口</summary>
 Public Interface ITextLocalizerGridTextFormatter
     Inherits ITextLocalizerPlugin
 
     Function Format(ByVal TextName As String, ByVal TextIndex As Integer, ByVal FormatedTexts As IEnumerable(Of String)) As IEnumerable(Of String)
 End Interface
 
-''' <summary>TextLocalizer的格式插件接口</summary>
+''' <summary>格式插件接口</summary>
 Public Interface ITextLocalizerFormatPlugin
     Inherits ITextLocalizerPlugin
 
     Function GetTextListFactories() As IEnumerable(Of ILocalizationTextListFactory)
 End Interface
 
-''' <summary>TextLocalizer的文本默认值翻译插件接口</summary>
+''' <summary>文本默认值翻译插件接口</summary>
 Public Interface ITextLocalizerTranslatorPlugin
     Inherits ITextLocalizerPlugin
 

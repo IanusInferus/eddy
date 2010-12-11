@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.FindReplace <Visual Basic .Net>
 '  Description: 文本本地化工具查找替换插件
-'  Version:     2010.12.10.
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -26,10 +26,24 @@ Public Class Config
     Public BackColor As String = "FFFFFFB7"
 End Class
 
+Public Class WindowReferenceAdapter
+    Implements IWin32Window
+    Private Reference As WindowReference
+    Public Sub New(ByVal Reference As WindowReference)
+        Me.Reference = Reference
+    End Sub
+    Private ReadOnly Property HandleInterface As IntPtr Implements IWin32Window.Handle
+        Get
+            Return Reference.Handle
+        End Get
+    End Property
+End Class
+
 Public Class Plugin
     Inherits TextLocalizerBase
     Implements ITextLocalizerTextHighlighter
     Implements ITextLocalizerToolStripButtonPlugin
+    Implements ITextLocalizerKeyListenerPlugin
 
     Private SettingPath As String = "FindReplace.locplugin"
     Private Config As Config
@@ -66,22 +80,12 @@ Public Class Plugin
         Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.FindReplace, .Text = "查找替换(Ctrl+F)", .Click = AddressOf ToolStripButton_Click}}
     End Function
 
-    Public Sub Application_KeyDown(ByVal ControlId As ControlId, ByVal e As KeyEventArgs) Handles Controller.KeyDown
-        Select Case e.KeyData
-            Case Keys.Control Or Keys.F, Keys.Control Or Keys.H, Keys.Control Or Keys.R
-                ToolStripButton_Click()
-            Case Else
-                Return
-        End Select
-        e.Handled = True
-    End Sub
-
     Private Sub ToolStripButton_Click()
         If FormSearch.Visible Then
             FormSearch.Focus()
         Else
             With FormSearch
-                .Show(Controller.Form)
+                .Show(New WindowReferenceAdapter(Controller.MainWindow))
             End With
         End If
     End Sub
@@ -111,4 +115,11 @@ Public Class Plugin
     Private Sub FormSearch_VisibleChanged(ByVal sender As Object, ByVal e As System.EventArgs) Handles FormSearch.VisibleChanged
         If Not FormSearch.Visible Then FormSearch_FindOrReplacePerformed("", Nothing)
     End Sub
+
+    Public Function GetKeyListeners() As IEnumerable(Of KeyListener) Implements ITextLocalizerKeyListenerPlugin.GetKeyListeners
+        Return New KeyListener() {
+            New KeyListener With {.Source = ControlId.MainWindow, .KeyCombination = {VirtualKeys.ControlKey, VirtualKeys.F}, .EventType = KeyEventType.Up, .Handler = AddressOf ToolStripButton_Click},
+            New KeyListener With {.Source = ControlId.MainWindow, .KeyCombination = {VirtualKeys.ControlKey, VirtualKeys.H}, .EventType = KeyEventType.Up, .Handler = AddressOf ToolStripButton_Click}
+        }
+    End Function
 End Class

@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.TemplateTranslate <Visual Basic .Net>
 '  Description: 文本本地化工具模板翻译插件
-'  Version:     2010.12.10.
+'  Version:     2010.12.11.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -16,6 +16,19 @@ Imports System.IO
 Imports System.Text.RegularExpressions
 Imports System.Windows.Forms
 Imports Eddy.Interfaces
+
+Public Class WindowReferenceAdapter
+    Implements IWin32Window
+    Private Reference As WindowReference
+    Public Sub New(ByVal Reference As WindowReference)
+        Me.Reference = Reference
+    End Sub
+    Private ReadOnly Property HandleInterface As IntPtr Implements IWin32Window.Handle
+        Get
+            Return Reference.Handle
+        End Get
+    End Property
+End Class
 
 Public Class Plugin
     Inherits TextLocalizerBase
@@ -42,7 +55,7 @@ Public Class Plugin
             FormTemplateTranslate.Focus()
         Else
             With FormTemplateTranslate
-                .Show(Controller.Form)
+                .Show(New WindowReferenceAdapter(Controller.MainWindow))
             End With
         End If
     End Sub
