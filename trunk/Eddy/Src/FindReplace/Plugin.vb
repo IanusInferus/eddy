@@ -77,7 +77,7 @@ Public Class Plugin
         FormSearch.Columns = Columns
         FormSearch.MainColumnIndex = MainColumnIndex
 
-        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.FindReplace, .Text = "查找替换(Ctrl+F)", .Click = AddressOf ToolStripButton_Click}}
+        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.FindReplace, .Text = "查找替换(Ctrl+F)..", .Click = AddressOf ToolStripButton_Click}}
     End Function
 
     Private Sub ToolStripButton_Click()

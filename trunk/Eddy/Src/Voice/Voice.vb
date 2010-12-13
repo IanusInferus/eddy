@@ -3,7 +3,7 @@
 '  File:        Voice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具控制符高亮插件
-'  Version:     2010.12.11.
+'  Version:     2010.12.13.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -60,11 +60,13 @@ Public Class Voice
         MyBase.DisposeManagedResource()
     End Sub
 
+    Private ButtonDescriptor As ToolStripButtonDescriptor
     Public Function GetToolStripButtonDescriptors() As IEnumerable(Of ToolStripButtonDescriptor) Implements ITextLocalizerToolStripButtonPlugin.GetToolStripButtonDescriptors
-        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.Voice, .Text = "朗读(F1)", .Click = AddressOf ToolStripButton_Click}}
+        ButtonDescriptor = New ToolStripButtonDescriptor With {.Image = My.Resources.VoiceStart, .Text = "朗读(F1)", .Click = AddressOf ToolStripButton_Click}
+        Return New ToolStripButtonDescriptor() {ButtonDescriptor}
     End Function
 
-    Private Synth As SpeechSynthesizer
+    Private WithEvents Synth As SpeechSynthesizer
     Private InstalledVoices As Dictionary(Of String, VoiceInfo)
     Private Sub ToolStripButton_Click()
         If Synth Is Nothing Then
@@ -103,6 +105,14 @@ Public Class Voice
             End If
             Synth.SpeakAsync(Text)
         End If
+    End Sub
+    Private Sub Synth_SpeakStarted(ByVal sender As Object, ByVal e As SpeakStartedEventArgs) Handles Synth.SpeakStarted
+        ButtonDescriptor.ImageChanged.Raise(My.Resources.VoiceStop)
+        ButtonDescriptor.TextChanged.Raise("停止朗读(Esc)")
+    End Sub
+    Private Sub Synth_SpeakCompleted(ByVal sender As Object, ByVal e As SpeakCompletedEventArgs) Handles Synth.SpeakCompleted
+        ButtonDescriptor.ImageChanged.Raise(My.Resources.VoiceStart)
+        ButtonDescriptor.TextChanged.Raise("朗读(F1)")
     End Sub
 
     Public Function GetKeyListeners() As IEnumerable(Of KeyListener) Implements ITextLocalizerKeyListenerPlugin.GetKeyListeners

@@ -1,4 +1,10 @@
-﻿2010.12.12.0
+﻿2010.12.13
+FindReplace, TemplateTranslate:
+修正界面提示，增加“..”以表示会弹出窗口。
+Voice:
+修改工具条图标，增加停止图标。
+
+2010.12.12.0
 Base, Eddy:
 移动LocalizationTextListFactoryAggregation到主程序。
 WQSG:
