@@ -33,6 +33,7 @@ Public Class OnlineDictionaryDescriptor
     Public Name As String
     Public UrlTemplate As String
     Public Encoding As String
+    Public IconUrl As String
 End Class
 
 Public Class Plugin
@@ -47,8 +48,10 @@ Public Class Plugin
             Config = Xml.ReadFile(Of Config)(SettingPath)
         Else
             Config = New Config With {.Dictionaries = New OnlineDictionaryDescriptor() {
-                New OnlineDictionaryDescriptor With {.UrlTemplate = "http://www.iciba.com/index.php?s=%s", .Encoding = "UTF-8"},
-                New OnlineDictionaryDescriptor With {.UrlTemplate = "http://dic.search.yahoo.co.jp/search?p=%s&ei=UTF-8", .Encoding = "UTF-8"}
+                New OnlineDictionaryDescriptor With {.Name = "金山词霸..", .UrlTemplate = "http://www.iciba.com/index.php?s=%s", .Encoding = "UTF-8"},
+                New OnlineDictionaryDescriptor With {.Name = "Yahoo!辞書..", .UrlTemplate = "http://dic.search.yahoo.co.jp/search?p=%s&ei=UTF-8", .Encoding = "UTF-8"},
+                New OnlineDictionaryDescriptor With {.Name = "沪江小D..", .UrlTemplate = "http://dict.hjenglish.com/app/jp/jc/%s", .Encoding = "UTF-8"},
+                New OnlineDictionaryDescriptor With {.Name = "Babylon..", .UrlTemplate = "http://info.babylon.com/cgi-bin/info.cgi?word=%s&lang=0&type=undefined", .Encoding = "UTF-8", .IconUrl = "http://www.babylon.com"}
             }}
         End If
     End Sub
@@ -73,11 +76,13 @@ Public Class Plugin
 
         For Each d In Config.Dictionaries
             Dim t = d.UrlTemplate
+            Dim i = t
+            If d.IconUrl <> "" Then i = d.IconUrl
             Dim e = GetEncoding(d.Encoding)
             Dim bd = New ToolStripButtonDescriptor With {.Image = My.Resources.Dictionary, .Text = d.Name, .Click =
                 Sub() ToolStripButton_Click(t, e)
             }
-            GetIconAsync(t, bd, Controller.UIThreadInvoker)
+            GetIconAsync(i, bd, Controller.UIThreadInvoker)
             l.Add(bd)
         Next
 
@@ -97,8 +102,8 @@ Public Class Plugin
     End Sub
 
     Private Shared rHost As New Regex("^http://(?<host>.*?)(/.*)?$", RegexOptions.ExplicitCapture)
-    Private Sub GetIconAsync(ByVal UrlTemplate As String, ByVal bd As ToolStripButtonDescriptor, ByVal UIThreadInvoker As Action(Of Action))
-        Dim m = rHost.Match(UrlTemplate)
+    Private Sub GetIconAsync(ByVal IconUrl As String, ByVal bd As ToolStripButtonDescriptor, ByVal UIThreadInvoker As Action(Of Action))
+        Dim m = rHost.Match(IconUrl)
         If Not m.Success Then Return
         Dim Host = m.Result("${host}")
         Dim Url = "http://www.google.com/s2/favicons?domain={0}".Formats(Host)
