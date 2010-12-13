@@ -3,7 +3,7 @@
 '  File:        FormTemplateTranslate.vb
 '  Location:    Eddy.TemplateTranslate <Visual Basic .Net>
 '  Description: 文本本地化工具模板翻译插件窗体
-'  Version:     2010.12.11.
+'  Version:     2010.12.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -13,7 +13,6 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.Text.RegularExpressions
 Imports System.Windows.Forms
-Imports Firefly.GUI
 Imports Eddy.Interfaces
 
 Public Class FormTemplateTranslate
@@ -116,11 +115,11 @@ Public Class FormTemplateTranslate
             Next
         End If
         If (CheckBox_SourceCurrent.Checked OrElse CheckBox_TargetCurrent.Checked) AndAlso (SourceNameSet.Contains(CurrentName) OrElse TargetNameSet.Contains(CurrentName)) Then
-            MessageDialog.Show("源和目标中有相同的文件。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Controller.ShowError("源和目标中有相同的文件。")
             Return
         End If
         If SourceNameSet.Intersect(TargetNameSet).Count > 0 Then
-            MessageDialog.Show("源和目标中有相同的文件。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Controller.ShowError("源和目标中有相同的文件。")
             Return
         End If
 
@@ -197,6 +196,6 @@ Public Class FormTemplateTranslate
         Controller.RefreshMainPanel()
         Controller.RefreshGrid()
 
-        MessageDialog.Show("成功执行按模板翻译。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Controller.ShowInfo("成功执行按模板翻译。")
     End Sub
 End Class

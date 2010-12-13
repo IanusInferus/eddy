@@ -1,4 +1,8 @@
-﻿2010.12.13
+﻿2010.12.14
+Interfaces, *:
+增加弹出MessageDialog的接口函数，去除不必要的System.Windows.Forms和Firefly.GUI引用。
+
+2010.12.13
 FindReplace, TemplateTranslate:
 修正界面提示，增加“..”以表示会弹出窗口。
 Voice:

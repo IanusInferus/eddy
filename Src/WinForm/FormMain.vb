@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.12.13.
+'  Version:     2010.12.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -15,6 +15,8 @@ Imports System.Linq
 Imports System.IO
 Imports System.Drawing
 Imports System.ComponentModel
+Imports System.Diagnostics
+Imports System.Reflection
 Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.GUI
@@ -968,11 +970,6 @@ Public Class FormMain
             Return AddressOf Me.Invoke
         End Get
     End Property
-    Public ReadOnly Property Application_ApplicationName() As String Implements ITextLocalizerApplicationController.ApplicationName
-        Get
-            Return ApplicationData.ApplicationName
-        End Get
-    End Property
     Public Property Application_TextName() As String Implements ITextLocalizerApplicationController.TextName
         Get
             Return TextName
@@ -1073,7 +1070,7 @@ Public Class FormMain
             If ApplicationData.Columns.Count = 0 Then Throw New InvalidOperationException
             Dim l = LocalizationTextBoxes(CurrentColumnIndex)
             If l.IsReadOnly Then
-                MessageDialog.Show("无法修改只读文本。", Me.Text, MessageBoxButtons.OK, MessageBoxIcon.Error)
+                MessageDialog.Show("无法修改只读文本。", ExceptionInfo.AssemblyDescriptionOrTitle, MessageBoxButtons.OK, MessageBoxIcon.Error)
             Else
                 l.Text = Value
             End If
@@ -1084,4 +1081,67 @@ Public Class FormMain
         lb.TextBox.ScrollToCaret()
         If Not lb.TextBox.Visible Then lb.SwitchBox()
     End Sub
+
+    Private Shared Function GetAssemblyTitle(ByVal a As Assembly) As String
+        Dim Attributes = a.GetCustomAttributes(GetType(AssemblyTitleAttribute), True)
+        If Attributes.Length >= 1 Then
+            Dim Str = DirectCast(Attributes(0), AssemblyTitleAttribute).Title
+            If Str <> "" Then Return Str
+        End If
+
+        Return ""
+    End Function
+    Private Shared Function GetAssemblyDescription(ByVal a As Assembly) As String
+        Dim Attributes = a.GetCustomAttributes(GetType(AssemblyDescriptionAttribute), True)
+        If Attributes.Length >= 1 Then
+            Dim Str = DirectCast(Attributes(0), AssemblyDescriptionAttribute).Description
+            If Str <> "" Then Return Str
+        End If
+
+        Return ""
+    End Function
+    Private Shared Function GetAssemblyDescriptionOrTitle(ByVal a As Assembly) As String
+        Dim Description = GetAssemblyDescription(a)
+        If Description <> "" Then Return Description
+
+        Dim Title = GetAssemblyTitle(a)
+        If Title <> "" Then Return Title
+
+        Return ""
+    End Function
+    Public Function GetPluginDescriptionOrTitle() As String
+        Dim t As New StackTrace(2, False)
+        If t.FrameCount > 0 Then
+            Dim f = t.GetFrame(0)
+            Dim m = f.GetMethod()
+            Dim a = m.Module.Assembly
+            Return GetAssemblyDescriptionOrTitle(a)
+        Else
+            Return ""
+        End If
+    End Function
+    Public Sub ShowError(ByVal Message As String) Implements ITextLocalizerApplicationController.ShowError
+        Dim Caption = GetPluginDescriptionOrTitle()
+        MessageDialog.Show(Message, Caption, MessageBoxButtons.OK, MessageBoxIcon.Error)
+    End Sub
+    Public Sub ShowError(ByVal Message As String, ByVal Information As String) Implements ITextLocalizerApplicationController.ShowError
+        Dim Caption = GetPluginDescriptionOrTitle()
+        MessageDialog.Show(Message, Information, Caption, MessageBoxButtons.OK, MessageBoxIcon.Error)
+    End Sub
+    Public Sub ShowInfo(ByVal Message As String) Implements ITextLocalizerApplicationController.ShowInfo
+        Dim Caption = GetPluginDescriptionOrTitle()
+        MessageDialog.Show(Message, Caption, MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+    Public Sub ShowInfo(ByVal Message As String, ByVal Information As String) Implements ITextLocalizerApplicationController.ShowInfo
+        Dim Caption = GetPluginDescriptionOrTitle()
+        MessageDialog.Show(Message, Information, Caption, MessageBoxButtons.OK, MessageBoxIcon.Information)
+    End Sub
+    Public Function ShowYesNoQuestion(ByVal Message As String) As Boolean Implements ITextLocalizerApplicationController.ShowYesNoQuestion
+        Dim Caption = GetPluginDescriptionOrTitle()
+        Return MessageDialog.Show(Message, Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes
+    End Function
+    Public Function ShowYesNoQuestion(ByVal Message As String, ByVal Information As String) As Boolean Implements ITextLocalizerApplicationController.ShowYesNoQuestion
+        Dim Caption = GetPluginDescriptionOrTitle()
+        Return MessageDialog.Show(Message, Information, Caption, MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes
+    End Function
 End Class

@@ -3,7 +3,7 @@
 '  File:        Voice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具控制符高亮插件
-'  Version:     2010.12.13.
+'  Version:     2010.12.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -13,13 +13,11 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.IO
 Imports System.Text.RegularExpressions
-Imports System.Windows.Forms
 Imports System.Speech
 Imports System.Speech.Synthesis
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Setting
-Imports Firefly.GUI
 Imports Eddy.Interfaces
 
 Public Class Config
@@ -113,7 +111,7 @@ Public Class Voice
         Else
             Static Flag As Boolean = True
             If Flag AndAlso NameToVoiceName.ContainsKey(tp.Name) Then
-                ExceptionHandler.PopupInfo("无法找到TTS引擎: {0}".Formats(NameToVoiceName(tp.Name)))
+                Controller.ShowInfo("无法找到TTS引擎:", NameToVoiceName(tp.Name))
                 Flag = False
             End If
             Synth.SpeakAsync(Text)
