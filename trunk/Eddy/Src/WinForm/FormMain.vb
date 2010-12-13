@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.12.11.
+'  Version:     2010.12.13.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
