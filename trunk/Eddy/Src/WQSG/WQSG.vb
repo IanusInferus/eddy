@@ -3,7 +3,7 @@
 '  File:        WQSG.vb
 '  Location:    Eddy.WQSG <Visual Basic .Net>
 '  Description: 文本本地化工具WQSG文本插件
-'  Version:     2010.12.10.
+'  Version:     2010.12.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -54,6 +54,8 @@ Public Class WQSGPlugin
     End Function
 
     Public Function GetToolStripButtonDescriptors() As IEnumerable(Of ToolStripButtonDescriptor) Implements ITextLocalizerToolStripButtonPlugin.GetToolStripButtonDescriptors
+        WQSGTextList.Controller = Controller
+
         If (From c In Columns Where c.Type = "WQSGText").Count = 0 Then
             Return New ToolStripButtonDescriptor() {}
         Else

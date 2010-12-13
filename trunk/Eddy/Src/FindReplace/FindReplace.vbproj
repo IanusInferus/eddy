@@ -49,9 +49,6 @@
     <Reference Include="Firefly.Core">
       <HintPath>..\Firefly.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Firefly.GUI">
-      <HintPath>..\Firefly.GUI.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="FindReplace.vb" />

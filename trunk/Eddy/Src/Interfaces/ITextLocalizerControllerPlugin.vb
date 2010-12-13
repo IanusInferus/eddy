@@ -3,7 +3,7 @@
 '  File:        ITextLocalizerControllerPlugin.vb
 '  Location:    Eddy.Interfaces <Visual Basic .Net>
 '  Description: 控制器使用插件接口
-'  Version:     2010.12.13.
+'  Version:     2010.12.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -34,9 +34,6 @@ Public Interface ITextLocalizerApplicationController
     Sub RefreshMainPanel()
     Sub FlushLocalizedText()
 
-    ReadOnly Property MainWindow() As WindowReference
-    ReadOnly Property UIThreadInvoker As Action(Of Action)
-    ReadOnly Property ApplicationName() As String
     Property TextName() As String
     Property TextIndex() As Integer
     Property TextIndices() As IEnumerable(Of Integer)
@@ -45,4 +42,14 @@ Public Interface ITextLocalizerApplicationController
     Property SelectionLength() As Integer
     Property Text(ByVal ColumnIndex As Integer) As String
     Sub ScrollToCaret(ByVal ColumnIndex As Integer)
+
+    ReadOnly Property MainWindow() As WindowReference
+    ReadOnly Property UIThreadInvoker As Action(Of Action)
+
+    Sub ShowError(ByVal Message As String)
+    Sub ShowError(ByVal Message As String, ByVal Information As String)
+    Sub ShowInfo(ByVal Message As String)
+    Sub ShowInfo(ByVal Message As String, ByVal Information As String)
+    Function ShowYesNoQuestion(ByVal Message As String) As Boolean
+    Function ShowYesNoQuestion(ByVal Message As String, ByVal Information As String) As Boolean
 End Interface

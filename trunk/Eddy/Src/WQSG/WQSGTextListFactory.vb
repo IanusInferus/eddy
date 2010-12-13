@@ -3,7 +3,7 @@
 '  File:        WQSGTextListFactory.vb
 '  Location:    Eddy.WQSG <Visual Basic .Net>
 '  Description: 本地化文本列表工厂接口与默认实现的WQSG文本支持
-'  Version:     2010.12.12.
+'  Version:     2010.12.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -12,11 +12,9 @@ Imports System
 Imports System.Collections.Generic
 Imports System.Linq
 Imports System.IO
-Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Texting
-Imports Firefly.GUI
 Imports Eddy.Interfaces
 
 Partial Public Class WQSGPlugin
@@ -93,6 +91,8 @@ Public Class WQSGTextList
     Private IsModifiedValue As Boolean
     Private Values As List(Of WQSG.Triple)
 
+    Public Shared Controller As ITextLocalizerApplicationController
+
     Public Sub New(ByVal Path As String, ByVal IsReadOnly As Boolean, Optional ByVal Encoding As System.Text.Encoding = Nothing)
         Me.Path = Path
         Me.IsReadOnlyValue = IsReadOnly
@@ -116,7 +116,7 @@ Public Class WQSGTextList
         Dim Values = WQSG.ReadFile(Path, Encoding)
         If Values.Count = BaseValues.Count Then Return New WQSGTextList(Path, False, Encoding)
 
-        If MessageDialog.Show("文本{0}条数不对，尝试修复吗？".Formats(Path), Nothing, ExceptionInfo.AssemblyDescriptionOrTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+        If Controller.ShowYesNoQuestion("文本{0}条数不对，尝试修复吗？".Formats(Path)) Then
         Else
             Throw New InvalidDataException
         End If
@@ -131,7 +131,7 @@ Public Class WQSGTextList
         Next
         Dim Repeated = RepeatDict.Where(Function(v) v.Value > 1).ToArray()
         If Repeated.Length > 0 Then
-            MessageDialog.Show("修复失败。下列索引多次出现。", String.Join(CrLf, Repeated.Select(Function(v) v.Key.ToString("X8")).ToArray), ExceptionInfo.AssemblyDescriptionOrTitle, MessageBoxButtons.OK, MessageBoxIcon.Error)
+            Controller.ShowError("修复失败。下列索引多次出现。", String.Join(CrLf, Repeated.Select(Function(v) v.Key.ToString("X8")).ToArray))
             Throw New InvalidDataException
         End If
 
@@ -153,13 +153,13 @@ Public Class WQSGTextList
             NewValues(n) = t
         Next
         If Dict.Count > 0 Then
-            If MessageDialog.Show("修复可能，需要删除下列索引，修复吗？", String.Join(CrLf, Dict.Keys.Select(Function(v) v.ToString("X8")).ToArray), ExceptionInfo.AssemblyDescriptionOrTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+            If Controller.ShowYesNoQuestion("修复可能，需要删除下列索引，修复吗？", String.Join(CrLf, Dict.Keys.Select(Function(v) v.ToString("X8")).ToArray)) Then
             Else
                 Throw New InvalidDataException
             End If
         End If
         If AddValues.Count > 0 Then
-            If MessageDialog.Show("修复可能。需要增加下列索引，修复吗？", String.Join(CrLf, AddValues.Select(Function(v) v.ToString("X8")).ToArray), ExceptionInfo.AssemblyDescriptionOrTitle, MessageBoxButtons.YesNo, MessageBoxIcon.Information) = DialogResult.Yes Then
+            If Controller.ShowYesNoQuestion("修复可能。需要增加下列索引，修复吗？", String.Join(CrLf, AddValues.Select(Function(v) v.ToString("X8")).ToArray)) Then
             Else
                 Throw New InvalidDataException
             End If

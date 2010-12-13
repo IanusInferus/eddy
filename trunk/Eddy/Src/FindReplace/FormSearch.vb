@@ -3,7 +3,7 @@
 '  File:        FormSearch.vb
 '  Location:    Eddy.FindReplace <Visual Basic .Net>
 '  Description: 文本本地化工具查找替换插件窗体
-'  Version:     2010.12.11.
+'  Version:     2010.12.14.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -16,7 +16,6 @@ Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Setting
-Imports Firefly.GUI
 Imports Eddy.Interfaces
 
 Public Class FormSearch
@@ -120,7 +119,7 @@ Public Class FormSearch
             Controller.ScrollToCaret(Result.ColumnIndex)
             RaiseEvent FindOrReplacePerformed(TextFind, FindReplace.GetFindRegex(TextFind))
         Else
-            MessageDialog.Show("未找到下一条匹配文本。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Controller.ShowInfo("未找到下一条匹配文本。")
         End If
     End Sub
 
@@ -165,7 +164,7 @@ Public Class FormSearch
             Controller.ScrollToCaret(Result.ColumnIndex)
             RaiseEvent FindOrReplacePerformed(TextFind, FindReplace.GetFindRegex(TextFind))
         Else
-            MessageDialog.Show("未找到下一条匹配文本。", Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
+            Controller.ShowInfo("未找到下一条匹配文本。")
         End If
     End Sub
 
@@ -196,6 +195,6 @@ Public Class FormSearch
         Dim Count = FindReplace.ReplaceAll(tps, MainColumnIndex, Input, TextFind, TextReplace)
         Controller.RefreshMainPanel()
         Controller.RefreshGrid()
-        MessageDialog.Show("替换了{0}处搜索项。".Formats(Count), Controller.ApplicationName, MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Controller.ShowInfo("替换了{0}处搜索项。".Formats(Count))
     End Sub
 End Class
