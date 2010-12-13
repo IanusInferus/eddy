@@ -14,6 +14,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.IO
 Imports System.Drawing
+Imports System.ComponentModel
 Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.GUI
@@ -960,6 +961,11 @@ Public Class FormMain
     Public ReadOnly Property MainWindow() As WindowReference Implements ITextLocalizerApplicationController.MainWindow
         Get
             Return New WindowReference With {.Handle = Me.Handle}
+        End Get
+    End Property
+    Public ReadOnly Property UIThreadInvoker As Action(Of Action) Implements ITextLocalizerApplicationController.UIThreadInvoker
+        Get
+            Return AddressOf Me.Invoke
         End Get
     End Property
     Public ReadOnly Property Application_ApplicationName() As String Implements ITextLocalizerApplicationController.ApplicationName

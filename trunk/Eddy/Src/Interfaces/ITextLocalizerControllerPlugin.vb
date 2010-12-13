@@ -3,13 +3,14 @@
 '  File:        ITextLocalizerControllerPlugin.vb
 '  Location:    Eddy.Interfaces <Visual Basic .Net>
 '  Description: 控制器使用插件接口
-'  Version:     2010.12.11.
+'  Version:     2010.12.13.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
 
 Imports System
 Imports System.Collections.Generic
+Imports System.ComponentModel
 
 ''' <summary>窗口句柄引用</summary>
 Public Class WindowReference
@@ -34,6 +35,7 @@ Public Interface ITextLocalizerApplicationController
     Sub FlushLocalizedText()
 
     ReadOnly Property MainWindow() As WindowReference
+    ReadOnly Property UIThreadInvoker As Action(Of Action)
     ReadOnly Property ApplicationName() As String
     Property TextName() As String
     Property TextIndex() As Integer
