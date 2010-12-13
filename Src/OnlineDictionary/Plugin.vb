@@ -16,6 +16,7 @@ Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Diagnostics
+Imports System.Threading
 Imports System.Threading.Tasks
 Imports System.ComponentModel
 Imports System.Net
@@ -95,7 +96,7 @@ Public Class Plugin
         Process.Start(Url)
     End Sub
 
-    Private Shared rHost As New Regex("http://(?<host>.*?)(/.*)?", RegexOptions.ExplicitCapture)
+    Private Shared rHost As New Regex("^http://(?<host>.*?)(/.*)?$", RegexOptions.ExplicitCapture)
     Private Sub GetIconAsync(ByVal UrlTemplate As String, ByVal bd As ToolStripButtonDescriptor, ByVal UIThreadInvoker As Action(Of Action))
         Dim m = rHost.Match(UrlTemplate)
         If Not m.Success Then Return
@@ -103,28 +104,33 @@ Public Class Plugin
         Dim Url = "http://www.google.com/s2/favicons?domain={0}".Formats(Host)
 
         Dim i As Image = Nothing
-        Try
-            Dim Request = HttpWebRequest.Create(Url)
-            Dim Response = Request.GetResponse()
-            If String.Equals(Response.ContentType, "image/png", StringComparison.OrdinalIgnoreCase) Then
-                Using s = Response.GetResponseStream
-                    Dim Bytes = New Byte(Response.ContentLength - 1) {}
-                    s.Read(Bytes, 0, Bytes.Length)
-                    Using ms As New MemoryStream(Bytes)
-                        i = Image.FromStream(ms)
-                    End Using
-                End Using
-            End If
-        Catch
-        End Try
-
-        If i Is Nothing Then Return
-
-        Dim F =
+        Dim GetIcon =
             Sub()
-                bd.ImageChanged.Raise(i)
+                Try
+                    Dim Request = HttpWebRequest.Create(Url)
+                    Request.Timeout = 10000
+                    Dim Response = Request.GetResponse()
+                    If String.Equals(Response.ContentType, "image/png", StringComparison.OrdinalIgnoreCase) Then
+                        Using s = Response.GetResponseStream
+                            Dim Bytes = New Byte(Response.ContentLength - 1) {}
+                            s.Read(Bytes, 0, Bytes.Length)
+                            Using ms As New MemoryStream(Bytes)
+                                i = Image.FromStream(ms)
+                            End Using
+                        End Using
+                    End If
+                Catch
+                End Try
+
+                Dim F =
+                    Sub()
+                        bd.ImageChanged.Raise(i)
+                    End Sub
+
+                UIThreadInvoker(F)
             End Sub
 
-        UIThreadInvoker(F)
+        Dim Task As New Task(GetIcon)
+        Task.Start()
     End Sub
 End Class
