@@ -66,9 +66,22 @@ Public Class Voice
         Return New ToolStripButtonDescriptor() {ButtonDescriptor}
     End Function
 
+    Private LockObject As New Object
+    Private Started As Boolean = False
     Private WithEvents Synth As SpeechSynthesizer
     Private InstalledVoices As Dictionary(Of String, VoiceInfo)
     Private Sub ToolStripButton_Click()
+        Dim IsStarted As Boolean
+        SyncLock LockObject
+            IsStarted = Started
+        End SyncLock
+        If IsStarted Then
+            StopVoice()
+        Else
+            StartVoice()
+        End If
+    End Sub
+    Private Sub StartVoice()
         If Synth Is Nothing Then
             Synth = New SpeechSynthesizer()
             InstalledVoices = (From v In Synth.GetInstalledVoices Select v.VoiceInfo).ToDictionary(Function(v) v.Name, Function(v) v)
@@ -106,25 +119,30 @@ Public Class Voice
             Synth.SpeakAsync(Text)
         End If
     End Sub
+    Private Sub StopVoice()
+        If Synth IsNot Nothing Then
+            Synth.SpeakAsyncCancelAll()
+        End If
+    End Sub
     Private Sub Synth_SpeakStarted(ByVal sender As Object, ByVal e As SpeakStartedEventArgs) Handles Synth.SpeakStarted
         ButtonDescriptor.ImageChanged.Raise(My.Resources.VoiceStop)
         ButtonDescriptor.TextChanged.Raise("停止朗读(Esc)")
+        SyncLock LockObject
+            Started = True
+        End SyncLock
     End Sub
     Private Sub Synth_SpeakCompleted(ByVal sender As Object, ByVal e As SpeakCompletedEventArgs) Handles Synth.SpeakCompleted
         ButtonDescriptor.ImageChanged.Raise(My.Resources.VoiceStart)
         ButtonDescriptor.TextChanged.Raise("朗读(F1)")
+        SyncLock LockObject
+            Started = False
+        End SyncLock
     End Sub
 
     Public Function GetKeyListeners() As IEnumerable(Of KeyListener) Implements ITextLocalizerKeyListenerPlugin.GetKeyListeners
         Return New KeyListener() {
-            New KeyListener With {.Source = ControlId.MainWindow, .KeyCombination = {VirtualKeys.F1}, .EventType = KeyEventType.Up, .Handler = AddressOf ToolStripButton_Click},
-            New KeyListener With {.Source = ControlId.MainWindow, .KeyCombination = {VirtualKeys.Escape}, .EventType = KeyEventType.Up, .Handler =
-                Sub()
-                    If Synth IsNot Nothing Then
-                        Synth.SpeakAsyncCancelAll()
-                    End If
-                End Sub
-            }
+            New KeyListener With {.Source = ControlId.MainWindow, .KeyCombination = {VirtualKeys.F1}, .EventType = KeyEventType.Up, .Handler = AddressOf StartVoice},
+            New KeyListener With {.Source = ControlId.MainWindow, .KeyCombination = {VirtualKeys.Escape}, .EventType = KeyEventType.Up, .Handler = AddressOf StopVoice}
         }
     End Function
 End Class
