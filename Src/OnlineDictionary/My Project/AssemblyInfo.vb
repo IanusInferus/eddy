@@ -8,17 +8,17 @@ Imports System.Runtime.InteropServices
 
 ' 查看程序集属性的值
 
-<Assembly: AssemblyTitle("Eddy.WinForm")> 
-<Assembly: AssemblyDescription("漩涡文本本地化工具WinForm界面")> 
+<Assembly: AssemblyTitle("Eddy.OnlineDictionary")> 
+<Assembly: AssemblyDescription("漩涡文本本地化工具在线词典插件")> 
 <Assembly: AssemblyCompany("")> 
-<Assembly: AssemblyProduct("Eddy.WinForm")> 
+<Assembly: AssemblyProduct("Eddy.OnlineDictionary")> 
 <Assembly: AssemblyCopyright("Copyright(C) F.R.C., under BSD license")> 
 <Assembly: AssemblyTrademark("")> 
 
 <Assembly: ComVisible(False)>
 
 '如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
-<Assembly: Guid("0dcd680b-ae90-4f67-a1db-a301e92af07d")> 
+<Assembly: Guid("2a2373e1-acd9-4f08-93ef-4961cc80fd5e")> 
 
 ' 程序集的版本信息由下面四个值组成:
 '

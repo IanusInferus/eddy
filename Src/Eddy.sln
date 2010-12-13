@@ -25,6 +25,8 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Base", "Base\Base.vbproj", 
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "WinForm", "WinForm\WinForm.vbproj", "{2441B29F-12ED-435B-BC9D-A576A588A4C1}"
 EndProject
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "OnlineDictionary", "OnlineDictionary\OnlineDictionary.vbproj", "{C98CE341-BF2C-480C-93BF-2B0502F06C8E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -127,6 +129,12 @@ Global
 		{2441B29F-12ED-435B-BC9D-A576A588A4C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2441B29F-12ED-435B-BC9D-A576A588A4C1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2441B29F-12ED-435B-BC9D-A576A588A4C1}.Release|x86.ActiveCfg = Release|Any CPU
+		{C98CE341-BF2C-480C-93BF-2B0502F06C8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C98CE341-BF2C-480C-93BF-2B0502F06C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C98CE341-BF2C-480C-93BF-2B0502F06C8E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C98CE341-BF2C-480C-93BF-2B0502F06C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C98CE341-BF2C-480C-93BF-2B0502F06C8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C98CE341-BF2C-480C-93BF-2B0502F06C8E}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
