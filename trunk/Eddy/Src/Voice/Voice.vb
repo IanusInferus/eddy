@@ -2,7 +2,7 @@
 '
 '  File:        Voice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
-'  Description: 文本本地化工具控制符高亮插件
+'  Description: 文本本地化工具朗读插件
 '  Version:     2010.12.14.
 '  Copyright(C) F.R.C.
 '
