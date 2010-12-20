@@ -10,22 +10,33 @@ Public Class Packet
 End Class
 
 Public Enum IpcVerb As Int32
-    Excetpion = &H100 'Exception:String
+    KindMask = &HFF000000
 
-    RequestExecute = &H200 '(MethodId NumParameter Parameter*) ->
-    ResponseExecute = &H201 'Return?
 
-    RequestPrimitiveTypeBinding = &H300 '(TypeId FriendlyTypeName) ->
-    ResponsePrimitiveTypeBinding = &H301 '()
+    KindException = &H1000000
 
-    RequestCollectionTypeBinding = &H310 '(TypeId FriendlyTypeName) ->
-    ResponseCollectionTypeBinding = &H311 '()
+    Excetpion = &H1000000 'Exception:String
 
-    RequestRecordTypeBinding = &H320 '(TypeId FriendlyTypeName NumFieldOrProperty (Name TypeId){NumFieldOrProperty}) ->
-    ResponseRecordTypeBinding = &H321 '()
 
-    RequestMethodBinding = &H330 '(MethodId MethodName NumTypeParamter TypeId{NumTypeParamter} NumParameter TypeId{NumParameter}) ->
-    ResponseMethodBinding = &H331 '()
+    KindExecute = &H2000000
+
+    RequestExecute = &H2000000 '(MethodId NumParameter Parameter*) ->
+    ResponseExecute = &H2000001 'Return?
+
+
+    KindMetaData = &H3000000
+
+    RequestPrimitiveTypeBinding = &H3000000 '(TypeId FriendlyTypeName) ->
+    ResponsePrimitiveTypeBinding = &H3000001 '()
+
+    RequestCollectionTypeBinding = &H3000010 '(TypeId FriendlyTypeName) ->
+    ResponseCollectionTypeBinding = &H3000011 '()
+
+    RequestRecordTypeBinding = &H3000020 '(TypeId FriendlyTypeName NumFieldOrProperty (Name TypeId){NumFieldOrProperty}) ->
+    ResponseRecordTypeBinding = &H3000021 '()
+
+    RequestMethodBinding = &H3000030 '(MethodId MethodName NumTypeParamter TypeId{NumTypeParamter} NumParameter TypeId{NumParameter}) ->
+    ResponseMethodBinding = &H3000031 '()
 End Enum
 
 Public Interface ISerializer
