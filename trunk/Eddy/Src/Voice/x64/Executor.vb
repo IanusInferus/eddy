@@ -23,22 +23,22 @@ Public Class ExecutorMaster
     End Sub
 
     Public Sub SendException(ByVal Message As String)
-        Pipe.Send(New Packet With {.Verb = IpcVerb.Excetpion, .Content = UTF16.GetBytes(Message)})
+        Pipe.Send(New Packet With {.Verb = RpcVerb.Excetpion, .Content = UTF16.GetBytes(Message)})
     End Sub
 
     Public Function SendRequestExecute(ByVal MethodId As Integer, ByVal Content As Byte()) As Byte()
-        Pipe.Send(New Packet With {.Verb = IpcVerb.RequestExecute, .Content = Content})
+        Pipe.Send(New Packet With {.Verb = RpcVerb.RequestExecute, .Content = Content})
         Dim p = ReceiveResponseExecute()
     End Function
 
     Public Function ReceiveResponseExecute() As Byte()
         Dim p = Pipe.Receive()
         Select Case p.Verb
-            Case IpcVerb.ResponseExecute
+            Case RpcVerb.ResponseExecute
                 Return p.Content
-            Case IpcVerb.Excetpion
+            Case RpcVerb.Excetpion
                 Throw New Exception(UTF16.GetString(p.Content))
-            Case IpcVerb.RequestExecute
+            Case RpcVerb.RequestExecute
 
         End Select
     End Function
