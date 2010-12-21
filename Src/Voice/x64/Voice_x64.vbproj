@@ -59,8 +59,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Executor.vb" />
-    <Compile Include="Ipc.vb" />
-    <Compile Include="IpcInterface.vb" />
+    <Compile Include="Rpc.vb" />
+    <Compile Include="RpcInterface.vb" />
     <Compile Include="IVoiceService.vb" />
     <Compile Include="Main.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />

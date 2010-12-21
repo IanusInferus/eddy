@@ -8,7 +8,7 @@ Imports Firefly
 Imports Firefly.Streaming
 Imports Firefly.Mapping
 
-Public Class Ipc
+Public Class Rpc
     Private Sub New()
     End Sub
 

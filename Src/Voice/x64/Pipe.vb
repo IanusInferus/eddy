@@ -64,7 +64,7 @@ Public NotInheritable Class PipeMaster
 
     Public Function Receive() As Packet Implements IPipe.Receive
         Dim Pipe = PipeIn.AsReadable
-        Dim Verb = CType(Pipe.ReadInt32, IpcVerb)
+        Dim Verb = CType(Pipe.ReadInt32, RpcVerb)
         Dim Length = Pipe.ReadInt32
         Dim Content = New Byte(Length - 1) {}
 
@@ -119,7 +119,7 @@ Public NotInheritable Class PipeSlave
 
     Public Function Receive() As Packet Implements IPipe.Receive
         Dim Pipe = PipeIn.AsReadable
-        Dim Verb = CType(Pipe.ReadInt32, IpcVerb)
+        Dim Verb = CType(Pipe.ReadInt32, RpcVerb)
         Dim Length = Pipe.ReadInt32
         Dim Content = New Byte(Length - 1) {}
 

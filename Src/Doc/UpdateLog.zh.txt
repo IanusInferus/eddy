@@ -1,4 +1,9 @@
-﻿2010.12.14
+﻿2010.12.21
+Voice:
+引入基于匿名管道的远程调用来解决64位进程无法访问32位语音Misaki的问题。
+修改中。
+
+2010.12.14
 Interfaces, *:
 增加弹出MessageDialog的接口函数，去除不必要的System.Windows.Forms和Firefly.GUI引用。
 

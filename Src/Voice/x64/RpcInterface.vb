@@ -5,11 +5,11 @@ Imports Firefly.Streaming
 'Packet:
 'Verb:Int32 Length:Int32 Content:Byte{Length}
 Public Class Packet
-    Public Verb As IpcVerb
+    Public Verb As RpcVerb
     Public Content As Byte()
 End Class
 
-Public Enum IpcVerb As Int32
+Public Enum RpcVerb As Int32
     KindMask = &HFF000000
 
 
