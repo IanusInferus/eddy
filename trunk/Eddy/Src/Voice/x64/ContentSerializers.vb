@@ -4,6 +4,7 @@ Imports Firefly.Streaming
 
 Public NotInheritable Class ContentPacker
     Implements IDisposable
+    Implements IParameterWriter
 
     Private s As ISerializer
     Private BaseStream As IStream
@@ -13,7 +14,7 @@ Public NotInheritable Class ContentPacker
         Me.BaseStream = StreamEx.Create()
     End Sub
 
-    Public Sub WriteParameter(Of T)(ByVal Parameter As T)
+    Public Sub WriteParameter(Of T)(ByVal Parameter As T) Implements IParameterWriter.WriteParameter
         s.Write(Parameter, s)
     End Sub
 
@@ -37,6 +38,7 @@ End Class
 
 Public Class ContentUnpacker
     Implements IDisposable
+    Implements IParameterReader
 
     Private s As ISerializer
     Private BaseStream As IStream
@@ -48,7 +50,7 @@ Public Class ContentUnpacker
         Me.BaseStream.Position = 0
     End Sub
 
-    Public Function ReadParameter(Of T)() As T
+    Public Function ReadParameter(Of T)() As T Implements IParameterReader.ReadParameter
         Return s.Read(Of T)(BaseStream)
     End Function
 

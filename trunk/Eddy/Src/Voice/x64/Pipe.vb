@@ -55,6 +55,7 @@ Public NotInheritable Class PipeMaster
     End Sub
 
     Public Sub Send(ByVal p As Packet) Implements IPipe.Send
+        If p Is Nothing OrElse p.Content Is Nothing Then Throw New ArgumentNullException
         Dim Pipe = PipeOut.AsWritable()
         Pipe.WriteInt32(p.Verb)
         Pipe.WriteInt32(p.Content.Length)
@@ -110,6 +111,7 @@ Public NotInheritable Class PipeSlave
     End Sub
 
     Public Sub Send(ByVal p As Packet) Implements IPipe.Send
+        If p Is Nothing OrElse p.Content Is Nothing Then Throw New ArgumentNullException
         Dim Pipe = PipeOut.AsWritable()
         Pipe.WriteInt32(p.Verb)
         Pipe.WriteInt32(p.Content.Length)
