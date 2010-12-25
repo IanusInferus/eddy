@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具在线词典插件
-'  Version:     2010.12.13.
+'  Version:     2010.12.26.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -82,7 +82,7 @@ Public Class Plugin
             Dim bd = New ToolStripButtonDescriptor With {.Image = My.Resources.Dictionary, .Text = d.Name, .Click =
                 Sub() ToolStripButton_Click(t, e)
             }
-            GetIconAsync(i, bd, Controller.UIThreadInvoker)
+            GetIconAsync(i, bd, Controller.UIThreadAsyncInvoker)
             l.Add(bd)
         Next
 

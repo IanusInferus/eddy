@@ -3,7 +3,7 @@
 '  File:        Voice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具朗读插件
-'  Version:     2010.12.14.
+'  Version:     2010.12.26.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -13,8 +13,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.IO
 Imports System.Text.RegularExpressions
-Imports System.Speech
-Imports System.Speech.Synthesis
+Imports System.Reflection
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Setting
@@ -23,7 +22,13 @@ Imports Eddy.Interfaces
 Public Class Config
     Public IgnoreSequence As String = "\{.*?\}"
     Public Voices As VoiceDescriptor()
+    Public Platform As Platform = Platform.x86
 End Class
+
+Public Enum Platform
+    x86
+    x64
+End Enum
 
 Public Class VoiceDescriptor
     Public LocalizationBoxName As String
@@ -39,6 +44,7 @@ Public Class Voice
     Private Config As Config
     Private Regex As Regex
     Private NameToVoiceName As Dictionary(Of String, String)
+    Private Installed As Dictionary(Of String, Boolean)
 
     Public Sub New()
         If File.Exists(SettingPath) Then
@@ -48,13 +54,14 @@ Public Class Voice
         End If
         If Config.IgnoreSequence <> "" Then Regex = New Regex(Config.IgnoreSequence, RegexOptions.ExplicitCapture Or RegexOptions.Compiled)
         NameToVoiceName = Config.Voices.ToDictionary(Function(d) d.LocalizationBoxName, Function(d) d.TTSName, StringComparer.OrdinalIgnoreCase)
+        Installed = New Dictionary(Of String, Boolean)
     End Sub
     Protected Overrides Sub DisposeManagedResource()
         Try
             Xml.WriteFile(SettingPath, UTF16, Config)
         Catch
         End Try
-        If Synth IsNot Nothing Then Synth.Dispose()
+        If VoiceService IsNot Nothing Then VoiceService.Dispose()
         MyBase.DisposeManagedResource()
     End Sub
 
@@ -66,8 +73,7 @@ Public Class Voice
 
     Private LockObject As New Object
     Private Started As Boolean = False
-    Private WithEvents Synth As SpeechSynthesizer
-    Private InstalledVoices As Dictionary(Of String, VoiceInfo)
+    Private WithEvents VoiceService As IVoiceService
     Private Sub ToolStripButton_Click()
         Dim IsStarted As Boolean
         SyncLock LockObject
@@ -80,11 +86,17 @@ Public Class Voice
         End If
     End Sub
     Private Sub StartVoice()
-        If Synth Is Nothing Then
-            Synth = New SpeechSynthesizer()
-            InstalledVoices = (From v In Synth.GetInstalledVoices Select v.VoiceInfo).ToDictionary(Function(v) v.Name, Function(v) v)
+        If VoiceService Is Nothing Then
+            Dim StartDir = GetFileDirectory(Assembly.GetEntryAssembly().Location)
+            Select Case Config.Platform
+                Case Platform.x86
+                    VoiceService = Rpc.CreateMaster(Of IVoiceService)(GetPath(StartDir, "Eddy.Voice.x86.exe"), Controller.UIThreadAsyncInvoker)
+                Case Platform.x64
+                    VoiceService = Rpc.CreateMaster(Of IVoiceService)(GetPath(StartDir, "Eddy.Voice.x64.exe"), Controller.UIThreadAsyncInvoker)
+                Case Else
+                    Throw New InvalidDataException
+            End Select
         End If
-        If InstalledVoices.Count = 0 Then Throw New InvalidOperationException("没有找到已安装的TTS引擎")
         Dim ColumnIndex = Controller.ColumnIndex
         Dim tp = Columns(ColumnIndex)
         Dim Text As String
@@ -98,38 +110,41 @@ Public Class Voice
         If Regex IsNot Nothing Then
             Text = Regex.Replace(Text, "")
         End If
-        Dim Voice As VoiceInfo = Nothing
-        If NameToVoiceName.ContainsKey(tp.Name) AndAlso InstalledVoices.ContainsKey(NameToVoiceName(tp.Name)) Then
-            Voice = InstalledVoices(NameToVoiceName(tp.Name))
+        Dim VoiceName As String = Nothing
+        If NameToVoiceName.ContainsKey(tp.Name) Then
+            VoiceName = NameToVoiceName(tp.Name)
         End If
-        If Voice IsNot Nothing Then
-            Dim p As New PromptBuilder
-            p.StartVoice(Voice)
-            p.AppendText(Text)
-            p.EndVoice()
-            Synth.SpeakAsync(p)
-        Else
-            Static Flag As Boolean = True
-            If Flag AndAlso NameToVoiceName.ContainsKey(tp.Name) Then
+        If VoiceName Is Nothing Then
+            VoiceService.SpeakAsync(Text)
+            Return
+        End If
+        If Not Installed.ContainsKey(VoiceName) Then
+            If VoiceService.IsVoiceInstalled(VoiceName) Then
+                Installed.Add(VoiceName, True)
+            Else
+                Installed.Add(VoiceName, False)
                 Controller.ShowInfo("无法找到TTS引擎:", NameToVoiceName(tp.Name))
-                Flag = False
             End If
-            Synth.SpeakAsync(Text)
+        End If
+        If Installed(VoiceName) Then
+            VoiceService.SpeakAsync(VoiceName, Text)
+        Else
+            VoiceService.SpeakAsync(Text)
         End If
     End Sub
     Private Sub StopVoice()
-        If Synth IsNot Nothing Then
-            Synth.SpeakAsyncCancelAll()
+        If VoiceService IsNot Nothing Then
+            VoiceService.SpeakAsyncCancelAll()
         End If
     End Sub
-    Private Sub Synth_SpeakStarted(ByVal sender As Object, ByVal e As SpeakStartedEventArgs) Handles Synth.SpeakStarted
+    Private Sub Synth_SpeakStarted() Handles VoiceService.SpeakStarted
         ButtonDescriptor.ImageChanged.Raise(My.Resources.VoiceStop)
         ButtonDescriptor.TextChanged.Raise("停止朗读(Esc)")
         SyncLock LockObject
             Started = True
         End SyncLock
     End Sub
-    Private Sub Synth_SpeakCompleted(ByVal sender As Object, ByVal e As SpeakCompletedEventArgs) Handles Synth.SpeakCompleted
+    Private Sub Synth_SpeakCompleted() Handles VoiceService.SpeakCompleted
         ButtonDescriptor.ImageChanged.Raise(My.Resources.VoiceStart)
         ButtonDescriptor.TextChanged.Raise("朗读(F1)")
         SyncLock LockObject

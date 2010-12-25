@@ -54,6 +54,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ContentSerializers.vb" />
+    <Compile Include="RpcExecutor.vb" />
     <Compile Include="GlyphText.vb" />
     <Compile Include="ITextLocalizerUserInterfacePlugin.vb" />
     <Compile Include="KeyEventWatcher.vb" />
@@ -74,6 +76,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Compile Include="Pipe.vb" />
+    <Compile Include="RpcInterface.vb" />
     <Compile Include="TextLocalizerData.vb" />
   </ItemGroup>
   <ItemGroup>

@@ -1,7 +1,12 @@
-﻿2010.12.21
+﻿2010.12.26
+Base, Voice:
+基于匿名管道的远程调用基本完成，并在Voice中使用。
+Interfaces, OnlineDictionary, WinForm:
+修改ITextLocalizerApplicationController.UIThreadInvoker为UIThreadAsyncInvoker，使其为异步调用，避免死锁。
+
+2010.12.21
 Voice:
 引入基于匿名管道的远程调用来解决64位进程无法访问32位语音Misaki的问题。
-修改中。
 
 2010.12.14
 Interfaces, *:

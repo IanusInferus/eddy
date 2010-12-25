@@ -1,4 +1,14 @@
-﻿Imports System
+﻿'==========================================================================
+'
+'  File:        ContentSerializers.vb
+'  Location:    Eddy <Visual Basic .Net>
+'  Description: 数据序列化器
+'  Version:     2010.12.26.
+'  Copyright(C) F.R.C.
+'
+'==========================================================================
+
+Imports System
 Imports Firefly
 Imports Firefly.Streaming
 
@@ -15,7 +25,7 @@ Public NotInheritable Class ContentPacker
     End Sub
 
     Public Sub WriteParameter(Of T)(ByVal Parameter As T) Implements IParameterWriter.WriteParameter
-        s.Write(Parameter, s)
+        s.Write(Parameter, BaseStream)
     End Sub
 
     Public Function Build() As Byte()

@@ -12,6 +12,7 @@ Imports System
 Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
+Imports System.Threading
 Imports Firefly
 
 Public Module Main
@@ -47,6 +48,7 @@ Public Module Main
     End Sub
 
     Public Sub Listen(ByVal PipeIn As String, ByVal PipeOut As String)
-
+        Dim Service As New VoiceService
+        Rpc.ListenOnSlave(Of IVoiceService, VoiceService)(PipeIn, PipeOut, Service)
     End Sub
 End Module
