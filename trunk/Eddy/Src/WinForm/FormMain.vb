@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.12.14.
+'  Version:     2010.12.25.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -965,9 +965,9 @@ Public Class FormMain
             Return New WindowReference With {.Handle = Me.Handle}
         End Get
     End Property
-    Public ReadOnly Property UIThreadInvoker As Action(Of Action) Implements ITextLocalizerApplicationController.UIThreadInvoker
+    Public ReadOnly Property UIThreadAsyncInvoker As Action(Of Action) Implements ITextLocalizerApplicationController.UIThreadAsyncInvoker
         Get
-            Return AddressOf Me.Invoke
+            Return AddressOf Me.BeginInvoke
         End Get
     End Property
     Public Property Application_TextName() As String Implements ITextLocalizerApplicationController.TextName

@@ -1,4 +1,14 @@
-﻿Imports System
+﻿'==========================================================================
+'
+'  File:        RpcInterface.vb
+'  Location:    Eddy <Visual Basic .Net>
+'  Description: 远程调用接口
+'  Version:     2010.12.26.
+'  Copyright(C) F.R.C.
+'
+'==========================================================================
+
+Imports System
 Imports System.Collections.Generic
 Imports System.Runtime.CompilerServices
 Imports Firefly
@@ -22,21 +32,14 @@ End Enum
 Public Enum RpcVerb As Int32
     Excetpion = &H1000000 'Exception:String
 
-
     RequestExecute = &H2000000 '(MethodId NumParameter Parameter*) ->
     ResponseExecute = &H2000001 '(NumReturnValue ReturnValue*)
+    RequestEvent = &H2000010 '() ->
+    ResponseEvent = &H2000011 '()
 
-
-    RequestPrimitiveTypeBinding = &H3000000 '(TypeId FriendlyTypeName) ->
-    ResponsePrimitiveTypeBinding = &H3000001 '()
-
-    RequestCollectionTypeBinding = &H3000010 '(TypeId ElementTypeId:TypeId) ->
-    ResponseCollectionTypeBinding = &H3000011 '()
-
-    RequestRecordTypeBinding = &H3000020 '(TypeId FriendlyTypeName NumFieldOrProperty (Name TypeId){NumFieldOrProperty}) ->
-    ResponseRecordTypeBinding = &H3000021 '()
-
-    RequestMethodBinding = &H3000030 '(MethodId MethodName NumTypeParamter TypeId{NumTypeParamter} NumParameter TypeId{NumParameter} NumReturnValue TypeId{NumReturnValue}) ->
+    RequestTypeBinding = &H3000000 '(TypeId Hash) ->
+    ResponseTypeBinding = &H3000001 '()
+    RequestMethodBinding = &H3000030 '(MethodId MethodName TypeId{} TypeId{} TypeId{}) ->
     ResponseMethodBinding = &H3000031 '()
 End Enum
 
@@ -46,25 +49,9 @@ Public Module RpcVerbFunctions
     End Function
 End Module
 
-Public Class PrimitiveTypeBinding
+Public Class TypeBinding
     Public TypeId As Int32
-    Public FriendlyTypeName As String
-End Class
-
-Public Class CollectionTypeBinding
-    Public TypeId As Int32
-    Public ElementTypeId As String
-End Class
-
-Public Class RecordTypeFieldBinding
-    Public Name As String
-    Public TypeId As Int32
-End Class
-
-Public Class RecordTypeBinding
-    Public TypeId As Int32
-    Public FriendlyTypeName As String
-    Public FieldOrProperties As RecordTypeFieldBinding()
+    Public Hash As Int32
 End Class
 
 Public Class MethodBinding
@@ -88,7 +75,16 @@ Public Interface IParameterReader
     Function ReadParameter(Of T)() As T
 End Interface
 
-Public Interface IPipe
+Public Interface IMasterPipe
+    Inherits IDisposable
+
+    Sub Send(ByVal p As Packet)
+    Sub Send(ByVal p As Packet, ByVal Timeout As Integer)
+    Function Receive() As Packet
+    Function Receive(ByVal Timeout As Integer) As Packet
+End Interface
+
+Public Interface ISlavePipe
     Inherits IDisposable
 
     Sub Send(ByVal p As Packet)

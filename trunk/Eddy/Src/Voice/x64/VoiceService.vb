@@ -13,6 +13,7 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.Speech
 Imports System.Speech.Synthesis
+Imports Eddy.Voice
 
 Public NotInheritable Class VoiceService
     Implements IVoiceService
