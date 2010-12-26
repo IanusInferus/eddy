@@ -3,7 +3,7 @@
 '  File:        Voice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具朗读插件
-'  Version:     2010.12.26.
+'  Version:     2010.12.27.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -90,9 +90,9 @@ Public Class Voice
             Dim StartDir = GetFileDirectory(Assembly.GetEntryAssembly().Location)
             Select Case Config.Platform
                 Case Platform.x86
-                    VoiceService = Rpc.CreateMaster(Of IVoiceService)(GetPath(StartDir, "Eddy.Voice.x86.exe"), Controller.UIThreadAsyncInvoker)
+                    VoiceService = RpcVoice.CreateMaster(Of IVoiceService)(GetPath(StartDir, "Eddy.Voice.x86.exe"), Controller.UIThreadAsyncInvoker)
                 Case Platform.x64
-                    VoiceService = Rpc.CreateMaster(Of IVoiceService)(GetPath(StartDir, "Eddy.Voice.x64.exe"), Controller.UIThreadAsyncInvoker)
+                    VoiceService = RpcVoice.CreateMaster(Of IVoiceService)(GetPath(StartDir, "Eddy.Voice.x64.exe"), Controller.UIThreadAsyncInvoker)
                 Case Else
                     Throw New InvalidDataException
             End Select

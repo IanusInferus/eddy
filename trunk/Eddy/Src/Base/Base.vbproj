@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ContentSerializers.vb" />
+    <Compile Include="Rpc.vb" />
     <Compile Include="RpcExecutor.vb" />
     <Compile Include="GlyphText.vb" />
     <Compile Include="ITextLocalizerUserInterfacePlugin.vb" />

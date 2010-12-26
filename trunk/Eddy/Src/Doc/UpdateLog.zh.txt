@@ -1,4 +1,6 @@
-﻿2010.12.26
+﻿2010.12.27.0
+
+2010.12.26
 Base, Voice:
 基于匿名管道的远程调用基本完成，并在Voice中使用。
 Interfaces, OnlineDictionary, WinForm:

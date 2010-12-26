@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IVoiceService.vb" />
-    <Compile Include="Rpc.vb" />
+    <Compile Include="RpcVoice.vb" />
     <Compile Include="Voice.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
