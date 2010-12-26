@@ -14,6 +14,8 @@ Imports System.Text
 Imports System.Text.RegularExpressions
 Imports System.Threading
 Imports Firefly
+Imports Eddy
+Imports Eddy.Base
 
 Public Module Main
     Public Function Main() As Integer

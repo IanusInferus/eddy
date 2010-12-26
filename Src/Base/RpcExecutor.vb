@@ -23,7 +23,7 @@ Imports Firefly.TextEncoding
 Imports Firefly.Streaming
 Imports Firefly.Mapping
 
-Friend Module RpcExecutorUtility
+Public Module RpcExecutorUtility
     Private Function GetTypeFriendlyName(ByVal Type As Type) As String
         If Type.IsArray Then
             Dim n = Type.GetArrayRank
@@ -106,7 +106,7 @@ Friend Module RpcExecutorUtility
         Return c.GetCRC32()
     End Function
 
-    Public Function GetEventParameters(ByVal ei As EventInfo) As ParameterInfo()
+    <Extension()> Public Function GetEventParameters(ByVal ei As EventInfo) As ParameterInfo()
         Dim ht = ei.EventHandlerType
         Dim m = ht.GetMethod("Invoke")
         Return m.GetParameters()
@@ -190,7 +190,7 @@ Public Class RpcExecutorMaster
                     Dim ei = EventDict(eid)
 
                     Dim NumParameter = cu.ReadParameter(Of Int32)()
-                    If NumParameter <> GetEventParameters(ei).Length Then Throw New InvalidDataException
+                    If NumParameter <> ei.GetEventParameters().Length Then Throw New InvalidDataException
 
                     EventParameterReceiverResolver(ei)(NumParameter, cu)
 
@@ -223,7 +223,7 @@ Public Class RpcExecutorMaster
                     Dim ei = InterfaceType.GetEvent(mb.MethodName)
                     If mb.TypeParamters.Length <> 0 Then Throw New InvalidDataException
 
-                    Dim Parameters = GetEventParameters(ei)
+                    Dim Parameters = ei.GetEventParameters()
                     If mb.Parameters.Length <> Parameters.Length Then Throw New InvalidDataException
                     If mb.ReturnValues.Length <> 0 Then Throw New InvalidDataException
 
@@ -376,20 +376,17 @@ Public Class RpcExecutorMaster
 
     Private Sub Listen()
         While True
-            CancellationToken.ThrowIfCancellationRequested()
-            Thread.Sleep(100)
+            For n = 0 To 9
+                If CancellationToken.IsCancellationRequested Then Exit While
+                Thread.Sleep(10)
+            Next
             Pipe.Send(New Packet With {.Verb = RpcVerb.RequestEvent, .Content = New Byte() {}}, 1000)
-            Dim p As Packet = Nothing
-            Try
-                p = Pipe.Receive(2000)
-            Catch ex As Exception
-                Throw
-            End Try
+            Dim p = Pipe.Receive(2000)
             If p.Verb = RpcVerb.ResponseEvent Then Continue While
 
             If CancellationToken.IsCancellationRequested Then
                 ClientRequestExecute = p
-                Throw New OperationCanceledException
+                Exit While
             End If
 
             Dim f =
@@ -457,6 +454,7 @@ Public Class RpcExecutorSlave
             Throw LocalException
         End If
     End Sub
+    Private ExceptionQueue As New BlockingCollection(Of Exception)
     Private RequestExecuteQueue As New BlockingCollection(Of KeyValuePair(Of EventInfo, Action(Of Integer, IParameterWriter)))
     Private Sub ProcessRequestExecute(ByVal p As Packet)
         Try
@@ -477,6 +475,10 @@ Public Class RpcExecutorSlave
                     Pipe.Send(New Packet With {.Verb = RpcVerb.ResponseExecute, .Content = cp.Build()})
                 Case RpcVerb.RequestEvent
                     MainThreadEventLoop()
+                    While ExceptionQueue.Count > 0
+                        Dim ex = ExceptionQueue.Take()
+                        SendException(ExceptionInfo.GetExceptionInfo(ex))
+                    End While
                     While RequestExecuteQueue.Count > 0
                         Dim Pair = RequestExecuteQueue.Take()
                         SendRequestExecute(Pair.Key, Pair.Value)
@@ -593,7 +595,7 @@ Public Class RpcExecutorSlave
 
         Dim cp As New ContentPacker(s)
         cp.WriteParameter(mid)
-        Dim NumParameter = GetEventParameters(ei).Length
+        Dim NumParameter = ei.GetEventParameters().Length
         cp.WriteParameter(Of Int32)(NumParameter)
         ParameterWrite(NumParameter, cp)
 
@@ -611,7 +613,7 @@ Public Class RpcExecutorSlave
             .MethodId = mid,
             .MethodName = ei.Name,
             .TypeParamters = New Int32() {},
-            .Parameters = GetEventParameters(ei).Select(Function(param) GetTypeId(param.ParameterType)).ToArray(),
+            .Parameters = ei.GetEventParameters().Select(Function(param) GetTypeId(param.ParameterType)).ToArray(),
             .ReturnValues = New Int32() {}
         }
         Pipe.Send(New Packet With {.Verb = RpcVerb.RequestMethodBinding, .Content = s.ToBytes(mb)})
@@ -663,8 +665,13 @@ Public Class RpcExecutorSlave
 
     Public Sub Listen()
         While True
-            Dim p = Pipe.Receive()
-            ProcessPacket(p)
+            Try
+                Dim p = Pipe.Receive()
+                ProcessPacket(p)
+            Catch ex As Exception
+                If ExceptionQueue.Count > 20 Then Throw
+                ExceptionQueue.Add(ex)
+            End Try
         End While
     End Sub
     Public Sub SendRequestExecuteAsync(ByVal ei As EventInfo, ByVal ParameterWrite As Action(Of Integer, IParameterWriter))
