@@ -3,7 +3,7 @@
 '  File:        Rpc.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 远程过程调用代理
-'  Version:     2010.12.27.
+'  Version:     2010.12.28.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -44,9 +44,11 @@ Public Class Rpc
 
             Dim DummyMethod = DirectCast(AddressOf CreateMasterEventParameterReceiverResolver(Of T, T), Func(Of T, Dictionary(Of EventInfo, MethodInfo), Func(Of EventInfo, Action(Of Integer, IParameterReader)))).Method
             Dim m = DummyMethod.GetGenericMethodDefinition().MakeGenericMethod(GetType(T), ProxyType)
-            Dim EventParameterReceiverResolver = DirectCast(m.Invoke(Nothing, New Object() {Proxy, EventToRaiserMethod}), Func(Of EventInfo, Action(Of Integer, IParameterReader)))
+            Dim md = [Delegate].CreateDelegate(GetType(Func(Of ,,)).MakeGenericType(ProxyType, GetType(Dictionary(Of EventInfo, MethodInfo)), m.ReturnType), m)
 
-            Master = New RpcExecutorMaster(Pipe, New SerializerAdapter(s), GetType(T), EventParameterReceiverResolver, MainThreadAsyncInvoker)
+            Dim EventParameterReceiverResolver = md.StaticDynamicInvoke(Of T, Dictionary(Of EventInfo, MethodInfo), Func(Of EventInfo, Action(Of Integer, IParameterReader)))(Proxy, EventToRaiserMethod)
+
+            Master = New RpcExecutorMaster(Pipe, s, GetType(T), EventParameterReceiverResolver, MainThreadAsyncInvoker)
             Success = True
         Finally
             If Not Success Then
@@ -141,42 +143,59 @@ Public Class Rpc
         If Not ServiceInterfaceType.IsInterface Then Throw New ArgumentException("服务类型必须为接口")
         If ServiceInterfaceType.IsGenericTypeDefinition Then Throw New ArgumentException("服务类型必须是具体类型，泛型类型应先具体化")
 
-        Dim an As New AssemblyName("IpcDynamicAssembly")
-        Dim ab = AppDomain.CurrentDomain.DefineDynamicAssembly(an, AssemblyBuilderAccess.RunAndCollect)
-        Dim mob = ab.DefineDynamicModule(an.Name)
-        Dim tb = mob.DefineType("IpcServiceProxy", TypeAttributes.Public Or TypeAttributes.Class, GetType(_ServiceProxy), {GetType(T)})
+        Dim an As New AssemblyName("<>_Type$IpcDynamicAssembly")
+        Dim assb = AppDomain.CurrentDomain.DefineDynamicAssembly(an, AssemblyBuilderAccess.RunAndCollect) 'RunAndSave
+        'Dim mob = assb.DefineDynamicModule(an.Name, "Test.dll")
+        Dim mob = assb.DefineDynamicModule(an.Name)
+        Dim tb = mob.DefineType("<>_Type$IpcServiceProxy", TypeAttributes.Public Or TypeAttributes.Class, GetType(_ServiceProxy), {GetType(T)})
+
+        Dim CreateMethod =
+            Function(mi As MethodInfo) As MethodBuilder
+                Dim Parameters = mi.GetParameters().Select(Function(p) p.ParameterType).ToArray()
+                Dim ReturnValues = (Function(rv) IIf(Of Type())(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
+
+                Dim FieldType As Type
+
+                If ReturnValues.Length > 0 Then
+                    Dim Num = Parameters.Length + ReturnValues.Length
+                    FieldType = Type.GetType("System.Func`" & Num).MakeGenericType(Parameters.Concat(ReturnValues).ToArray())
+                Else
+                    Dim Num = Parameters.Length
+                    If Num > 0 Then
+                        FieldType = Type.GetType("System.Action`" & Num).MakeGenericType(Parameters)
+                    Else
+                        FieldType = GetType(Action)
+                    End If
+                End If
+
+                Dim fb = tb.DefineField("<>_Field$" & String.Join("_", {mi.Name}.Concat(Parameters.Select(Function(p) p.Name)).ToArray()), FieldType, FieldAttributes.Public)
+                MethodToExecuteField.Add(mi, fb)
+
+                Dim mb = tb.DefineMethod(mi.Name, mi.Attributes And Not MethodAttributes.Abstract, mi.CallingConvention, mi.ReturnType, Parameters)
+                If mi.IsGenericMethodDefinition Then Throw New NotSupportedException
+
+                Dim ig = mb.GetILGenerator()
+                ig.Emit(OpCodes.Ldarg_0)
+                ig.Emit(OpCodes.Ldfld, fb)
+                For n = 0 To Parameters.Length - 1
+                    ig.Emit(OpCodes.Ldarg, n + 1)
+                Next
+                ig.EmitCall(OpCodes.Callvirt, FieldType.GetMethod("Invoke"), Nothing)
+                ig.Emit(OpCodes.Ret)
+
+                Return mb
+            End Function
 
         For Each mi In ServiceInterfaceType.GetMethods.Where(Function(m) Not m.IsSpecialName)
-            Dim Parameters = mi.GetParameters().Select(Function(p) p.ParameterType).ToArray()
-            Dim ReturnValues = (Function(rv) IIf(Of Type())(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
+            CreateMethod(mi)
+        Next
 
-            Dim FieldType As Type
-
-            If ReturnValues.Length > 0 Then
-                Dim Num = Parameters.Length + ReturnValues.Length
-                FieldType = Type.GetType("System.Func`" & Num).MakeGenericType(Parameters.Concat(ReturnValues).ToArray())
-            Else
-                Dim Num = Parameters.Length
-                If Num > 0 Then
-                    FieldType = Type.GetType("System.Action`" & Num).MakeGenericType(Parameters)
-                Else
-                    FieldType = GetType(Action)
-                End If
-            End If
-
-            Dim fb = tb.DefineField("<>_" & String.Join("_", {mi.Name}.Concat(Parameters.Select(Function(p) p.Name)).ToArray()), FieldType, FieldAttributes.Public)
-            MethodToExecuteField.Add(mi, fb)
-
-            Dim mb = tb.DefineMethod(mi.Name, mi.Attributes And Not MethodAttributes.Abstract, mi.CallingConvention, mi.ReturnType, Parameters)
-            If mi.IsGenericMethodDefinition Then Throw New NotSupportedException
-
-            Dim ig = mb.GetILGenerator()
-            ig.Emit(OpCodes.Ldarg_0)
-            ig.Emit(OpCodes.Ldfld, fb)
-            For n = 0 To Parameters.Length - 1
-                ig.Emit(OpCodes.Ldarg, n + 1)
-            Next
-            ig.EmitCall(OpCodes.Callvirt, FieldType.GetMethod("Invoke"), Nothing)
+        For Each pi In ServiceInterfaceType.GetProperties
+            Dim mg = CreateMethod(pi.GetGetMethod)
+            Dim ms = CreateMethod(pi.GetSetMethod)
+            Dim pb = tb.DefineProperty(pi.Name, pi.Attributes, pi.PropertyType, pi.GetIndexParameters().Select(Function(p) p.ParameterType).ToArray())
+            pb.SetGetMethod(mg)
+            pb.SetSetMethod(ms)
         Next
 
         For Each ei In ServiceInterfaceType.GetEvents()
@@ -184,26 +203,66 @@ Public Class Rpc
 
             Dim eb = tb.DefineEvent(ei.Name, ei.Attributes, ei.EventHandlerType)
 
+            Dim fb = tb.DefineField("<>_Event$_" & ei.Name, ei.EventHandlerType, FieldAttributes.Private)
+
+            Dim ob = tb.DefineMethod("<>_On$_" & ei.Name, MethodAttributes.Public, CallingConventions.HasThis, GetType(Void), Parameters)
+            EventToRaiserMethod.Add(ei, ob)
+
             Dim am = ei.GetAddMethod()
             Dim rm = ei.GetRemoveMethod()
 
-            tb.DefineMethod(am.Name, am.Attributes And Not MethodAttributes.Abstract, am.CallingConvention, am.ReturnType, am.GetParameters().Select(Function(p) p.ParameterType).ToArray())
-            tb.DefineMethod(rm.Name, rm.Attributes And Not MethodAttributes.Abstract, rm.CallingConvention, rm.ReturnType, rm.GetParameters().Select(Function(p) p.ParameterType).ToArray())
+            Dim ab = tb.DefineMethod(am.Name, am.Attributes And Not MethodAttributes.Abstract, am.CallingConvention, am.ReturnType, am.GetParameters().Select(Function(p) p.ParameterType).ToArray())
+            Dim rb = tb.DefineMethod(rm.Name, rm.Attributes And Not MethodAttributes.Abstract, rm.CallingConvention, rm.ReturnType, rm.GetParameters().Select(Function(p) p.ParameterType).ToArray())
+            ab.SetImplementationFlags(MethodImplAttributes.Synchronized)
+            rb.SetImplementationFlags(MethodImplAttributes.Synchronized)
+            eb.SetAddOnMethod(ab)
+            eb.SetRemoveOnMethod(rb)
 
-            'Dim mb = tb.DefineMethod(ei.Name, MethodAttributes.Public, CallingConventions.HasThis, GetType(Void), Parameters)
+            Dim oig = ob.GetILGenerator()
+            oig.Emit(OpCodes.Ldarg_0)
+            oig.Emit(OpCodes.Ldfld, fb)
+            oig.Emit(OpCodes.Dup)
+            Dim omel = oig.DefineLabel()
+            oig.Emit(OpCodes.Brfalse_S, omel)
+            For n = 0 To Parameters.Length - 1
+                oig.Emit(OpCodes.Ldarg, n + 1)
+            Next
+            oig.EmitCall(OpCodes.Callvirt, ei.EventHandlerType.GetMethod("Invoke"), Parameters)
+            oig.Emit(OpCodes.Ret)
+            oig.MarkLabel(omel)
+            oig.Emit(OpCodes.Pop)
+            oig.Emit(OpCodes.Ret)
 
-            'Dim ig = mb.GetILGenerator()
-            'ig.Emit(OpCodes.Ldarg_0)
-            'ig.Emit(OpCodes.Ldfld, ei)
-            'For n = 0 To Parameters.Length - 1
-            '    ig.Emit(OpCodes.Ldarg, n + 1)
-            'Next
-            'ig.EmitCall(OpCodes.Callvirt, FieldType.GetMethod("Invoke"), Nothing)
+            Dim aig = ab.GetILGenerator()
+            aig.Emit(OpCodes.Ldarg_0)
+            aig.Emit(OpCodes.Dup)
+            aig.Emit(OpCodes.Ldfld, fb)
+            aig.Emit(OpCodes.Ldarg_1)
+            aig.EmitCall(OpCodes.Call, GetType([Delegate]).GetMethod("Combine", {GetType([Delegate]), GetType([Delegate])}), {GetType([Delegate]), GetType([Delegate])})
+            aig.Emit(OpCodes.Castclass, ei.EventHandlerType)
+            aig.Emit(OpCodes.Stfld, fb)
+            aig.Emit(OpCodes.Ret)
 
-            'MethodToExecuteField.Add(mi, fb)
+            Dim rig = rb.GetILGenerator()
+            rig.Emit(OpCodes.Ldarg_0)
+            rig.Emit(OpCodes.Dup)
+            rig.Emit(OpCodes.Ldfld, fb)
+            rig.Emit(OpCodes.Ldarg_1)
+            rig.EmitCall(OpCodes.Call, GetType([Delegate]).GetMethod("Remove", {GetType([Delegate]), GetType([Delegate])}), {GetType([Delegate]), GetType([Delegate])})
+            rig.Emit(OpCodes.Castclass, ei.EventHandlerType)
+            rig.Emit(OpCodes.Stfld, fb)
+            rig.Emit(OpCodes.Ret)
         Next
 
-        Return New MasterTypeResult With {.MasterType = tb.CreateType(), .MethodToExecuteField = MethodToExecuteField, .EventToRaiserMethod = EventToRaiserMethod}
+        Dim tc = tb.CreateType()
+
+        'assb.Save("Test.dll")
+
+        Return New MasterTypeResult With {
+            .MasterType = tc,
+            .MethodToExecuteField = MethodToExecuteField.ToDictionary(Function(Pair) Pair.Key, Function(Pair) tc.GetField(Pair.Value.Name)),
+            .EventToRaiserMethod = EventToRaiserMethod.ToDictionary(Function(Pair) Pair.Key, Function(Pair) tc.GetMethod(Pair.Value.Name, Pair.Value.GetParameters().Select(Function(p) p.ParameterType).ToArray()))
+        }
     End Function
 
     Private Shared Function CreateMasterEventParameterReceiverResolver(Of T As IDisposable, C As T)(ByVal ProxyService As C, ByVal EventToRaiseMethod As Dictionary(Of EventInfo, MethodInfo)) As Func(Of EventInfo, Action(Of Integer, IParameterReader))
@@ -228,7 +287,12 @@ Public Class Rpc
             Dim Read = GetType(IParameterReader).GetMethods.Single
             Statements.AddRange(ParameterVariables.Select(Function(pv) Expression.Assign(pv, Expression.Call(pr, Read.MakeGenericMethod(pv.Type)))).ToArray())
 
-            Dim RealCall = Expression.Call(ProxyParameter, EventToRaiseMethod(ei), ParameterVariables)
+            Dim RealCall As Expression
+            If ParameterVariables.Length = 0 Then
+                RealCall = Expression.Call(ProxyParameter, EventToRaiseMethod(ei))
+            Else
+                RealCall = Expression.Call(ProxyParameter, EventToRaiseMethod(ei), ParameterVariables)
+            End If
 
             Statements.Add(RealCall)
 
@@ -293,42 +357,52 @@ Public Class Rpc
         Dim Type = GetType(T)
         If Not Type.IsInterface Then Throw New ArgumentException
 
-        Dim Methods = Type.GetMethods()
         Dim Dict As New Dictionary(Of MethodInfo, Action(Of Integer, IParameterReader, Integer, IParameterWriter))
 
-        For Each mi In Methods
-            Dim ConcreteServiceParameter = Expression.Parameter(Type)
+        Dim CreateMethod =
+            Function(mi As MethodInfo) As Action(Of Integer, IParameterReader, Integer, IParameterWriter)
+                Dim ConcreteServiceParameter = Expression.Parameter(Type)
 
-            Dim pNumParameter = Expression.Parameter(GetType(Integer), "NumParameter")
-            Dim pr = Expression.Parameter(GetType(IParameterReader), "r")
-            Dim pNumReturnValue = Expression.Parameter(GetType(Integer), "NumReturnValue")
-            Dim pw = Expression.Parameter(GetType(IParameterWriter), "w")
+                Dim pNumParameter = Expression.Parameter(GetType(Integer), "NumParameter")
+                Dim pr = Expression.Parameter(GetType(IParameterReader), "r")
+                Dim pNumReturnValue = Expression.Parameter(GetType(Integer), "NumReturnValue")
+                Dim pw = Expression.Parameter(GetType(IParameterWriter), "w")
 
-            Dim Parameters = mi.GetParameters()
-            Dim ReturnValues = (Function(rv) IIf(Of Type())(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
+                Dim Parameters = mi.GetParameters()
+                Dim ReturnValues = (Function(rv) IIf(Of Type())(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
 
-            Dim Statements As New List(Of Expression)
-            Statements.Add(Expression.IfThen(Expression.NotEqual(pNumParameter, Expression.Constant(Parameters.Length)), Expression.Throw(Expression.[New](GetType(InvalidOperationException)))))
-            Statements.Add(Expression.IfThen(Expression.NotEqual(pNumReturnValue, Expression.Constant(ReturnValues.Length)), Expression.Throw(Expression.[New](GetType(InvalidOperationException)))))
+                Dim Statements As New List(Of Expression)
+                Statements.Add(Expression.IfThen(Expression.NotEqual(pNumParameter, Expression.Constant(Parameters.Length)), Expression.Throw(Expression.[New](GetType(InvalidOperationException)))))
+                Statements.Add(Expression.IfThen(Expression.NotEqual(pNumReturnValue, Expression.Constant(ReturnValues.Length)), Expression.Throw(Expression.[New](GetType(InvalidOperationException)))))
 
-            Dim ParameterVariables = Parameters.Select(Function(p) Expression.Variable(p.ParameterType)).ToArray()
-            Dim Read = GetType(IParameterReader).GetMethods.Single
-            Statements.AddRange(ParameterVariables.Select(Function(pv) Expression.Assign(pv, Expression.Call(pr, Read.MakeGenericMethod(pv.Type)))).ToArray())
+                Dim ParameterVariables = Parameters.Select(Function(p) Expression.Variable(p.ParameterType)).ToArray()
+                Dim Read = GetType(IParameterReader).GetMethods.Single
+                Statements.AddRange(ParameterVariables.Select(Function(pv) Expression.Assign(pv, Expression.Call(pr, Read.MakeGenericMethod(pv.Type)))).ToArray())
 
-            Dim RealCall = Expression.Call(ConcreteServiceParameter, mi, ParameterVariables)
+                Dim RealCall = Expression.Call(ConcreteServiceParameter, mi, ParameterVariables)
 
-            If ReturnValues.Length = 0 Then
-                Statements.Add(RealCall)
-            Else
-                Dim Write = GetType(IParameterWriter).GetMethods.Single
-                Statements.Add(Expression.Call(pw, Write.MakeGenericMethod(ReturnValues.Single), RealCall))
-            End If
+                If ReturnValues.Length = 0 Then
+                    Statements.Add(RealCall)
+                Else
+                    Dim Write = GetType(IParameterWriter).GetMethods.Single
+                    Statements.Add(Expression.Call(pw, Write.MakeGenericMethod(ReturnValues.Single), RealCall))
+                End If
 
-            Dim Inner = Expression.Lambda(Expression.Block(ParameterVariables, Statements), pNumParameter, pr, pNumReturnValue, pw)
-            Dim Outer = Expression.Lambda(Inner, ConcreteServiceParameter)
-            Dim Compiled = DirectCast(Outer.Compile(), Func(Of T, Action(Of Integer, IParameterReader, Integer, IParameterWriter)))
+                Dim Inner = Expression.Lambda(Expression.Block(ParameterVariables, Statements), pNumParameter, pr, pNumReturnValue, pw)
+                Dim Outer = Expression.Lambda(Inner, ConcreteServiceParameter)
+                Dim Compiled = DirectCast(Outer.Compile(), Func(Of T, Action(Of Integer, IParameterReader, Integer, IParameterWriter)))
 
-            Dict.Add(mi, Compiled(ConcreteService))
+                Return Compiled(ConcreteService)
+            End Function
+
+        For Each mi In Type.GetMethods().Where(Function(m) Not m.IsSpecialName)
+            Dict.Add(mi, CreateMethod(mi))
+        Next
+        For Each pi In Type.GetProperties()
+            Dim mg = pi.GetGetMethod()
+            Dim ms = pi.GetSetMethod()
+            Dict.Add(mg, CreateMethod(mg))
+            Dict.Add(ms, CreateMethod(ms))
         Next
 
         Dim MethodParameterReceiverResolver =
