@@ -18,6 +18,7 @@ Imports Firefly.Streaming
 'Verb:Int32 Length:Int32 Content:Byte{Length}
 Public Class Packet
     Public Verb As RpcVerb
+    Public StackDepth As Int32
     Public Content As Byte()
 End Class
 

@@ -165,6 +165,30 @@ Public Class RpcExecutorMaster
         End If
     End Sub
 
+    Private StackDepth As Int32 = 0
+    Private Sub Send(ByVal p As Packet)
+        If p.StackDepth < 0 OrElse (p.StackDepth <> StackDepth - 1 AndAlso p.StackDepth <> StackDepth + 1) Then Throw New InvalidOperationException
+        Pipe.Send(p)
+        StackDepth = p.StackDepth
+    End Sub
+    Private Sub Send(ByVal p As Packet, ByVal Timeout As Integer)
+        If p.StackDepth < 0 OrElse (p.StackDepth <> StackDepth - 1 AndAlso p.StackDepth <> StackDepth + 1) Then Throw New InvalidOperationException
+        Pipe.Send(p, Timeout)
+        StackDepth = p.StackDepth
+    End Sub
+    Private Function Receive() As Packet
+        Dim p = Pipe.Receive()
+        If p.StackDepth < 0 OrElse (p.StackDepth <> StackDepth - 1 AndAlso p.StackDepth <> StackDepth + 1) Then Throw New InvalidOperationException
+        StackDepth = p.StackDepth
+        Return p
+    End Function
+    Private Function Receive(ByVal Timeout As Integer) As Packet
+        Dim p = Pipe.Receive(Timeout)
+        If p.StackDepth < 0 OrElse (p.StackDepth <> StackDepth - 1 AndAlso p.StackDepth <> StackDepth + 1) Then Throw New InvalidOperationException
+        StackDepth = p.StackDepth
+        Return p
+    End Function
+
     Private Sub ProcessException(ByVal p As Packet)
         Dim RemoteException As Exception = Nothing
         Try
@@ -197,7 +221,7 @@ Public Class RpcExecutorMaster
                     Dim cp As New ContentPacker(s)
                     cp.WriteParameter(0)
 
-                    Pipe.Send(New Packet With {.Verb = RpcVerb.ResponseExecute, .Content = cp.Build()})
+                    Send(New Packet With {.Verb = RpcVerb.ResponseExecute, .StackDepth = StackDepth - 1, .Content = cp.Build()})
                 Case RpcVerb.ResponseEvent
                 Case Else
                     Throw New NotSupportedException
@@ -215,7 +239,7 @@ Public Class RpcExecutorMaster
                     TypeBindings.Add(tb.TypeId, tb)
                     NumType += 1
                     Dim cp As New ContentPacker(s)
-                    Pipe.Send(New Packet With {.Verb = RpcVerb.ResponseTypeBinding, .Content = cp.Build()})
+                    Send(New Packet With {.Verb = RpcVerb.ResponseTypeBinding, .StackDepth = StackDepth - 1, .Content = cp.Build()})
                 Case RpcVerb.RequestMethodBinding
                     Dim mb = s.FromBytes(Of MethodBinding)(p.Content)
                     If mb.MethodId <> NumMethod Then Throw New InvalidDataException
@@ -248,7 +272,7 @@ Public Class RpcExecutorMaster
 
                     NumMethod += 1
                     Dim cp As New ContentPacker(s)
-                    Pipe.Send(New Packet With {.Verb = RpcVerb.ResponseMethodBinding, .Content = cp.Build()})
+                    Send(New Packet With {.Verb = RpcVerb.ResponseMethodBinding, .StackDepth = StackDepth - 1, .Content = cp.Build()})
                 Case Else
                     Throw New NotSupportedException
             End Select
@@ -270,7 +294,7 @@ Public Class RpcExecutorMaster
     End Sub
     Private Function ReceivePacket(ByVal Verb As RpcVerb) As Packet
         While True
-            Dim p = Pipe.Receive()
+            Dim p = Receive()
             If p.Verb = Verb Then Return p
             ProcessPacket(p)
         End While
@@ -278,7 +302,7 @@ Public Class RpcExecutorMaster
     End Function
 
     Private Sub SendException(ByVal Message As String)
-        Pipe.Send(New Packet With {.Verb = RpcVerb.Excetpion, .Content = UTF16.GetBytes(Message)})
+        Send(New Packet With {.Verb = RpcVerb.Excetpion, .StackDepth = StackDepth - 1, .Content = UTF16.GetBytes(Message)})
     End Sub
     Public Sub SendRequestExecute(ByVal mi As MethodInfo, ByVal ParameterWrite As Action(Of Integer, IParameterWriter), ByVal ReturnValueReader As Action(Of Integer, IParameterReader))
         CancellationTokenSource.Cancel()
@@ -301,7 +325,7 @@ Public Class RpcExecutorMaster
             cp.WriteParameter(Of Int32)(NumParameter)
             ParameterWrite(NumParameter, cp)
 
-            Pipe.Send(New Packet With {.Verb = RpcVerb.RequestExecute, .Content = cp.Build()})
+            Send(New Packet With {.Verb = RpcVerb.RequestExecute, .StackDepth = StackDepth + 1, .Content = cp.Build()})
             Dim p = ReceivePacket(RpcVerb.ResponseExecute)
 
             Dim cu As New ContentUnpacker(p.Content, s)
@@ -327,7 +351,7 @@ Public Class RpcExecutorMaster
             .Parameters = mi.GetParameters().Select(Function(param) GetTypeId(param.ParameterType)).ToArray(),
             .ReturnValues = ReturnValues.ToArray()
         }
-        Pipe.Send(New Packet With {.Verb = RpcVerb.RequestMethodBinding, .Content = s.ToBytes(mb)})
+        Send(New Packet With {.Verb = RpcVerb.RequestMethodBinding, .StackDepth = StackDepth + 1, .Content = s.ToBytes(mb)})
         ReceivePacket(RpcVerb.ResponseMethodBinding)
     End Sub
 
@@ -341,7 +365,7 @@ Public Class RpcExecutorMaster
                 NumType += 1
 
                 Dim h As Int32 = GetTypeHash(t)
-                Pipe.Send(New Packet With {.Verb = RpcVerb.RequestTypeBinding, .Content = s.ToBytes(New TypeBinding With {.TypeId = tid, .Hash = h})})
+                Send(New Packet With {.Verb = RpcVerb.RequestTypeBinding, .StackDepth = StackDepth + 1, .Content = s.ToBytes(New TypeBinding With {.TypeId = tid, .Hash = h})})
                 ReceivePacket(RpcVerb.ResponseTypeBinding)
 
                 Success = True
@@ -380,9 +404,15 @@ Public Class RpcExecutorMaster
                 If CancellationToken.IsCancellationRequested Then Exit While
                 Thread.Sleep(10)
             Next
-            Pipe.Send(New Packet With {.Verb = RpcVerb.RequestEvent, .Content = New Byte() {}}, 1000)
-            Dim p = Pipe.Receive(2000)
-            If p.Verb = RpcVerb.ResponseEvent Then Continue While
+            If StackDepth = 0 Then Send(New Packet With {.Verb = RpcVerb.RequestEvent, .StackDepth = StackDepth + 1, .Content = New Byte() {}}, 500)
+            Dim p = Receive(2000)
+            If StackDepth = 0 Then
+                If p.Verb = RpcVerb.ResponseEvent Then
+                    Continue While
+                Else
+                    Throw New InvalidOperationException
+                End If
+            End If
 
             If CancellationToken.IsCancellationRequested Then
                 ClientRequestExecute = p
@@ -438,6 +468,19 @@ Public Class RpcExecutorSlave
     Public Sub Dispose() Implements IDisposable.Dispose
     End Sub
 
+    Private StackDepth As Int32 = 0
+    Private Sub Send(ByVal p As Packet)
+        If p.StackDepth < 0 OrElse (p.StackDepth <> StackDepth - 1 AndAlso p.StackDepth <> StackDepth + 1) Then Throw New InvalidOperationException
+        Pipe.Send(p)
+        StackDepth = p.StackDepth
+    End Sub
+    Private Function Receive() As Packet
+        Dim p = Pipe.Receive()
+        If p.StackDepth < 0 OrElse (p.StackDepth <> StackDepth - 1 AndAlso p.StackDepth <> StackDepth + 1) Then Throw New InvalidOperationException
+        StackDepth = p.StackDepth
+        Return p
+    End Function
+
     Private Sub ProcessException(ByVal p As Packet)
         Dim LocalException As Exception = Nothing
         Try
@@ -454,8 +497,8 @@ Public Class RpcExecutorSlave
             Throw LocalException
         End If
     End Sub
-    Private ExceptionQueue As New BlockingCollection(Of Exception)
-    Private RequestExecuteQueue As New BlockingCollection(Of KeyValuePair(Of EventInfo, Action(Of Integer, IParameterWriter)))
+    Private ExceptionQueue As New ConcurrentQueue(Of Exception)
+    Private RequestExecuteQueue As New ConcurrentQueue(Of KeyValuePair(Of EventInfo, Action(Of Integer, IParameterWriter)))
     Private Sub ProcessRequestExecute(ByVal p As Packet)
         Try
             Select Case p.Verb
@@ -472,19 +515,23 @@ Public Class RpcExecutorSlave
 
                     MethodParameterReceiverResolver(mi)(NumParameter, cu, NumReturnValue, cp)
 
-                    Pipe.Send(New Packet With {.Verb = RpcVerb.ResponseExecute, .Content = cp.Build()})
+                    Send(New Packet With {.Verb = RpcVerb.ResponseExecute, .StackDepth = StackDepth - 1, .Content = cp.Build()})
                 Case RpcVerb.RequestEvent
                     MainThreadEventLoop()
                     While ExceptionQueue.Count > 0
-                        Dim ex = ExceptionQueue.Take()
-                        SendException(ExceptionInfo.GetExceptionInfo(ex))
+                        Dim ex As Exception = Nothing
+                        If ExceptionQueue.TryDequeue(ex) Then
+                            SendException(ExceptionInfo.GetExceptionInfo(ex))
+                        End If
                     End While
                     While RequestExecuteQueue.Count > 0
-                        Dim Pair = RequestExecuteQueue.Take()
-                        SendRequestExecute(Pair.Key, Pair.Value)
+                        Dim Pair As KeyValuePair(Of EventInfo, Action(Of Integer, IParameterWriter)) = Nothing
+                        If RequestExecuteQueue.TryDequeue(Pair) Then
+                            SendRequestExecute(Pair.Key, Pair.Value)
+                        End If
                     End While
                     Dim cp As New ContentPacker(s)
-                    Pipe.Send(New Packet With {.Verb = RpcVerb.ResponseEvent, .Content = cp.Build()})
+                    Send(New Packet With {.Verb = RpcVerb.ResponseEvent, .StackDepth = StackDepth - 1, .Content = cp.Build()})
                 Case Else
                     Throw New NotSupportedException
             End Select
@@ -501,7 +548,7 @@ Public Class RpcExecutorSlave
                     TypeBindings.Add(tb.TypeId, tb)
                     NumType += 1
                     Dim cp As New ContentPacker(s)
-                    Pipe.Send(New Packet With {.Verb = RpcVerb.ResponseTypeBinding, .Content = cp.Build()})
+                    Send(New Packet With {.Verb = RpcVerb.ResponseTypeBinding, .StackDepth = StackDepth - 1, .Content = cp.Build()})
                 Case RpcVerb.RequestMethodBinding
                     Dim mb = s.FromBytes(Of MethodBinding)(p.Content)
                     If mb.MethodId <> NumMethod Then Throw New InvalidDataException
@@ -558,7 +605,7 @@ Public Class RpcExecutorSlave
 
                     NumMethod += 1
                     Dim cp As New ContentPacker(s)
-                    Pipe.Send(New Packet With {.Verb = RpcVerb.ResponseMethodBinding, .Content = cp.Build()})
+                    Send(New Packet With {.Verb = RpcVerb.ResponseMethodBinding, .StackDepth = StackDepth - 1, .Content = cp.Build()})
                 Case Else
                     Throw New NotSupportedException
             End Select
@@ -580,7 +627,7 @@ Public Class RpcExecutorSlave
     End Sub
     Private Function ReceivePacket(ByVal Verb As RpcVerb) As Packet
         While True
-            Dim p = Pipe.Receive()
+            Dim p = Receive()
             If p.Verb = Verb Then Return p
             ProcessPacket(p)
         End While
@@ -588,7 +635,7 @@ Public Class RpcExecutorSlave
     End Function
 
     Private Sub SendException(ByVal Message As String)
-        Pipe.Send(New Packet With {.Verb = RpcVerb.Excetpion, .Content = UTF16.GetBytes(Message)})
+        Send(New Packet With {.Verb = RpcVerb.Excetpion, .StackDepth = StackDepth - 1, .Content = UTF16.GetBytes(Message)})
     End Sub
     Private Sub SendRequestExecute(ByVal ei As EventInfo, ByVal ParameterWrite As Action(Of Integer, IParameterWriter))
         Dim mid = GetMethodId(ei)
@@ -599,7 +646,7 @@ Public Class RpcExecutorSlave
         cp.WriteParameter(Of Int32)(NumParameter)
         ParameterWrite(NumParameter, cp)
 
-        Pipe.Send(New Packet With {.Verb = RpcVerb.RequestExecute, .Content = cp.Build()})
+        Send(New Packet With {.Verb = RpcVerb.RequestExecute, .StackDepth = StackDepth + 1, .Content = cp.Build()})
         Dim p = ReceivePacket(RpcVerb.ResponseExecute)
 
         Dim cu As New ContentUnpacker(p.Content, s)
@@ -616,7 +663,7 @@ Public Class RpcExecutorSlave
             .Parameters = ei.GetEventParameters().Select(Function(param) GetTypeId(param.ParameterType)).ToArray(),
             .ReturnValues = New Int32() {}
         }
-        Pipe.Send(New Packet With {.Verb = RpcVerb.RequestMethodBinding, .Content = s.ToBytes(mb)})
+        Send(New Packet With {.Verb = RpcVerb.RequestMethodBinding, .StackDepth = StackDepth + 1, .Content = s.ToBytes(mb)})
         ReceivePacket(RpcVerb.ResponseMethodBinding)
     End Sub
 
@@ -630,7 +677,7 @@ Public Class RpcExecutorSlave
                 NumType += 1
 
                 Dim h As Int32 = GetTypeHash(t)
-                Pipe.Send(New Packet With {.Verb = RpcVerb.RequestTypeBinding, .Content = s.ToBytes(New TypeBinding With {.TypeId = tid, .Hash = h})})
+                Send(New Packet With {.Verb = RpcVerb.RequestTypeBinding, .StackDepth = StackDepth + 1, .Content = s.ToBytes(New TypeBinding With {.TypeId = tid, .Hash = h})})
                 ReceivePacket(RpcVerb.ResponseTypeBinding)
 
                 Success = True
@@ -666,15 +713,15 @@ Public Class RpcExecutorSlave
     Public Sub Listen()
         While True
             Try
-                Dim p = Pipe.Receive()
+                Dim p = Receive()
                 ProcessPacket(p)
             Catch ex As Exception
                 If ExceptionQueue.Count > 20 Then Throw
-                ExceptionQueue.Add(ex)
+                ExceptionQueue.Enqueue(ex)
             End Try
         End While
     End Sub
     Public Sub SendRequestExecuteAsync(ByVal ei As EventInfo, ByVal ParameterWrite As Action(Of Integer, IParameterWriter))
-        RequestExecuteQueue.Add(CreatePair(ei, ParameterWrite))
+        RequestExecuteQueue.Enqueue(CreatePair(ei, ParameterWrite))
     End Sub
 End Class
