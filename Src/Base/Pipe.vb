@@ -75,6 +75,7 @@ Public NotInheritable Class PipeMaster
         If p Is Nothing OrElse p.Content Is Nothing Then Throw New ArgumentNullException
         Dim Pipe = PipeOut.AsWritable()
         Pipe.WriteInt32(p.Verb)
+        Pipe.WriteInt32(p.StackDepth)
         Pipe.WriteInt32(p.Content.Length)
         Pipe.Write(p.Content)
         Pipe.Flush()
@@ -83,8 +84,9 @@ Public NotInheritable Class PipeMaster
     Public Function Receive() As Packet Implements IMasterPipe.Receive
         If PipeIn Is Nothing Then Throw New InvalidOperationException
         Dim Pipe = PipeIn.AsReadable
-        Dim Verb = CType(Pipe.ReadInt32, RpcVerb)
-        Dim Length = Pipe.ReadInt32
+        Dim Verb = CType(Pipe.ReadInt32(), RpcVerb)
+        Dim StackDepth As Int32 = Pipe.ReadInt32()
+        Dim Length = Pipe.ReadInt32()
         Dim Content = New Byte(Length - 1) {}
 
         Dim Offset As Int32 = 0
@@ -96,7 +98,7 @@ Public NotInheritable Class PipeMaster
         If Offset <> Length Then Throw New ProtocolViolationException
 
         'Debug.WriteLine("MasterReceived: {0}".Formats(Verb))
-        Return New Packet With {.Verb = Verb, .Content = Content}
+        Return New Packet With {.Verb = Verb, .StackDepth = StackDepth, .Content = Content}
     End Function
 
     Public Sub Send(ByVal p As Packet, ByVal Timeout As Integer) Implements IMasterPipe.Send
@@ -163,6 +165,7 @@ Public NotInheritable Class PipeSlave
         If p Is Nothing OrElse p.Content Is Nothing Then Throw New ArgumentNullException
         Dim Pipe = PipeOut.AsWritable()
         Pipe.WriteInt32(p.Verb)
+        Pipe.WriteInt32(p.StackDepth)
         Pipe.WriteInt32(p.Content.Length)
         Pipe.Write(p.Content)
         Pipe.Flush()
@@ -172,6 +175,7 @@ Public NotInheritable Class PipeSlave
         If PipeIn Is Nothing Then Throw New InvalidOperationException
         Dim Pipe = PipeIn.AsReadable
         Dim Verb = CType(Pipe.ReadInt32, RpcVerb)
+        Dim StackDepth As Int32 = Pipe.ReadInt32()
         Dim Length = Pipe.ReadInt32
         Dim Content = New Byte(Length - 1) {}
 
@@ -184,6 +188,6 @@ Public NotInheritable Class PipeSlave
         If Offset <> Length Then Throw New ProtocolViolationException
 
         'Debug.WriteLine("SlaveReceived: {0}".Formats(Verb))
-        Return New Packet With {.Verb = Verb, .Content = Content}
+        Return New Packet With {.Verb = Verb, .StackDepth = StackDepth, .Content = Content}
     End Function
 End Class
