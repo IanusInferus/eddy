@@ -5,10 +5,9 @@ cd Src
 MSBuild /t:Rebuild /p:Configuration=Release
 cd ..
 
-copy ..\..\Bin\Firefly.Core.dll Bin\
-copy ..\..\Bin\Firefly.GUI.dll Bin\
-copy ..\..\Bin\Eddy.exe Bin\
-copy ..\..\Bin\Eddy.*.exe Bin\
-copy ..\..\Bin\Eddy.*.dll Bin\
-copy *.locproj Bin\
-copy *.locplugin Bin\
+xcopy ..\..\Bin\Firefly.*.dll Bin\ /Y
+xcopy ..\..\Bin\Eddy.exe Bin\ /Y
+xcopy ..\..\Bin\Eddy.*.dll Bin\ /Y
+xcopy ..\..\Bin\Eddy.* Bin\ /E /Y
+xcopy *.locproj Bin\ /Y
+xcopy *.locplugin Bin\ /Y
