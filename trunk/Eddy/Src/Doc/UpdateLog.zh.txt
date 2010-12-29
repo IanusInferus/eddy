@@ -13,6 +13,8 @@ Eddy:
 修正单目录插件没有加载的问题。
 Version:
 增加版本控制插件。
+Interfaces, Eddy, WinForm, Version:
+调节版本控制时的文本卸载和再加载。
 
 2010.12.28
 Base, Voice:

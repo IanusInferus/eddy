@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.12.25.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -954,6 +954,19 @@ Public Class FormMain
     End Sub
     Public Sub Application_FlushLocalizedText() Implements ITextLocalizerApplicationController.FlushLocalizedText
         FlushLocalizedText()
+    End Sub
+    Public Sub Application_Unload() Implements ITextLocalizerApplicationController.Unload
+        For Each L In LocalizationTextBoxes
+            L.UnloadText()
+        Next
+        For Each c In ApplicationData.Columns
+            For Each t In c.Keys
+                c.ForceUnloadText(t)
+            Next
+        Next
+    End Sub
+    Public Sub Application_Reload() Implements ITextLocalizerApplicationController.Reload
+        UpdateToTextName(ApplicationData.CurrentProject.TextName, ApplicationData.CurrentProject.TextNumber - 1)
     End Sub
 
     Public Event TextIndexChanged() Implements ITextLocalizerApplicationController.TextIndexChanged
