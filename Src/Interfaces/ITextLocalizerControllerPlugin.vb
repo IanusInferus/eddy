@@ -3,7 +3,7 @@
 '  File:        ITextLocalizerControllerPlugin.vb
 '  Location:    Eddy.Interfaces <Visual Basic .Net>
 '  Description: 控制器使用插件接口
-'  Version:     2010.12.25.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -33,6 +33,8 @@ Public Interface ITextLocalizerApplicationController
     Sub RefreshColumn(ByVal ColumnIndex As Integer)
     Sub RefreshMainPanel()
     Sub FlushLocalizedText()
+    Sub Unload()
+    Sub Reload()
 
     Property TextName() As String
     Property TextIndex() As Integer

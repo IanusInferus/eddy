@@ -203,7 +203,7 @@ Public Class ApplicationController
 
         For Each ConfigurationPlugin In ApplicationData.ConfigurationPlugins
             Dim PluginName = ConfigurationPlugin.GetType().Assembly.GetName().Name
-            Dim ConfigPath = GetAbsolutePath(PluginName & ".locplugin", Application.StartupPath)
+            Dim ConfigPath = PluginName & ".locplugin"
             Dim Config As XElement = Nothing
             If File.Exists(ConfigPath) Then
                 Config = XElement.Load(ConfigPath)

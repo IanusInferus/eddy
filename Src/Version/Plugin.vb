@@ -14,6 +14,7 @@ Imports System.Linq
 Imports System.IO
 Imports System.Xml.Linq
 Imports System.Diagnostics
+Imports Microsoft.VisualBasic
 Imports Firefly
 Imports Firefly.Mapping
 Imports Eddy
@@ -21,7 +22,6 @@ Imports Eddy.Interfaces
 
 Public Class Config
     Public CheckPathTemplate As String = "%s\.svn"
-    Public CheckoutCommandTemplate As String = "TortoiseProc /command:checkout /path:""%s"" /url:""http://%n"" /closeonend:0"
     Public UpdateCommandTemplate As String = "TortoiseProc /command:update /path:""%s"" /closeonend:0"
     Public CommitCommandTemplate As String = "TortoiseProc /command:commit /path:""%s"" /closeonend:0"
 End Class
@@ -53,30 +53,37 @@ Public Class Voice
     Private Sub Update()
         Dim Column = Columns(Controller.ColumnIndex)
         Dim DirectoryPath = GetAbsolutePath(Column.Directory, Environment.CurrentDirectory)
-        Dim DirectoryName = GetFileName(DirectoryPath)
-
-        Dim CheckPath = Config.CheckPathTemplate.Replace("%s", DirectoryPath).Replace("%n", DirectoryName)
+        Dim CheckPath = Config.CheckPathTemplate.Replace("%s", DirectoryPath)
 
         If Not Directory.Exists(CheckPath) Then
-            Dim CheckoutCommand = Config.CheckoutCommandTemplate.Replace("%s", DirectoryPath).Replace("%n", DirectoryName)
-            Execute(CheckoutCommand)
+            Controller.ShowError("当前栏""{0}""所在目录没有置于版本管理下，请先手动签出。".Formats(Column.DisplayName))
         Else
-            Dim UpdateCommand = Config.UpdateCommandTemplate.Replace("%s", DirectoryPath).Replace("%n", DirectoryName)
-            Execute(UpdateCommand)
+            Try
+                Controller.FlushLocalizedText()
+                Controller.Unload()
+                Dim UpdateCommand = Config.UpdateCommandTemplate.Replace("%s", DirectoryPath)
+                ExecuteAndActivate(UpdateCommand)
+            Finally
+                Controller.Reload()
+            End Try
         End If
-
     End Sub
 
     Private Sub Commit()
         Dim Column = Columns(Controller.ColumnIndex)
         Dim DirectoryPath = GetAbsolutePath(Column.Directory, Environment.CurrentDirectory)
-        Dim DirectoryName = GetFileName(DirectoryPath)
+        Dim CheckPath = Config.CheckPathTemplate.Replace("%s", DirectoryPath)
 
-        Dim CommitCommand = Config.CommitCommandTemplate.Replace("%s", DirectoryPath).Replace("%n", DirectoryName)
-        Execute(CommitCommand)
+        If Not Directory.Exists(CheckPath) Then
+            Controller.ShowError("当前栏""{0}""所在目录没有置于版本管理下，请先手动签出。".Formats(Column.DisplayName))
+        Else
+            Controller.FlushLocalizedText()
+            Dim CommitCommand = Config.CommitCommandTemplate.Replace("%s", DirectoryPath)
+            ExecuteAndActivate(CommitCommand)
+        End If
     End Sub
 
-    Private Sub Execute(ByVal Command As String)
-        Microsoft.VisualBasic.Interaction.Shell(Command)
+    Private Sub ExecuteAndActivate(ByVal Command As String)
+        Shell(Command, AppWinStyle.NormalFocus, True)
     End Sub
 End Class
