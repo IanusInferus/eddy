@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.FindReplace <Visual Basic .Net>
 '  Description: 文本本地化工具查找替换插件
-'  Version:     2010.12.11.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -14,10 +14,11 @@ Imports System.Linq
 Imports System.Drawing
 Imports System.IO
 Imports System.Text.RegularExpressions
+Imports System.Xml.Linq
 Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.TextEncoding
-Imports Firefly.Setting
+Imports Firefly.Mapping
 Imports Eddy.Interfaces
 
 Public Class Config
@@ -44,30 +45,35 @@ Public Class Plugin
     Implements ITextLocalizerTextHighlighter
     Implements ITextLocalizerToolStripButtonPlugin
     Implements ITextLocalizerKeyListenerPlugin
+    Implements ITextLocalizerConfigurationPlugin
 
-    Private SettingPath As String = "FindReplace.locplugin"
     Private Config As Config
+    Public Sub SetConfiguration(ByVal Config As XElement) Implements ITextLocalizerConfigurationPlugin.SetConfiguration
+        If Config Is Nothing Then
+            Me.Config = New Config
+        Else
+            Me.Config = (New XmlSerializer).Read(Of Config)(Config)
+        End If
+        ForeColor = Color.FromArgb(Integer.Parse(Me.Config.ForeColor, Globalization.NumberStyles.HexNumber))
+        BackColor = Color.FromArgb(Integer.Parse(Me.Config.BackColor, Globalization.NumberStyles.HexNumber))
+    End Sub
+    Public Function GetConfiguration() As XElement Implements ITextLocalizerConfigurationPlugin.GetConfiguration
+        Return (New XmlSerializer).Write(Me.Config)
+    End Function
+
     Private ForeColor As Color
     Private BackColor As Color
 
     Private WithEvents FormSearch As FormSearch
 
     Public Sub New()
-        If File.Exists(SettingPath) Then
-            Config = Xml.ReadFile(Of Config)(SettingPath)
-        Else
-            Config = New Config
-        End If
-        ForeColor = Color.FromArgb(Integer.Parse(Config.ForeColor, Globalization.NumberStyles.HexNumber))
-        BackColor = Color.FromArgb(Integer.Parse(Config.BackColor, Globalization.NumberStyles.HexNumber))
-
         FormSearch = New FormSearch
     End Sub
     Protected Overrides Sub DisposeManagedResource()
-        Try
-            Xml.WriteFile(SettingPath, UTF16, Config)
-        Catch
-        End Try
+        If FormSearch IsNot Nothing Then
+            FormSearch.Dispose()
+            FormSearch = Nothing
+        End If
         MyBase.DisposeManagedResource()
     End Sub
 
@@ -77,7 +83,7 @@ Public Class Plugin
         FormSearch.Columns = Columns
         FormSearch.MainColumnIndex = MainColumnIndex
 
-        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.FindReplace, .Text = "查找替换(Ctrl+F)..", .Click = AddressOf ToolStripButton_Click}}
+        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.FindReplace, .Text = "查找替换(Ctrl+F)...", .Click = AddressOf ToolStripButton_Click}}
     End Function
 
     Private Sub ToolStripButton_Click()

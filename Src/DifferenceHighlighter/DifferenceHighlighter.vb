@@ -3,7 +3,7 @@
 '  File:        DifferenceHighlighter.vb
 '  Location:    Eddy.DifferenceHighlighter <Visual Basic .Net>
 '  Description: 文本本地化工具差异比较高亮插件
-'  Version:     2010.12.10.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -13,9 +13,10 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.Drawing
 Imports System.IO
+Imports System.Xml.Linq
 Imports Firefly
 Imports Firefly.TextEncoding
-Imports Firefly.Setting
+Imports Firefly.Mapping
 Imports Eddy.Interfaces
 
 Public Class Config
@@ -34,24 +35,19 @@ End Class
 Public Class DifferenceHighlighter
     Inherits TextLocalizerBase
     Implements ITextLocalizerTextHighlighter
+    Implements ITextLocalizerConfigurationPlugin
 
-    Private SettingPath As String = "DifferenceHighlighter.locplugin"
     Private Config As Config
-
-    Public Sub New()
-        If File.Exists(SettingPath) Then
-            Config = Xml.ReadFile(Of Config)(SettingPath)
+    Public Sub SetConfiguration(ByVal Config As XElement) Implements ITextLocalizerConfigurationPlugin.SetConfiguration
+        If Config Is Nothing Then
+            Me.Config = New Config With {.ComparePairs = New ComparePair() {}}
         Else
-            Config = New Config With {.ComparePairs = New ComparePair() {}}
+            Me.Config = (New XmlSerializer).Read(Of Config)(Config)
         End If
     End Sub
-    Protected Overrides Sub DisposeManagedResource()
-        Try
-            Xml.WriteFile(SettingPath, UTF16, Config)
-        Catch
-        End Try
-        MyBase.DisposeManagedResource()
-    End Sub
+    Public Function GetConfiguration() As XElement Implements ITextLocalizerConfigurationPlugin.GetConfiguration
+        Return (New XmlSerializer).Write(Me.Config)
+    End Function
 
     Private Function SplitToLines(ByVal Text As String) As String()
         Dim Lines As New List(Of String)

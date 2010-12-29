@@ -54,6 +54,8 @@
     <Reference Include="Firefly.GUI">
       <HintPath>..\Firefly.GUI.dll</HintPath>
     </Reference>
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApplicationController.vb" />

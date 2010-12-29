@@ -3,7 +3,7 @@
 '  File:        EscapeSequenceHighlighter.vb
 '  Location:    Eddy.EscapeSequenceHighlighter <Visual Basic .Net>
 '  Description: 文本本地化工具控制符高亮插件
-'  Version:     2010.12.11.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -14,9 +14,10 @@ Imports System.Linq
 Imports System.Drawing
 Imports System.IO
 Imports System.Text.RegularExpressions
+Imports System.Xml.Linq
 Imports Firefly
 Imports Firefly.TextEncoding
-Imports Firefly.Setting
+Imports Firefly.Mapping
 Imports Eddy.Interfaces
 
 Public Class Config
@@ -31,30 +32,26 @@ Public Class EscapeSequenceHighlighter
     Implements ITextLocalizerTextHighlighter
     Implements ITextLocalizerGridTextFormatter
     Implements ITextLocalizerToolStripButtonPlugin
+    Implements ITextLocalizerConfigurationPlugin
 
-    Private SettingPath As String = "EscapeSequenceHighlighter.locplugin"
     Private Config As Config
+    Public Sub SetConfiguration(ByVal Config As XElement) Implements ITextLocalizerConfigurationPlugin.SetConfiguration
+        If Config Is Nothing Then
+            Me.Config = New Config
+        Else
+            Me.Config = (New XmlSerializer).Read(Of Config)(Config)
+        End If
+        EscapeSequenceRegex = New Regex(Me.Config.Regex, RegexOptions.ExplicitCapture Or RegexOptions.Compiled)
+        ForeColor = Color.FromArgb(Integer.Parse(Me.Config.ForeColor, Globalization.NumberStyles.HexNumber))
+        BackColor = Color.FromArgb(Integer.Parse(Me.Config.BackColor, Globalization.NumberStyles.HexNumber))
+    End Sub
+    Public Function GetConfiguration() As XElement Implements ITextLocalizerConfigurationPlugin.GetConfiguration
+        Return (New XmlSerializer).Write(Me.Config)
+    End Function
+
     Private EscapeSequenceRegex As Regex
     Private ForeColor As Color
     Private BackColor As Color
-
-    Public Sub New()
-        If File.Exists(SettingPath) Then
-            Config = Xml.ReadFile(Of Config)(SettingPath)
-        Else
-            Config = New Config
-        End If
-        EscapeSequenceRegex = New Regex(Config.Regex, RegexOptions.ExplicitCapture Or RegexOptions.Compiled)
-        ForeColor = Color.FromArgb(Integer.Parse(Config.ForeColor, Globalization.NumberStyles.HexNumber))
-        BackColor = Color.FromArgb(Integer.Parse(Config.BackColor, Globalization.NumberStyles.HexNumber))
-    End Sub
-    Protected Overrides Sub DisposeManagedResource()
-        Try
-            Xml.WriteFile(SettingPath, UTF16, Config)
-        Catch
-        End Try
-        MyBase.DisposeManagedResource()
-    End Sub
 
     Private Function GetTextStylesForText(ByVal Text As String) As TextStyle()
         Return (From m As Match In EscapeSequenceRegex.Matches(Text) Select (New TextStyle With {.Index = m.Index, .Length = m.Length, .ForeColor = ForeColor, .BackColor = BackColor})).ToArray

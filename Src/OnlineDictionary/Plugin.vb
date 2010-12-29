@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具在线词典插件
-'  Version:     2010.12.26.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -15,6 +15,7 @@ Imports System.Drawing
 Imports System.IO
 Imports System.Text
 Imports System.Text.RegularExpressions
+Imports System.Xml.Linq
 Imports System.Diagnostics
 Imports System.Threading
 Imports System.Threading.Tasks
@@ -22,7 +23,7 @@ Imports System.ComponentModel
 Imports System.Net
 Imports Firefly
 Imports Firefly.TextEncoding
-Imports Firefly.Setting
+Imports Firefly.Mapping
 Imports Eddy.Interfaces
 
 Public Class Config
@@ -39,29 +40,24 @@ End Class
 Public Class Plugin
     Inherits TextLocalizerBase
     Implements ITextLocalizerToolStripButtonPlugin
+    Implements ITextLocalizerConfigurationPlugin
 
-    Private SettingPath As String = "OnlineDictionary.locplugin"
     Private Config As Config
-
-    Public Sub New()
-        If File.Exists(SettingPath) Then
-            Config = Xml.ReadFile(Of Config)(SettingPath)
-        Else
-            Config = New Config With {.Dictionaries = New OnlineDictionaryDescriptor() {
-                New OnlineDictionaryDescriptor With {.Name = "金山词霸..", .UrlTemplate = "http://www.iciba.com/index.php?s=%s", .Encoding = "UTF-8"},
-                New OnlineDictionaryDescriptor With {.Name = "Yahoo!辞書..", .UrlTemplate = "http://dic.search.yahoo.co.jp/search?p=%s&ei=UTF-8", .Encoding = "UTF-8"},
-                New OnlineDictionaryDescriptor With {.Name = "沪江小D..", .UrlTemplate = "http://dict.hjenglish.com/app/jp/jc/%s", .Encoding = "UTF-8"},
-                New OnlineDictionaryDescriptor With {.Name = "Babylon..", .UrlTemplate = "http://info.babylon.com/cgi-bin/info.cgi?word=%s&lang=0&type=undefined", .Encoding = "UTF-8", .IconUrl = "http://www.babylon.com"}
+    Public Sub SetConfiguration(ByVal Config As XElement) Implements ITextLocalizerConfigurationPlugin.SetConfiguration
+        If Config Is Nothing Then
+            Me.Config = New Config With {.Dictionaries = New OnlineDictionaryDescriptor() {
+                New OnlineDictionaryDescriptor With {.Name = "金山词霸...", .UrlTemplate = "http://www.iciba.com/index.php?s=%s", .Encoding = "UTF-8"},
+                New OnlineDictionaryDescriptor With {.Name = "Yahoo!辞書...", .UrlTemplate = "http://dic.search.yahoo.co.jp/search?p=%s&ei=UTF-8", .Encoding = "UTF-8"},
+                New OnlineDictionaryDescriptor With {.Name = "沪江小D...", .UrlTemplate = "http://dict.hjenglish.com/app/jp/jc/%s", .Encoding = "UTF-8"},
+                New OnlineDictionaryDescriptor With {.Name = "Babylon...", .UrlTemplate = "http://info.babylon.com/cgi-bin/info.cgi?word=%s&lang=0&type=undefined", .Encoding = "UTF-8", .IconUrl = "http://www.babylon.com"}
             }}
+        Else
+            Me.Config = (New XmlSerializer).Read(Of Config)(Config)
         End If
     End Sub
-    Protected Overrides Sub DisposeManagedResource()
-        Try
-            Xml.WriteFile(SettingPath, UTF16, Config)
-        Catch
-        End Try
-        MyBase.DisposeManagedResource()
-    End Sub
+    Public Function GetConfiguration() As XElement Implements ITextLocalizerConfigurationPlugin.GetConfiguration
+        Return (New XmlSerializer).Write(Me.Config)
+    End Function
 
     Private Function GetEncoding(ByVal NameOrCodePage As String) As Encoding
         Dim CodePage As Integer

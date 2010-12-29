@@ -4,8 +4,9 @@
   )
 )
 @cd..
-@if exist Bin (
-  @cd Bin
+@for /D %%r in (Bin;Bin\*) do @(
+  @pushd "%%r"
+  @if errorlevel 1 goto exit
   @for %%a in (*.exe;*.dll) do @(
     @del %%~na.pdb /F /Q
     @del %%~na.xml /F /Q
@@ -15,8 +16,10 @@
   @del *.CodeAnalysisLog.xml /F /Q
   @del *.lastcodeanalysissucceeded /F /Q
   @del Test.* /F /S /Q
-  @cd..
+  @popd
 )
 @cd Src
 @del *.cache /F /Q
+
+:exit
 @pause
