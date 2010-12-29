@@ -17,6 +17,10 @@ Interfaces, Eddy, WinForm, Version:
 调节版本控制时的文本卸载和再加载。
 Doc:
 更新说明文件。
+Examples:
+更新截图。
+----
+本次更新后，新功能冻结，将等待新的使用WPF制作的界面完成。
 
 2010.12.28
 Base, Voice:
