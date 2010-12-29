@@ -14,29 +14,44 @@
 2.1 主程序(Eddy.exe)
 文本本地化工具主程序。
 
-2.2 项目库(Firefly.Project.dll)
+2.2 接口库(Eddy.Interfaces.dll)
 本库定义了插件的接口。
 
-2.3 差异比较高亮插件(Eddy.DifferenceHighlighter.dll)
+2.3 基础库(Eddy.Interfaces.dll)
+本库定义了界面插件的接口及其他基础设施。
+
+2.4 WinForm界面库(Eddy.WinForm.dll)
+实现了WinForm制作的主界面。
+
+2.5 差异比较高亮插件(Eddy.DifferenceHighlighter.dll)
 实现差异比较高亮。
 
-2.4 控制符高亮插件(Eddy.EscapeSequenceHighlighter.dll)
+2.6 控制符高亮插件(Eddy.EscapeSequenceHighlighter.dll)
 实现控制符高亮。
 
-2.5 朗读插件(Eddy.Voice.dll)
+2.7 朗读插件(Eddy.Voice.dll)
 实现使用TTS进行语音朗读。
+需要安装VM Misaki之类的软件后方能使用。
 
-2.6 查找替换插件(Eddy.FindReplace.dll)
+2.8 查找替换插件(Eddy.FindReplace.dll)
 实现查找替换。
 
-2.7 WQSG文本插件(Eddy.WQSG.dll)
+2.9 WQSG文本插件(Eddy.WQSG.dll)
 实现对WQSG格式的支持。
 
-2.8 日汉转换插件(Eddy.J2G.dll)
+2.10 日汉转换插件(Eddy.J2G.dll)
 实现日本汉字到简体汉字的转换。
 
-2.9 模板翻译插件(Eddy.TemplateTranslate.dll)
+2.11 模板翻译插件(Eddy.TemplateTranslate.dll)
 实现按模板翻译重复文本。
+
+2.12 在线词典(Eddy.OnlineDictionary.dll)
+实现通过在线网页查词。使用时先选中单词，然后点击对应的词典图标，即可打开相应的网页。
+默认支持金山词霸(英汉、汉英)、Yahoo!辞書(日日、日英)、沪江小D(日汉、汉日)、Babylon(多英、英多)。
+
+2.13 版本控制(Eddy.Version.dll)
+实现在程序内调用版本控制软件，更新和提交文本。
+默认支持TortoiseSVN，请从http://tortoisesvn.net/downloads.html下载最新的版本(及语言包)。
 
 
 3 环境要求
