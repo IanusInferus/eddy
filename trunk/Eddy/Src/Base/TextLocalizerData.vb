@@ -3,7 +3,7 @@
 '  File:        TextLocalizerData.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 数据
-'  Version:     2010.12.11.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -34,6 +34,7 @@ Public Class TextLocalizerData
     Public FormatPlugins As New List(Of ITextLocalizerFormatPlugin)
     Public TranslatorPlugins As New List(Of ITextLocalizerTranslatorPlugin)
     Public KeyListenerPlugins As New List(Of ITextLocalizerKeyListenerPlugin)
+    Public ConfigurationPlugins As New List(Of ITextLocalizerConfigurationPlugin)
     Public UserInterfacePlugins As New List(Of ITextLocalizerUserInterfacePlugin)
 
     Public Factory As ILocalizationTextListFactory

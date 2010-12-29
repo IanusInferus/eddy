@@ -3,7 +3,7 @@
 '  File:        Voice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具朗读插件
-'  Version:     2010.12.28.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -13,10 +13,11 @@ Imports System.Collections.Generic
 Imports System.Linq
 Imports System.IO
 Imports System.Text.RegularExpressions
+Imports System.Xml.Linq
 Imports System.Reflection
 Imports Firefly
 Imports Firefly.TextEncoding
-Imports Firefly.Setting
+Imports Firefly.Mapping
 Imports Eddy
 Imports Eddy.Interfaces
 Imports Eddy.Base
@@ -41,28 +42,28 @@ Public Class Voice
     Inherits TextLocalizerBase
     Implements ITextLocalizerToolStripButtonPlugin
     Implements ITextLocalizerKeyListenerPlugin
+    Implements ITextLocalizerConfigurationPlugin
 
-    Private SettingPath As String = "Voice.locplugin"
     Private Config As Config
+    Public Sub SetConfiguration(ByVal Config As XElement) Implements ITextLocalizerConfigurationPlugin.SetConfiguration
+        If Config Is Nothing Then
+            Me.Config = New Config With {.Voices = New VoiceDescriptor() {}}
+        Else
+            Me.Config = (New XmlSerializer).Read(Of Config)(Config)
+        End If
+        If Me.Config.IgnoreSequence <> "" Then Regex = New Regex(Me.Config.IgnoreSequence, RegexOptions.ExplicitCapture Or RegexOptions.Compiled)
+        NameToVoiceName = Me.Config.Voices.ToDictionary(Function(d) d.LocalizationBoxName, Function(d) d.TTSName, StringComparer.OrdinalIgnoreCase)
+        Installed = New Dictionary(Of String, Boolean)
+    End Sub
+    Public Function GetConfiguration() As XElement Implements ITextLocalizerConfigurationPlugin.GetConfiguration
+        Return (New XmlSerializer).Write(Me.Config)
+    End Function
+
     Private Regex As Regex
     Private NameToVoiceName As Dictionary(Of String, String)
     Private Installed As Dictionary(Of String, Boolean)
 
-    Public Sub New()
-        If File.Exists(SettingPath) Then
-            Config = Xml.ReadFile(Of Config)(SettingPath)
-        Else
-            Config = New Config With {.Voices = New VoiceDescriptor() {}}
-        End If
-        If Config.IgnoreSequence <> "" Then Regex = New Regex(Config.IgnoreSequence, RegexOptions.ExplicitCapture Or RegexOptions.Compiled)
-        NameToVoiceName = Config.Voices.ToDictionary(Function(d) d.LocalizationBoxName, Function(d) d.TTSName, StringComparer.OrdinalIgnoreCase)
-        Installed = New Dictionary(Of String, Boolean)
-    End Sub
     Protected Overrides Sub DisposeManagedResource()
-        Try
-            Xml.WriteFile(SettingPath, UTF16, Config)
-        Catch
-        End Try
         If VoiceService IsNot Nothing Then VoiceService.Dispose()
         MyBase.DisposeManagedResource()
     End Sub
@@ -89,7 +90,7 @@ Public Class Voice
     End Sub
     Private Sub StartVoice()
         If VoiceService Is Nothing Then
-            Dim StartDir = GetFileDirectory(Assembly.GetEntryAssembly().Location)
+            Dim StartDir = GetFileDirectory(Assembly.GetExecutingAssembly().Location)
             Select Case Config.Platform
                 Case Platform.x86
                     VoiceService = Rpc.CreateMaster(Of IVoiceService)(GetPath(StartDir, "Eddy.Voice.x86.exe"), Controller.UIThreadAsyncInvoker)

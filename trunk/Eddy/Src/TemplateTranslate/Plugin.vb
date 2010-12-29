@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.TemplateTranslate <Visual Basic .Net>
 '  Description: 文本本地化工具模板翻译插件
-'  Version:     2010.12.11.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -47,7 +47,7 @@ Public Class Plugin
         FormTemplateTranslate.Columns = Columns
         FormTemplateTranslate.MainColumnIndex = MainColumnIndex
 
-        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.TemplateTranslate, .Text = "按模板翻译..", .Click = AddressOf ToolStripButton_Click}}
+        Return New ToolStripButtonDescriptor() {New ToolStripButtonDescriptor With {.Image = My.Resources.TemplateTranslate, .Text = "按模板翻译...", .Click = AddressOf ToolStripButton_Click}}
     End Function
 
     Private Sub ToolStripButton_Click()

@@ -3,7 +3,7 @@
 '  File:        ApplicationController.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 主控制器
-'  Version:     2010.12.12.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -14,9 +14,12 @@ Imports System.Linq
 Imports System.IO
 Imports System.Reflection
 Imports System.Text
+Imports System.Xml
+Imports System.Xml.Linq
 Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.TextEncoding
+Imports Firefly.Texting
 Imports Firefly.Setting
 Imports Firefly.GUI
 Imports Eddy.Interfaces
@@ -151,11 +154,14 @@ Public Class ApplicationController
             End Try
 #End If
         Next
+        Dim NewPluginPaths As New List(Of String)
+        NewPluginPaths.AddRange(Directory.GetFiles(Application.StartupPath, "*.dll", SearchOption.TopDirectoryOnly).OrderBy(Function(f) f, StringComparer.OrdinalIgnoreCase).Select(Function(f) GetAbsolutePath(f, Application.StartupPath)))
+        NewPluginPaths.AddRange(Directory.GetDirectories(Application.StartupPath, "*", SearchOption.TopDirectoryOnly).Select(Function(f) GetAbsolutePath(GetPath(f, GetFileName(f) & ".dll"), Application.StartupPath)).Where(Function(f) File.Exists(f)))
         Dim NewPlugins As New List(Of PluginDescriptor)
-        For Each DllPath In Directory.GetFiles(Application.StartupPath, "*.dll", SearchOption.TopDirectoryOnly).OrderBy(Function(f) f, StringComparer.OrdinalIgnoreCase)
+        For Each DllPath In NewPluginPaths
             Dim AsmToken As AssemblyName
             Try
-                AsmToken = AssemblyName.GetAssemblyName(GetAbsolutePath(DllPath, Application.StartupPath))
+                AsmToken = AssemblyName.GetAssemblyName(DllPath)
             Catch
                 '由于可能遇到非.Net程序集，所以需要作此判断
                 Continue For
@@ -193,6 +199,16 @@ Public Class ApplicationController
             If DataPlugin IsNot Nothing Then
                 DataPlugin.InitializeData(ApplicationData)
             End If
+        Next
+
+        For Each ConfigurationPlugin In ApplicationData.ConfigurationPlugins
+            Dim PluginName = ConfigurationPlugin.GetType().Assembly.GetName().Name
+            Dim ConfigPath = GetAbsolutePath(PluginName & ".locplugin", Application.StartupPath)
+            Dim Config As XElement = Nothing
+            If File.Exists(ConfigPath) Then
+                Config = XElement.Load(ConfigPath)
+            End If
+            ConfigurationPlugin.SetConfiguration(Config)
         Next
 
         For Each FormatPlugin In ApplicationData.FormatPlugins
@@ -274,6 +290,11 @@ Public Class ApplicationController
                 ApplicationData.KeyListenerPlugins.Add(KeyListenerPlugin)
             End If
 
+            Dim ConfigurationPlugin = TryCast(Obj, ITextLocalizerConfigurationPlugin)
+            If ConfigurationPlugin IsNot Nothing Then
+                ApplicationData.ConfigurationPlugins.Add(ConfigurationPlugin)
+            End If
+
             Dim UserInterfacePlugin = TryCast(Obj, ITextLocalizerUserInterfacePlugin)
             If UserInterfacePlugin IsNot Nothing Then
                 ApplicationData.UserInterfacePlugins.Add(UserInterfacePlugin)
@@ -287,6 +308,25 @@ Public Class ApplicationController
             Save()
             ApplicationData.CurrentProject = Nothing
         End If
+
+        For Each ConfigurationPlugin In ApplicationData.ConfigurationPlugins
+            Dim CurrentConfig = ConfigurationPlugin.GetConfiguration()
+            If CurrentConfig Is Nothing Then Continue For
+
+            Dim PluginName = ConfigurationPlugin.GetType().Assembly.GetName().Name
+            Dim ConfigPath = PluginName & ".locplugin"
+            Dim PreviousConfig As XElement = Nothing
+            If File.Exists(ConfigPath) Then
+                PreviousConfig = XElement.Load(ConfigPath)
+            End If
+            If PreviousConfig IsNot Nothing AndAlso PreviousConfig.ToString() = CurrentConfig.ToString() Then Continue For
+            Using tw = Txt.CreateTextWriter(ConfigPath, TextEncoding.WritingDefault)
+                Dim Setting = New XmlWriterSettings With {.Encoding = tw.Encoding, .Indent = True, .OmitXmlDeclaration = False}
+                Using w = XmlWriter.Create(tw, Setting)
+                    CurrentConfig.Save(w)
+                End Using
+            End Using
+        Next
 
         ApplicationData.TextHighlighters.Clear()
         ApplicationData.GridTextFormatters.Clear()

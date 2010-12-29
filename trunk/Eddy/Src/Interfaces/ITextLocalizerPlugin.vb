@@ -3,7 +3,7 @@
 '  File:        ITextLocalizerPlugin.vb
 '  Location:    Eddy.Interfaces <Visual Basic .Net>
 '  Description: 插件接口
-'  Version:     2010.12.11.
+'  Version:     2010.12.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -11,6 +11,7 @@
 Imports System
 Imports System.Collections.Generic
 Imports System.Drawing
+Imports System.Xml.Linq
 
 ''' <summary>所有插件的接口</summary>
 Public Interface ITextLocalizerPlugin
@@ -68,4 +69,15 @@ Public Interface ITextLocalizerTranslatorPlugin
     Inherits ITextLocalizerPlugin
 
     Function TranslateText(ByVal SourceColumn As Integer, ByVal TargeColumn As Integer, ByVal Text As String) As String
+End Interface
+
+''' <summary>配置接口</summary>
+Public Interface ITextLocalizerConfigurationPlugin
+    Inherits ITextLocalizerPlugin
+
+    ''' <summary>如果文件不存在，将传入Nothing</summary>
+    Sub SetConfiguration(ByVal Config As XElement)
+
+    ''' <summary>可传出Nothing表示不做修改</summary>
+    Function GetConfiguration() As XElement
 End Interface
