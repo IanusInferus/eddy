@@ -11,6 +11,8 @@ Interfaces, Base, Eddy, *:
 增加配置接口，使用集中式配置管理。
 Eddy:
 修正单目录插件没有加载的问题。
+Version:
+增加版本控制插件。
 
 2010.12.28
 Base, Voice:
