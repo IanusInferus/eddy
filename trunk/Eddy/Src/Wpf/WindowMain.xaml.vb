@@ -1,3 +1,3 @@
-﻿Public Class WindowMain2
+﻿Public Class WindowMain
 
 End Class
