@@ -19,6 +19,7 @@ Public NotInheritable Class Plugin
     Private FormMain As FormMain
     Public Sub Initialize(ByVal ApplicationData As TextLocalizerData) Implements ITextLocalizerUserInterfacePlugin.Initialize
         If FormMain IsNot Nothing Then Throw New InvalidOperationException
+        FormMain = New FormMain
         FormMain.Initialize(ApplicationData)
     End Sub
     Public Function Run() As Integer Implements ITextLocalizerUserInterfacePlugin.Run
