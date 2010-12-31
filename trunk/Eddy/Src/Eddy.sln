@@ -19,7 +19,7 @@ Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "J2G", "J2G\J2G.vbproj", "{6
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "TemplateTranslate", "TemplateTranslate\TemplateTranslate.vbproj", "{7ED18FC2-2369-4C8C-9193-B26465C02E02}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomoe", "Tomoe\Tomoe.csproj", "{0665E65A-4395-4323-8595-F0B1AA61E297}"
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Wpf", "Wpf\Wpf.vbproj", "{0665E65A-4395-4323-8595-F0B1AA61E297}"
 EndProject
 Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Base", "Base\Base.vbproj", "{5255F02C-092C-4DAB-9E7A-DF3F79F9D3F8}"
 EndProject

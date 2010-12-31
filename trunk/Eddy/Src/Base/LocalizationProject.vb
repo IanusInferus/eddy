@@ -3,7 +3,7 @@
 '  File:        LocalizationProject.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化项目项目文件
-'  Version:     2010.10.24.
+'  Version:     2010.12.31.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -31,6 +31,7 @@ Public Class LocalizationProject
     Public LocalizationRowHeaderWidthRatio As Double = 50 / 300
 
     Public Plugins As PluginDescriptor()
+    Public UIPlugin As String
 End Class
 
 Public Class LocalizationTextBoxDescriptor
@@ -70,6 +71,7 @@ Public Class LocalizationProjectUser
     Public LocalizationRowHeaderWidthRatio As Double = 50 / 300
 
     Public Plugins As PluginDescriptor()
+    Public UIPlugin As String
 End Class
 
 Public Class LocalizationTextBoxDescriptorUser
@@ -99,6 +101,7 @@ Public NotInheritable Class LocalizationProjectGlobalToUserMapper
         ProjectUser.LocalizationGridWidthRatio = Project.LocalizationGridWidthRatio
         ProjectUser.LocalizationRowHeaderWidthRatio = Project.LocalizationRowHeaderWidthRatio
         ProjectUser.Plugins = Project.Plugins
+        ProjectUser.UIPlugin = Project.UIPlugin
 
         Return ProjectUser
     End Function
@@ -132,6 +135,7 @@ Public NotInheritable Class LocalizationProjectGlobalToUserMapper
         Project.LocalizationGridWidthRatio = ProjectUser.LocalizationGridWidthRatio
         Project.LocalizationRowHeaderWidthRatio = ProjectUser.LocalizationRowHeaderWidthRatio
         Project.Plugins = ProjectUser.Plugins
+        Project.UIPlugin = ProjectUser.UIPlugin
 
         Return Project
     End Function

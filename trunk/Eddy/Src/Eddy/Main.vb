@@ -3,7 +3,7 @@
 '  File:        Main.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具入口函数
-'  Version:     2010.10.24.
+'  Version:     2010.12.31.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -73,12 +73,16 @@ Public Module Main
                 MessageDialog.Show("没有用户界面插件。", ExceptionInfo.AssemblyDescriptionOrTitle, MessageBoxButtons.OK, MessageBoxIcon.Stop)
                 Return -1
             End If
-            Dim UserInterface = UserInterfacePlugins.First
+            Dim UserInterface As ITextLocalizerUserInterfacePlugin = Nothing
+            For Each UserInterfacePlugin In UserInterfacePlugins.Where(Function(p) String.Equals(p.GetType().Assembly.GetName().Name, Controller.ApplicationData.CurrentProject.UIPlugin, StringComparison.OrdinalIgnoreCase))
+                UserInterface = UserInterfacePlugin
+            Next
+            If UserInterface Is Nothing Then
+                UserInterface = UserInterfacePlugins.First
+            End If
 
             UserInterface.Initialize(Controller.ApplicationData)
-            UserInterface.Run()
+            Return UserInterface.Run()
         End Using
-
-        Return 0
     End Function
 End Module
