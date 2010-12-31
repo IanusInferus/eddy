@@ -1,37 +1,75 @@
-﻿<Window x:Class="WindowMain"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="漩涡文本本地化工具(Firefly.Eddy) 实验项目，暂无法正常使用" Width="800" Height="600" FontFamily="SimSun" Icon="/Eddy.Wpf;component/Eddy.ico">
+﻿<Window x:Class="WindowMain2"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+    Title="漩涡文本本地化工具(Firefly.Eddy) 实验项目，暂无法正常使用" Width="800" Height="600" FontFamily="SimSun" Icon="/Eddy.Wpf;component/Eddy.ico">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="328*" />
             <ColumnDefinition Width="3" />
             <ColumnDefinition Width="450*" />
         </Grid.ColumnDefinitions>
-        <GridSplitter HorizontalAlignment="Center" Name="gridSplitter1" VerticalAlignment="Stretch" Width="3" Grid.Column="1" />
-        <DataGrid AutoGenerateColumns="False" HorizontalAlignment="Stretch" Name="dataGrid1" VerticalAlignment="Stretch" />
-        <Grid Grid.Column="2" HorizontalAlignment="Stretch" Name="grid1" VerticalAlignment="Stretch">
-            <Label Content="文本" Height="28" HorizontalAlignment="Left" Margin="6,6,0,0" Name="label1" VerticalAlignment="Top" />
-            <ComboBox Height="23" Margin="44,6,145,0" Name="comboBox1" VerticalAlignment="Top" IsEditable="True" />
-            <Button Content="打开(_O)" Height="23" Margin="0,6,76,0" Name="button1" VerticalAlignment="Top" HorizontalAlignment="Right" Width="63" />
-            <Button Content="&lt;-" Height="23" Margin="0,6,41,0" Name="button2" VerticalAlignment="Top" HorizontalAlignment="Right" Width="29" />
-            <Button Content="-&gt;" Height="23" HorizontalAlignment="Right" Margin="0,6,6,0" Name="button3" VerticalAlignment="Top" Width="29" />
-            <Label Content="F6" Height="28" HorizontalAlignment="Right" Margin="0,24,48,0" Name="label2" VerticalAlignment="Top" />
-            <Label Content="F7" Height="28" HorizontalAlignment="Right" Margin="0,24,13,0" Name="label3" VerticalAlignment="Top" />
-            <ScrollBar Margin="0,58,6,38" Name="scrollBar1" HorizontalAlignment="Right" Width="18" />
-            <Label Content="按鼠标滚轮切换图形文本框" Height="28" HorizontalAlignment="Center" Margin="166,38,128,0" Name="label4" VerticalAlignment="Top" />
-            <Label Content="PgUp/PgDn" Height="28" HorizontalAlignment="Right" Margin="378,38,0,0" Name="label5" VerticalAlignment="Top" />
-            <WindowsFormsHost Height="21" HorizontalAlignment="Left" Margin="6,31,0,0" Name="windowsFormsHost1" VerticalAlignment="Top" Width="59" />
-            <WindowsFormsHost Height="25" Margin="6,0" Name="windowsFormsHost2" VerticalAlignment="Bottom" />
-        </Grid>
-        <Grid Margin="6,58,30,38" Name="Grid2" Grid.Column="2">
-            <RichTextBox Name="RichTextBox1" Margin="0,0,0,274" VerticalScrollBarVisibility="Auto" AcceptsTab="True">
-                <RichTextBox.Resources>
-                    <Style TargetType="{x:Type Paragraph}">
-                        <Setter Property="Margin" Value="0"/>
-                    </Style>
-                </RichTextBox.Resources>
-            </RichTextBox>
-        </Grid>
+        <DataGrid Grid.Column="0" AutoGenerateColumns="False" Name="DataGrid_Multiview" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Width="3" />
+        <DockPanel Grid.Column="2" HorizontalAlignment="Stretch">
+            <DockPanel HorizontalAlignment="Stretch" DockPanel.Dock="Top" KeyboardNavigation.TabIndex="0">
+                <TextBlock Text="文本" VerticalAlignment="Center" Margin="1" Padding="2" />
+                <Button Content="-&gt;" Name="Button_NextFile" VerticalAlignment="Center" ToolTip="F7" Margin="1" Padding="2" DockPanel.Dock="Right" KeyboardNavigation.TabIndex="3" />
+                <Button Content="&lt;-" Name="Button_PreviousFile" VerticalAlignment="Center" ToolTip="F6" Margin="1" Padding="2" DockPanel.Dock="Right" KeyboardNavigation.TabIndex="2" />
+                <Button Content="打开(_O)" Name="Button_Open" VerticalAlignment="Center" Margin="1" Padding="2" DockPanel.Dock="Right" KeyboardNavigation.TabIndex="1" />
+                <ComboBox Name="ComboBox_TextName" VerticalAlignment="Center" Margin="1" Padding="2" IsEditable="True" KeyboardNavigation.TabIndex="0" />
+            </DockPanel>
+            <DockPanel HorizontalAlignment="Stretch" DockPanel.Dock="Top" KeyboardNavigation.TabIndex="1">
+                <WindowsFormsHost Width="59">
+                    <wf:NumericUpDown Name="NumericUpDown_TextNumber" TextAlign="Right"></wf:NumericUpDown>
+                </WindowsFormsHost>
+                <Grid>
+                    <TextBlock Text="按鼠标滚轮切换图形文本框" Padding="2" HorizontalAlignment="Center" />
+                </Grid>
+            </DockPanel>
+            <ToolBar Name="ToolBar_Tools" DockPanel.Dock="Bottom" KeyboardNavigation.TabIndex="3" HorizontalAlignment="Left" VerticalAlignment="Bottom" VerticalContentAlignment="Center">
+                <Button>
+                    <Image Source="/Eddy.Wpf;component/ToolIconSample.png" Stretch="None" />
+                </Button>
+                <Button>
+                    <Image Source="/Eddy.Wpf;component/ToolIconSample.png" Stretch="None" />
+                </Button>
+                <Button>
+                    <Image Source="/Eddy.Wpf;component/ToolIconSample.png" Stretch="None" />
+                </Button>
+            </ToolBar>
+            <Grid Name="MainPanel" DockPanel.Dock="Bottom" KeyboardNavigation.TabIndex="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="3" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="3" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+                <RichTextBox Grid.Row="0" VerticalScrollBarVisibility="Auto" AcceptsTab="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+                <GridSplitter Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="3" />
+                <RichTextBox Grid.Row="2" VerticalScrollBarVisibility="Auto" AcceptsTab="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+                <GridSplitter Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Height="3" />
+                <RichTextBox Grid.Row="4" VerticalScrollBarVisibility="Auto" AcceptsTab="True">
+                    <RichTextBox.Resources>
+                        <Style TargetType="{x:Type Paragraph}">
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </RichTextBox.Resources>
+                </RichTextBox>
+            </Grid>
+        </DockPanel>
     </Grid>
 </Window>
