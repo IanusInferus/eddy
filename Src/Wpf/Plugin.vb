@@ -28,7 +28,7 @@ Public NotInheritable Class Plugin
     End Sub
 
     Public Function Run() As Integer Implements ITextLocalizerUserInterfacePlugin.Run
-        Return App.Run()
+        Return App.Run(WindowMain)
     End Function
 
     Public Sub Dispose() Implements IDisposable.Dispose
