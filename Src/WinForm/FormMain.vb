@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.12.29.
+'  Version:     2010.12.31.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -25,7 +25,6 @@ Imports Eddy.Base
 
 Public Class FormMain
     Implements ITextLocalizerApplicationController
-    Implements ITextLocalizerUserInterfacePlugin
 
     Private ApplicationData As New TextLocalizerData
 
@@ -33,11 +32,7 @@ Public Class FormMain
 
     Private KeyEventWatcher As New KeyEventWatcher
 
-    Public Sub Run() Implements ITextLocalizerUserInterfacePlugin.Run
-        Application.Run(Me)
-    End Sub
-
-    Public Sub Initialize(ByVal ApplicationData As TextLocalizerData) Implements ITextLocalizerUserInterfacePlugin.Initialize
+    Public Sub Initialize(ByVal ApplicationData As TextLocalizerData)
         Me.ApplicationData = ApplicationData
         Me.Text = ApplicationData.ApplicationName
 

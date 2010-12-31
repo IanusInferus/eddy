@@ -16,5 +16,5 @@ Public Interface ITextLocalizerUserInterfacePlugin
     Inherits ITextLocalizerPlugin
 
     Sub Initialize(ByVal ApplicationData As TextLocalizerData)
-    Sub Run()
+    Function Run() As Integer
 End Interface
