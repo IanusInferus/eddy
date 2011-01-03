@@ -3,7 +3,7 @@
 '  File:        Main.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具入口函数
-'  Version:     2010.12.31.
+'  Version:     2011.01.03.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -23,25 +23,29 @@ Public Module Main
         ExceptionHandler.PopupException(e.Exception, New StackTrace(4, True))
     End Sub
 
+    <STAThread()>
     Public Function Main() As Integer
+        Dim ExitValue As Integer = -1
         Application.EnableVisualStyles()
         Application.SetCompatibleTextRenderingDefault(False)
 
         If Debugger.IsAttached Then
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException)
-            Return MainInner()
+            ExitValue = MainInner()
         Else
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException)
             Try
                 AddHandler Application.ThreadException, AddressOf Application_ThreadException
-                Return MainInner()
+                ExitValue = MainInner()
             Catch ex As Exception
                 ExceptionHandler.PopupException(ex)
-                Return -1
+                ExitValue = -1
             Finally
                 RemoveHandler Application.ThreadException, AddressOf Application_ThreadException
             End Try
         End If
+        Environment.Exit(ExitValue)
+        Throw New InvalidOperationException
     End Function
 
     Public Function MainInner() As Integer

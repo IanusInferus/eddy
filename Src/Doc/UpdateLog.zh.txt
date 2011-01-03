@@ -1,4 +1,12 @@
-﻿2010.12.31
+﻿2011.01.03
+Eddy:
+通过增加强制退出，修正在某些情况下Wpf窗口退出时有些线程没有退出的问题。
+WinForm:
+修正字号设置失败的问题。
+Examples\GlyphText:
+修正图形文本未设置字体的问题。
+
+2010.12.31
 Tomoe, Wpf:
 将Tomoe改名为Wpf，并修改为VB项目。
 Base, Eddy, WinForm, Wpf:
