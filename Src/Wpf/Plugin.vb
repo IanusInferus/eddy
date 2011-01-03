@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: UI插件
-'  Version:     2010.12.31.
+'  Version:     2011.01.03.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -25,6 +25,7 @@ Public NotInheritable Class Plugin
         If WindowMain IsNot Nothing Then Throw New InvalidOperationException
         App = New Application
         WindowMain = New WindowMain
+        WindowMain.Initialize(ApplicationData)
     End Sub
 
     Public Function Run() As Integer Implements ITextLocalizerUserInterfacePlugin.Run
