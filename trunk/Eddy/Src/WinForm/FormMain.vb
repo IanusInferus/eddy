@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2010.12.31.
+'  Version:     2011.01.03.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -68,6 +68,7 @@ Public Class FormMain
 
                     .Space = Des.Space
                     If Des.FontName <> "" Then .Font = New Font(Des.FontName, Des.FontPixel, FontStyle.Regular, GraphicsUnit.Pixel)
+                    .FontPixel = Des.FontPixel
 
                     .Size = New System.Drawing.Size(Me.Panel_LocalizationBoxes.Width, Des.HeightRatio * Panel_LocalizationBoxes.Height)
                 End With
@@ -96,6 +97,7 @@ Public Class FormMain
 
                 .Space = Des.Space
                 If Des.FontName <> "" Then .Font = New Font(Des.FontName, Des.FontPixel, FontStyle.Regular, GraphicsUnit.Pixel)
+                .FontPixel = Des.FontPixel
 
                 .Size = New System.Drawing.Size(Me.Panel_LocalizationBoxes.Width, Me.Panel_LocalizationBoxes.Height - Height)
             End With
