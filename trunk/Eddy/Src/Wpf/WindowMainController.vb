@@ -3,13 +3,15 @@
 '  File:        WindowMainController.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 主窗体控制器实现
-'  Version:     2010.12.31.
+'  Version:     2011.01.03.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
 
 Imports System
 Imports System.Collections.Generic
+Imports System.Reflection
+Imports System.Diagnostics
 Imports Eddy
 Imports Eddy.Interfaces
 
@@ -109,6 +111,44 @@ Partial Public NotInheritable Class WindowMain
         End Get
     End Property
 
+    Private Shared Function GetAssemblyTitle(ByVal a As Assembly) As String
+        Dim Attributes = a.GetCustomAttributes(GetType(AssemblyTitleAttribute), True)
+        If Attributes.Length >= 1 Then
+            Dim Str = DirectCast(Attributes(0), AssemblyTitleAttribute).Title
+            If Str <> "" Then Return Str
+        End If
+
+        Return ""
+    End Function
+    Private Shared Function GetAssemblyDescription(ByVal a As Assembly) As String
+        Dim Attributes = a.GetCustomAttributes(GetType(AssemblyDescriptionAttribute), True)
+        If Attributes.Length >= 1 Then
+            Dim Str = DirectCast(Attributes(0), AssemblyDescriptionAttribute).Description
+            If Str <> "" Then Return Str
+        End If
+
+        Return ""
+    End Function
+    Private Shared Function GetAssemblyDescriptionOrTitle(ByVal a As Assembly) As String
+        Dim Description = GetAssemblyDescription(a)
+        If Description <> "" Then Return Description
+
+        Dim Title = GetAssemblyTitle(a)
+        If Title <> "" Then Return Title
+
+        Return ""
+    End Function
+    Public Function GetPluginDescriptionOrTitle() As String
+        Dim t As New StackTrace(2, False)
+        If t.FrameCount > 0 Then
+            Dim f = t.GetFrame(0)
+            Dim m = f.GetMethod()
+            Dim a = m.Module.Assembly
+            Return GetAssemblyDescriptionOrTitle(a)
+        Else
+            Return ""
+        End If
+    End Function
     Public Sub ShowError(ByVal Message As String) Implements ITextLocalizerApplicationController.ShowError
 
     End Sub
