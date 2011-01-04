@@ -311,13 +311,15 @@ Public Class LocalizationTextBox
     End Property
     Private Property TextBox_Text As String
         Get
-            Dim Lines = TextBox.Document.Blocks.OfType(Of Documents.Paragraph).Select(Function(p) String.Join("", p.Inlines.OfType(Of Documents.Run).Select(Function(r) r.Text))).ToArray()
-            Return String.Join(CrLf, Lines)
+            Return TextBox.Text
+            'Dim Lines = TextBox.Document.Blocks.OfType(Of Documents.Paragraph).Select(Function(p) String.Join("", p.Inlines.OfType(Of Documents.Run).Select(Function(r) r.Text))).ToArray()
+            'Return String.Join(CrLf, Lines)
         End Get
         Set(ByVal Value As String)
-            Dim Lines = Value.UnifyNewLineToLf.Split(Lf)
-            TextBox.Document.Blocks.Clear()
-            TextBox.Document.Blocks.AddRange(Lines.Select(Function(l) New Documents.Paragraph(New Documents.Run(l))))
+            TextBox.Text = Value
+            'Dim Lines = Value.UnifyNewLineToLf.Split(Lf)
+            'TextBox.Document.Blocks.Clear()
+            'TextBox.Document.Blocks.AddRange(Lines.Select(Function(l) New Documents.Paragraph(New Documents.Run(l))))
         End Set
     End Property
     Private WriteOnly Property PictureBox_Image As System.Drawing.Bitmap
