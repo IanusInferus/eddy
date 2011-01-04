@@ -11,12 +11,5 @@
             <Image Name="PictureBox" Stretch="Fill" Visibility="Hidden" Focusable="True" SnapsToDevicePixels="True" />
         </ScrollViewer>
         <c:CodeBox Name="TextBox" VerticalScrollBarVisibility="Auto" AcceptsTab="True" />
-        <!--<RichTextBox Name="TextBox" VerticalScrollBarVisibility="Auto" AcceptsTab="True">
-            <RichTextBox.Resources>
-                <Style TargetType="{x:Type Paragraph}">
-                    <Setter Property="Margin" Value="0"/>
-                </Style>
-            </RichTextBox.Resources>
-        </RichTextBox>-->
     </Grid>
 </UserControl>

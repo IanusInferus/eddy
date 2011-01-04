@@ -3,7 +3,7 @@
 '  File:        WindowMain.xaml.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 主窗体
-'  Version:     2011.01.03.
+'  Version:     2011.01.04.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -16,6 +16,7 @@ Imports System.IO
 Imports System.Diagnostics
 Imports System.Reflection
 Imports System.Windows
+Imports System.Windows.Media
 Imports System.Windows.Interop
 Imports Firefly
 Imports Eddy.Interfaces
@@ -29,8 +30,6 @@ Public Class WindowMain
     Public Sub Initialize(ByVal ApplicationData As TextLocalizerData)
         Me.ApplicationData = ApplicationData
         Me.Title = ApplicationData.ApplicationName
-
-        'Forms.Application.AddMessageFilter(New Intercepter With {.Form = Me})
 
         Me.Width = ApplicationData.CurrentProject.WindowWidth
         Me.Height = ApplicationData.CurrentProject.WindowHeight
@@ -89,6 +88,55 @@ Public Class WindowMain
             AddHandler L.TextBox.TextChanged, AddressOf Box_TextChanged
             AddHandler L.GotFocus, AddressOf Box_GotFocus
         Next
+
+        AddHandler ComponentDispatcher.ThreadFilterMessage, AddressOf PreFilterMessage
+
+        For Each t In ApplicationData.TextNames
+            ComboBox_TextName.Items.Add(t)
+        Next
+
+        For Each Plugin In ApplicationData.Plugins
+            Dim ControllerPlugin = TryCast(Plugin, ITextLocalizerControllerPlugin)
+            If ControllerPlugin IsNot Nothing Then
+                ControllerPlugin.InitializeController(Me)
+            End If
+        Next
+
+        ToolBar_Tools.Items.Clear()
+        For Each ToolStripButtonPlugin In ApplicationData.ToolStripButtonPlugins
+            Dim ButtonDescriptors = ToolStripButtonPlugin.GetToolStripButtonDescriptors()
+            For Each ButtonDescriptor In ButtonDescriptors
+                Dim bd = ButtonDescriptor
+                Dim b As New Controls.Button
+                b.Content = New Controls.Image With {.Source = ButtonDescriptor.Image.ToWpfImageSource, .Stretch = Stretch.None, .SnapsToDevicePixels = True}
+                b.ToolTip = ButtonDescriptor.Text
+                AddHandler b.Click, Sub(o, e) bd.Click()
+                AddHandler bd.ImageChanged.Value, Sub(i) b.Content = New Controls.Image With {.Source = i.ToWpfImageSource, .Stretch = Stretch.None, .SnapsToDevicePixels = True}
+                AddHandler bd.TextChanged.Value, Sub(t) b.ToolTip = t
+                ToolBar_Tools.Items.Add(b)
+            Next
+        Next
+
+        For Each KeyListenerPlugin In ApplicationData.KeyListenerPlugins
+            Dim KeyListeners = KeyListenerPlugin.GetKeyListeners()
+            For Each kl In KeyListeners
+                KeyEventWatcher.Register(kl.KeyCombination, kl.EventType, kl.Handler)
+            Next
+        Next
+        KeyEventWatcher.Register(New VirtualKeys() {VirtualKeys.F}, KeyEventType.Down, Sub() System.Diagnostics.Debug.WriteLine("F"))
+
+        Dim DisplayLOCBoxTip = Visibility.Hidden
+        For Each L In LocalizationTextBoxes
+            If L.IsGlyphText Then
+                DisplayLOCBoxTip = Visibility.Visible
+                Exit For
+            End If
+        Next
+        TextBlock_LOCBoxTip.Visibility = DisplayLOCBoxTip
+
+        LocalizerEnable = False
+        'UpdateToTextName(ApplicationData.CurrentProject.TextName, ApplicationData.CurrentProject.TextNumber - 1)
+        VScrollBar_Bar.Focus()
     End Sub
 
     Private Sub Box_Scrolled(ByVal sender As Object, ByVal e As EventArgs)
@@ -111,9 +159,6 @@ Public Class WindowMain
         Timer.Interval = 500
         Timer.Start()
     End Sub
-    Private Sub WindowMain_Loaded(ByVal sender As Object, ByVal e As System.Windows.RoutedEventArgs) Handles Me.Loaded
-        AddHandler ComponentDispatcher.ThreadFilterMessage, AddressOf PreFilterMessage
-    End Sub
     Private MouseWheelHandled As Boolean = True
     Private Function DirectToInt32(ByVal i As IntPtr) As Int32
         If IntPtr.Size = 4 Then Return i.ToInt32
@@ -125,7 +170,7 @@ Public Class WindowMain
     Private Const WM_IME_ENDCOMPOSITION = &H10E
     Private Const WM_IME_NOTIFY = &H282
     Private Sub PreFilterMessage(ByRef m As Interop.MSG, ByRef Handled As Boolean)
-        Diagnostics.Debug.WriteLine(m.message.ToString("X8"))
+        'Diagnostics.Debug.WriteLine(m.message.ToString("X8"))
         Select Case m.message
             Case WM_MOUSEWHEEL
                 'Me.TextLocalizer_MouseWheel(Me, New MouseEventArgs(DirectToInt32(m.wParam) And &HFFFF, 0, DirectToInt32(m.lParam) And &HFFFF, (DirectToInt32(m.lParam.ToInt64) >> 16) And &HFFFF, CUS(CUShort((DirectToInt32(m.wParam) >> 16) And &HFFFF))))
@@ -145,39 +190,6 @@ Public Class WindowMain
                 Handled = False
         End Select
     End Sub
-    'Public Class Intercepter
-    '    Implements Forms.IMessageFilter
-
-    '    Public Form As WindowMain
-    '    Public Handled As Boolean = True
-
-    '    Private Function DirectToInt32(ByVal i As IntPtr) As Int32
-    '        If IntPtr.Size = 4 Then Return i.ToInt32
-    '        If IntPtr.Size = 8 Then Return CID(i.ToInt64)
-    '        Return CID(i.ToInt64)
-    '    End Function
-
-    '    Private Const WM_MOUSEWHEEL = 522
-    '    Private Const WM_IME_STARTCOMPOSITION = &H10D
-    '    Private Const WM_IME_ENDCOMPOSITION = &H10E
-    '    Private Const WM_IME_NOTIFY = &H282
-    '    Public Function PreFilterMessage(ByRef m As System.Windows.Forms.Message) As Boolean Implements System.Windows.Forms.IMessageFilter.PreFilterMessage
-    '        Select Case m.Msg
-    '            Case WM_MOUSEWHEEL
-    '                'Form.TextLocalizer_MouseWheel(Me, New MouseEventArgs(DirectToInt32(m.WParam) And &HFFFF, 0, DirectToInt32(m.LParam) And &HFFFF, (DirectToInt32(m.LParam.ToInt64) >> 16) And &HFFFF, CUS(CUShort((DirectToInt32(m.WParam) >> 16) And &HFFFF))))
-    '                Dim h = Handled
-    '                Handled = True
-    '                Return h
-    '            Case WM_IME_STARTCOMPOSITION
-    '                System.Threading.Interlocked.Exchange(Form.IMECompositing, -1)
-    '            Case WM_IME_ENDCOMPOSITION
-    '                System.Threading.Interlocked.Exchange(Form.IMECompositing, 0)
-    '            Case WM_IME_NOTIFY
-
-    '        End Select
-    '        Return False
-    '    End Function
-    'End Class
 
     Private CurrentColumnIndex As Integer = 0
     Private Sub Box_GotFocus(ByVal sender As Object, ByVal e As RoutedEventArgs)
@@ -189,4 +201,15 @@ Public Class WindowMain
             End If
         Next
     End Sub
+
+    Public Property LocalizerEnable() As Boolean
+        Get
+            Return MainPanel.IsEnabled
+        End Get
+        Set(ByVal Value As Boolean)
+            MainPanel.IsEnabled = Value
+            VScrollBar_Bar.IsEnabled = Value
+        End Set
+    End Property
+
 End Class

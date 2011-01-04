@@ -3,6 +3,9 @@ Eddy:
 改进了插件加载时的路径冲突问题的处理方法。
 Wpf:
 使用CodeBoxControl项目的代码高亮文本框。
+完成插件图标显示与文本列表加载。
+EscapeSequenceHighlighter, OnlineDictionary, TemplateTranslate:
+修正插件图标DPI不正确的问题。
 
 2011.01.03
 Eddy:

@@ -247,7 +247,9 @@ Public Class LocalizationTextBox
         If TextIndexValue < TextCount Then
             TextBox_Text = TextList.Text(TextIndexValue)
             If IsGlyphTextValue Then
-                PictureBox_Image = TextListLOC.GetBitmap(FontPixel, FontPixel, TextIndexValue, SpaceValue)
+                Using i = TextListLOC.GetBitmap(FontPixel, FontPixel, TextIndexValue, SpaceValue)
+                    PictureBox_Image = i
+                End Using
             End If
         Else
             TextBox_Text = Nothing
@@ -312,19 +314,18 @@ Public Class LocalizationTextBox
     Private Property TextBox_Text As String
         Get
             Return TextBox.Text
-            'Dim Lines = TextBox.Document.Blocks.OfType(Of Documents.Paragraph).Select(Function(p) String.Join("", p.Inlines.OfType(Of Documents.Run).Select(Function(r) r.Text))).ToArray()
-            'Return String.Join(CrLf, Lines)
         End Get
         Set(ByVal Value As String)
             TextBox.Text = Value
-            'Dim Lines = Value.UnifyNewLineToLf.Split(Lf)
-            'TextBox.Document.Blocks.Clear()
-            'TextBox.Document.Blocks.AddRange(Lines.Select(Function(l) New Documents.Paragraph(New Documents.Run(l))))
         End Set
     End Property
     Private WriteOnly Property PictureBox_Image As System.Drawing.Bitmap
         Set(ByVal Value As System.Drawing.Bitmap)
-            PictureBox.Source = Interop.Imaging.CreateBitmapSourceFromHBitmap(Value.GetHbitmap(), IntPtr.Zero, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions())
+            If Value Is Nothing Then
+                PictureBox.Source = Nothing
+            Else
+                PictureBox.Source = Value.ToWpfImageSource()
+            End If
         End Set
     End Property
 End Class
