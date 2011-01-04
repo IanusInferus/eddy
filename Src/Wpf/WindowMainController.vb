@@ -12,6 +12,7 @@ Imports System
 Imports System.Collections.Generic
 Imports System.Reflection
 Imports System.Diagnostics
+Imports System.Windows.Interop
 Imports Eddy
 Imports Eddy.Interfaces
 
@@ -102,12 +103,13 @@ Partial Public NotInheritable Class WindowMain
 
     Public ReadOnly Property MainWindow As WindowReference Implements ITextLocalizerApplicationController.MainWindow
         Get
-
+            Dim WindowHandle = New WindowInteropHelper(Me).Handle
+            Return New WindowReference With {.Handle = WindowHandle}
         End Get
     End Property
     Public ReadOnly Property UIThreadAsyncInvoker As Action(Of Action) Implements ITextLocalizerApplicationController.UIThreadAsyncInvoker
         Get
-
+            Return Sub(a) Dispatcher.BeginInvoke(a)
         End Get
     End Property
 

@@ -66,6 +66,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interops.vb" />
     <Compile Include="LocalizationTextBox.xaml.vb">
       <DependentUpon>LocalizationTextBox.xaml</DependentUpon>
     </Compile>
