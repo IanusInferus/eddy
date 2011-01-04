@@ -3,18 +3,20 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:c="clr-namespace:CodeBoxControl;assembly=CodeBoxControl" 
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
             <Image Name="PictureBox" Stretch="Fill" Visibility="Hidden" Focusable="True" SnapsToDevicePixels="True" />
         </ScrollViewer>
-        <RichTextBox Name="TextBox" VerticalScrollBarVisibility="Auto" AcceptsTab="True">
+        <c:CodeBox Name="TextBox" VerticalScrollBarVisibility="Auto" AcceptsTab="True" />
+        <!--<RichTextBox Name="TextBox" VerticalScrollBarVisibility="Auto" AcceptsTab="True">
             <RichTextBox.Resources>
                 <Style TargetType="{x:Type Paragraph}">
                     <Setter Property="Margin" Value="0"/>
                 </Style>
             </RichTextBox.Resources>
-        </RichTextBox>
+        </RichTextBox>-->
     </Grid>
 </UserControl>
