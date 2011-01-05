@@ -24,8 +24,10 @@ Public NotInheritable Class Plugin
         If App IsNot Nothing Then Throw New InvalidOperationException
         If WindowMain IsNot Nothing Then Throw New InvalidOperationException
         App = New Application
+        App.ShutdownMode = ShutdownMode.OnMainWindowClose
         WindowMain = New WindowMain
         WindowMain.Initialize(ApplicationData)
+        App.MainWindow = WindowMain
     End Sub
 
     Public Function Run() As Integer Implements ITextLocalizerUserInterfacePlugin.Run
@@ -39,6 +41,9 @@ Public NotInheritable Class Plugin
             Catch
             End Try
             WindowMain = Nothing
+        End If
+        If App IsNot Nothing Then
+            App = Nothing
         End If
     End Sub
 End Class
