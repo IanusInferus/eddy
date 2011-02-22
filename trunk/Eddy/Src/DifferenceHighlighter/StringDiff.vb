@@ -3,7 +3,7 @@
 '  File:        StringDiff.vb
 '  Location:    Eddy.DifferenceHighlighter <Visual Basic .Net>
 '  Description: 序列比较
-'  Version:     2010.09.27.
+'  Version:     2011.02.22.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -12,7 +12,6 @@ Imports System
 Imports System.Math
 Imports System.Collections.Generic
 Imports System.Linq
-Imports Firefly
 
 Public Class TranslatePart
     Public SourceIndex As Integer
