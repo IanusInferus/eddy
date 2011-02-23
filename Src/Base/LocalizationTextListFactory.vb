@@ -3,7 +3,7 @@
 '  File:        LocalizationTextListFactory.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化文本列表工厂默认实现
-'  Version:     2010.12.01.
+'  Version:     2011.02.23.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -324,7 +324,7 @@ Public Class LOCList
         Me.IsReadOnlyValue = IsReadOnly
         Me.IsModifiedValue = False
         Me.Encoding = Encoding
-        Using s = StreamEx.Create(Path, FileMode.Open)
+        Using s = Streams.OpenResizable(Path)
             Dim l = LOC.ReadFile(s.AsNewReading)
             Font = l.Font.ToArray
             Values = l.Text.ToArray

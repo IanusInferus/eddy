@@ -3,7 +3,7 @@
 '  File:        RpcExecutor.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 远程调用执行器
-'  Version:     2010.12.26.
+'  Version:     2011.02.23.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -41,14 +41,14 @@ Public Module RpcExecutorUtility
     End Function
 
     <Extension()> Public Function FromBytes(Of T)(ByVal This As ISerializer, ByVal Bytes As Byte()) As T
-        Using s = StreamEx.Create()
+        Using s = Streams.CreateMemoryStream()
             s.Write(Bytes)
             s.Position = 0
             Return This.Read(Of T)(s)
         End Using
     End Function
     <Extension()> Public Function ToBytes(Of T)(ByVal This As ISerializer, ByVal Value As T) As Byte()
-        Using s = StreamEx.Create()
+        Using s = Streams.CreateMemoryStream()
             This.Write(Value, s)
             s.Position = 0
             Return s.Read(s.Length)

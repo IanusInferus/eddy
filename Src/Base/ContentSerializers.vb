@@ -3,7 +3,7 @@
 '  File:        ContentSerializers.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 数据序列化器
-'  Version:     2010.12.26.
+'  Version:     2011.02.23.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -21,7 +21,7 @@ Public NotInheritable Class ContentPacker
 
     Public Sub New(ByVal s As ISerializer)
         Me.s = s
-        Me.BaseStream = StreamEx.Create()
+        Me.BaseStream = Streams.CreateMemoryStream()
     End Sub
 
     Public Sub WriteParameter(Of T)(ByVal Parameter As T) Implements IParameterWriter.WriteParameter
@@ -55,7 +55,7 @@ Public Class ContentUnpacker
 
     Public Sub New(ByVal Content As Byte(), ByVal s As ISerializer)
         Me.s = s
-        Me.BaseStream = StreamEx.Create()
+        Me.BaseStream = Streams.CreateMemoryStream()
         Me.BaseStream.Write(Content)
         Me.BaseStream.Position = 0
     End Sub
