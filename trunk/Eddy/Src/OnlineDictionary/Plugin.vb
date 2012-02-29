@@ -121,15 +121,15 @@ Public Class Plugin
                             End Using
                         End Using
                     End If
+
+                    Dim F =
+                        Sub()
+                            bd.ImageChanged.Raise(i)
+                        End Sub
+
+                    UIThreadInvoker(F)
                 Catch
                 End Try
-
-                Dim F =
-                    Sub()
-                        bd.ImageChanged.Raise(i)
-                    End Sub
-
-                UIThreadInvoker(F)
             End Sub
 
         Dim Task As New Task(GetIcon)

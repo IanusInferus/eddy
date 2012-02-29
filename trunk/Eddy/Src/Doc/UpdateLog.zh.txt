@@ -3,6 +3,7 @@
 按照Firefly升级。
 OnlineDictionary:
 修正金山词霸的链接地址。
+修正图标获取不能时的处理。
 Examples\
 修正示例文件。
 
