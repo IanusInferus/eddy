@@ -3,7 +3,7 @@
 '  File:        RpcVoice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 远程过程调用代理(具体)
-'  Version:     2010.12.27.
+'  Version:     2012.02.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -15,6 +15,7 @@ Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Streaming
 Imports Firefly.Mapping
+Imports Firefly.Mapping.Binary
 Imports Eddy
 Imports Eddy.Base
 Imports System.Linq.Expressions

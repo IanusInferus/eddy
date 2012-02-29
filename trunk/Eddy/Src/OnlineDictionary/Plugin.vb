@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具在线词典插件
-'  Version:     2010.12.29.
+'  Version:     2012.02.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -24,6 +24,7 @@ Imports System.Net
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Mapping
+Imports Firefly.Mapping.XmlText
 Imports Eddy.Interfaces
 
 Public Class Config
@@ -46,7 +47,7 @@ Public Class Plugin
     Public Sub SetConfiguration(ByVal Config As XElement) Implements ITextLocalizerConfigurationPlugin.SetConfiguration
         If Config Is Nothing Then
             Me.Config = New Config With {.Dictionaries = New OnlineDictionaryDescriptor() {
-                New OnlineDictionaryDescriptor With {.Name = "金山词霸...", .UrlTemplate = "http://www.iciba.com/index.php?s=%s", .Encoding = "UTF-8"},
+                New OnlineDictionaryDescriptor With {.Name = "金山词霸...", .UrlTemplate = "http://www.iciba.com/search?s=%s", .Encoding = "UTF-8"},
                 New OnlineDictionaryDescriptor With {.Name = "Yahoo!辞書...", .UrlTemplate = "http://dic.search.yahoo.co.jp/search?p=%s&ei=UTF-8", .Encoding = "UTF-8"},
                 New OnlineDictionaryDescriptor With {.Name = "沪江小D...", .UrlTemplate = "http://dict.hjenglish.com/app/jp/jc/%s", .Encoding = "UTF-8"},
                 New OnlineDictionaryDescriptor With {.Name = "Babylon...", .UrlTemplate = "http://info.babylon.com/cgi-bin/info.cgi?word=%s&lang=0&type=undefined", .Encoding = "UTF-8", .IconUrl = "http://www.babylon.com"}

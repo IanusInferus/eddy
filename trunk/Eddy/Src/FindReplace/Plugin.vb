@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.FindReplace <Visual Basic .Net>
 '  Description: 文本本地化工具查找替换插件
-'  Version:     2010.12.29.
+'  Version:     2012.02.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -19,6 +19,7 @@ Imports System.Windows.Forms
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Mapping
+Imports Firefly.Mapping.XmlText
 Imports Eddy.Interfaces
 
 Public Class Config

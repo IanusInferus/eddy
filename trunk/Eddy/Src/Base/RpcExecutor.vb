@@ -3,7 +3,7 @@
 '  File:        RpcExecutor.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 远程调用执行器
-'  Version:     2011.02.23.
+'  Version:     2012.02.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -22,6 +22,7 @@ Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Streaming
 Imports Firefly.Mapping
+Imports Firefly.Mapping.MetaProgramming
 
 Public Module RpcExecutorUtility
     Private Function GetTypeFriendlyName(ByVal Type As Type) As String
@@ -508,7 +509,7 @@ Public Class RpcExecutorSlave
                     Dim mi = EventDict(mid)
 
                     Dim NumParameter = cu.ReadParameter(Of Int32)()
-                    Dim NumReturnValue As Int32 = (Function(rv) IIf(rv Is GetType(Void), 0, 1))(mi.ReturnType)
+                    Dim NumReturnValue As Int32 = (Function(rv) If(rv Is GetType(Void), 0, 1))(mi.ReturnType)
 
                     Dim cp As New ContentPacker(s)
                     cp.WriteParameter(NumReturnValue)
@@ -568,7 +569,7 @@ Public Class RpcExecutorSlave
                         End If
                         Dim Parameters = mi.GetParameters().Select(Function(param) param.ParameterType).ToArray()
                         If Parameters.Length <> mb.Parameters.Length Then Continue For
-                        Dim ReturnValues = (Function(rv) IIf(Of Type())(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
+                        Dim ReturnValues = (Function(rv) If(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
                         If ReturnValues.Length <> mb.ReturnValues.Length Then Continue For
 
                         Dim Failure As Boolean = False

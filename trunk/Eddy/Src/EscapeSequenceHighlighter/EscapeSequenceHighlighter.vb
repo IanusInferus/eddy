@@ -3,7 +3,7 @@
 '  File:        EscapeSequenceHighlighter.vb
 '  Location:    Eddy.EscapeSequenceHighlighter <Visual Basic .Net>
 '  Description: 文本本地化工具控制符高亮插件
-'  Version:     2010.12.29.
+'  Version:     2012.02.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -18,6 +18,7 @@ Imports System.Xml.Linq
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Mapping
+Imports Firefly.Mapping.XmlText
 Imports Eddy.Interfaces
 
 Public Class Config

@@ -3,7 +3,7 @@
 '  File:        Rpc.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 远程过程调用代理
-'  Version:     2010.12.28.
+'  Version:     2012.02.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -20,6 +20,8 @@ Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Streaming
 Imports Firefly.Mapping
+Imports Firefly.Mapping.MetaProgramming
+Imports Firefly.Mapping.Binary
 Imports Eddy
 Imports Eddy.Base
 
@@ -152,7 +154,7 @@ Public Class Rpc
         Dim CreateMethod =
             Function(mi As MethodInfo) As MethodBuilder
                 Dim Parameters = mi.GetParameters().Select(Function(p) p.ParameterType).ToArray()
-                Dim ReturnValues = (Function(rv) IIf(Of Type())(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
+                Dim ReturnValues = (Function(rv) If(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
 
                 Dim FieldType As Type
 
@@ -322,7 +324,7 @@ Public Class Rpc
         Dim pr = Expression.Parameter(GetType(IParameterReader), "r")
 
         Dim Parameters = mi.GetParameters()
-        Dim ReturnValues = (Function(rv) IIf(Of Type())(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
+        Dim ReturnValues = (Function(rv) If(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
 
         Dim ParameterParameters = Parameters.Select(Function(p) Expression.Parameter(p.ParameterType)).ToArray()
         Dim ReturnValueVariables = ReturnValues.Select(Function(v) Expression.Variable(v)).ToArray()
@@ -369,7 +371,7 @@ Public Class Rpc
                 Dim pw = Expression.Parameter(GetType(IParameterWriter), "w")
 
                 Dim Parameters = mi.GetParameters()
-                Dim ReturnValues = (Function(rv) IIf(Of Type())(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
+                Dim ReturnValues = (Function(rv) If(rv Is GetType(Void), New Type() {}, New Type() {rv}))(mi.ReturnType)
 
                 Dim Statements As New List(Of Expression)
                 Statements.Add(Expression.IfThen(Expression.NotEqual(pNumParameter, Expression.Constant(Parameters.Length)), Expression.Throw(Expression.[New](GetType(InvalidOperationException)))))
