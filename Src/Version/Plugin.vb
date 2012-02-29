@@ -3,7 +3,7 @@
 '  File:        Plugin.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具版本管理插件
-'  Version:     2010.12.29.
+'  Version:     2012.02.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -17,6 +17,7 @@ Imports System.Diagnostics
 Imports Microsoft.VisualBasic
 Imports Firefly
 Imports Firefly.Mapping
+Imports Firefly.Mapping.XmlText
 Imports Eddy
 Imports Eddy.Interfaces
 

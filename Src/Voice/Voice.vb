@@ -3,7 +3,7 @@
 '  File:        Voice.vb
 '  Location:    Eddy.Voice <Visual Basic .Net>
 '  Description: 文本本地化工具朗读插件
-'  Version:     2010.12.29.
+'  Version:     2012.02.29.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -18,6 +18,7 @@ Imports System.Reflection
 Imports Firefly
 Imports Firefly.TextEncoding
 Imports Firefly.Mapping
+Imports Firefly.Mapping.XmlText
 Imports Eddy
 Imports Eddy.Interfaces
 Imports Eddy.Base
