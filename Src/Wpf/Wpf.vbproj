@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,8 +7,9 @@
     <RootNamespace>Eddy.Wpf</RootNamespace>
     <AssemblyName>Eddy.Wpf</AssemblyName>
     <OutputType>Library</OutputType>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <MyType>Custom</MyType>
     <ProjectGuid>{0665E65A-4395-4323-8595-F0B1AA61E297}</ProjectGuid>
     <SignAssembly>false</SignAssembly>
@@ -24,6 +25,7 @@
     <DocumentationFile>Eddy.Wpf.xml</DocumentationFile>
     <BaseIntermediateOutputPath>..\..\Obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -36,6 +38,7 @@
     <DocumentationFile>Eddy.Wpf.xml</DocumentationFile>
     <BaseIntermediateOutputPath>..\..\Obj\$(MSBuildProjectName)</BaseIntermediateOutputPath>
     <NoWarn>41999,42016,42017,42018,42019,42020,42021,42022,42032,42036,42314</NoWarn>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <OptionExplicit>On</OptionExplicit>
