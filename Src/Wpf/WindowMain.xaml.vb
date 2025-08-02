@@ -3,7 +3,7 @@
 '  File:        WindowMain.xaml.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 主窗体
-'  Version:     2011.01.04.
+'  Version:     2025.08.03.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -43,6 +43,7 @@ Public Class WindowMain
                 .Name = String.Format("LocalizationTextBox{0}", n + 1)
                 .TabIndex = n
                 .Space = Des.Space
+                .LocFontScale = Des.LocFontScale
                 If Des.FontName <> "" Then
                     .FontName = Des.FontName
                     .FontPixel = Des.FontPixel

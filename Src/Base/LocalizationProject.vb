@@ -3,7 +3,7 @@
 '  File:        LocalizationProject.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化项目项目文件
-'  Version:     2010.12.31.
+'  Version:     2025.08.03.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -50,6 +50,8 @@ Public Class LocalizationTextBoxDescriptor
     Public FontName As String
     Public FontPixel As Integer
     Public Space As Integer
+
+    Public LocFontScale As Double = 1
 End Class
 
 Public Class PluginDescriptor
@@ -81,6 +83,8 @@ Public Class LocalizationTextBoxDescriptorUser
     Public FontName As String
     Public FontPixel As Integer
     Public Space As Integer
+
+    Public LocFontScale As Double = 1
 End Class
 
 Public NotInheritable Class LocalizationProjectGlobalToUserMapper
@@ -114,6 +118,7 @@ Public NotInheritable Class LocalizationProjectGlobalToUserMapper
         DescriptorUser.FontName = Descriptor.FontName
         DescriptorUser.FontPixel = Descriptor.FontPixel
         DescriptorUser.Space = Descriptor.Space
+        DescriptorUser.LocFontScale = Descriptor.LocFontScale
 
         Return DescriptorUser
     End Function
@@ -156,6 +161,7 @@ Public NotInheritable Class LocalizationProjectGlobalToUserMapper
         Descriptor.FontName = DescriptorUser.FontName
         Descriptor.FontPixel = DescriptorUser.FontPixel
         Descriptor.Space = DescriptorUser.Space
+        Descriptor.LocFontScale = DescriptorUser.LocFontScale
 
         Return Descriptor
     End Function

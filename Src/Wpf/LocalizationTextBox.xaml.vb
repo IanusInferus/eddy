@@ -3,7 +3,7 @@
 '  File:        LocalizationTextBox.xaml.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化文本框
-'  Version:     2011.01.04.
+'  Version:     2025.08.03.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -31,6 +31,7 @@ Public Class LocalizationTextBox
     Private TextNameValue As String
     Private TextIndexValue As Integer
     Private SpaceValue As Integer
+    Private LocFontScaleValue As Double
 
     <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(False)> _
     Public Property TextProvider() As LocalizationTextProvider
@@ -112,7 +113,18 @@ Public Class LocalizationTextBox
         End Set
     End Property
 
-    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(False)> _
+    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(False)>
+    Public Property LocFontScale() As Double
+        Get
+            Return LocFontScaleValue
+        End Get
+        Set(ByVal Value As Double)
+            If Value < 0 Then Throw New ArgumentOutOfRangeException
+            LocFontScaleValue = Value
+        End Set
+    End Property
+
+    <DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden), Browsable(False)>
     Public Shadows ReadOnly Property IsLoaded() As Boolean
         Get
             Return TextNameValue <> ""
@@ -247,7 +259,7 @@ Public Class LocalizationTextBox
         If TextIndexValue < TextCount Then
             TextBox_Text = TextList.Text(TextIndexValue)
             If IsGlyphTextValue Then
-                Using i = TextListLOC.GetBitmap(FontPixel, FontPixel, TextIndexValue, SpaceValue)
+                Using i = TextListLOC.GetBitmap(FontPixel, FontPixel, LocFontScale, TextIndexValue, SpaceValue)
                     PictureBox_Image = i
                 End Using
             End If

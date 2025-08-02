@@ -3,7 +3,7 @@
 '  File:        FormMain.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 文本本地化工具主窗体
-'  Version:     2011.01.03.
+'  Version:     2025.08.03.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -67,6 +67,7 @@ Public Class FormMain
                     .TabIndex = n
 
                     .Space = Des.Space
+                    .LocFontScale = Des.LocFontScale
                     If Des.FontName <> "" Then .Font = New Font(Des.FontName, Des.FontPixel, FontStyle.Regular, GraphicsUnit.Pixel)
                     .FontPixel = Des.FontPixel
 
@@ -96,6 +97,7 @@ Public Class FormMain
                 .TabIndex = ApplicationData.CurrentProject.LocalizationTextBoxDescriptors.Length - 1
 
                 .Space = Des.Space
+                .LocFontScale = Des.LocFontScale
                 If Des.FontName <> "" Then .Font = New Font(Des.FontName, Des.FontPixel, FontStyle.Regular, GraphicsUnit.Pixel)
                 .FontPixel = Des.FontPixel
 
@@ -134,7 +136,9 @@ Public Class FormMain
 
             If ApplicationData.CurrentProject.EnableLocalizationGrid Then
                 DataGridView_Multiview.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None
-                SplitContainer_Main.SplitterDistance = ApplicationData.CurrentProject.LocalizationGridWidthRatio * Me.Width
+                Dim SplitterDistance = ApplicationData.CurrentProject.LocalizationGridWidthRatio * Me.Width
+                If SplitterDistance < 0 Then SplitterDistance = Me.Width / 2
+                SplitContainer_Main.SplitterDistance = SplitterDistance
                 Dim RowHeadersWidth As Integer = ApplicationData.CurrentProject.LocalizationRowHeaderWidthRatio * SplitContainer_Main.SplitterDistance
                 If RowHeadersWidth < 4 Then RowHeadersWidth = 4
                 DataGridView_Multiview.RowHeadersWidth = RowHeadersWidth
@@ -369,7 +373,7 @@ Public Class FormMain
             If L.TextProvider.ContainsKey(TextName) Then
                 If L.IsGlyphText Then
                     Dim TextListLOC = CType(L.TextProvider.Item(TextName), LOCList)
-                    Dim Image = TextListLOC.GetBitmap(L.FontPixel, L.FontPixel, TextIndex, L.Space)
+                    Dim Image = TextListLOC.GetBitmap(L.FontPixel, L.FontPixel, L.LocFontScale, TextIndex, L.Space)
                     If Image Is Nothing Then
                         Image = New Bitmap(1, 1)
                         Using g = Graphics.FromImage(Image)

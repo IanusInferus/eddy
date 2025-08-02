@@ -3,7 +3,7 @@
 '  File:        LocalizationTextListFactory.vb
 '  Location:    Eddy <Visual Basic .Net>
 '  Description: 本地化文本列表工厂默认实现
-'  Version:     2011.02.23.
+'  Version:     2025.08.03.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -34,6 +34,9 @@ Public Class LocalizationTextListFactory
         End Get
     End Property
     Public Function List(ByVal ProviderName As String, ByVal Type As String, ByVal Directory As String, ByVal Extension As String) As IEnumerable(Of String) Implements ILocalizationTextListFactory.List
+        If Not IO.Directory.Exists(Directory) Then
+            Return New List(Of String)
+        End If
         Return (From f In IO.Directory.GetFiles(Directory, "*", SearchOption.AllDirectories) Select FileName = GetRelativePath(f, Directory) Where IsMatchFileMask(FileName, "*." & Extension)).OrderBy(Function(s) s, StringComparer.CurrentCultureIgnoreCase).ToArray
     End Function
     Public Function Load(ByVal ProviderName As String, ByVal Type As String, ByVal Directory As String, ByVal Extension As String, ByVal TextName As String, ByVal IsReadOnly As Boolean, ByVal Encoding As System.Text.Encoding) As ILocalizationTextList Implements ILocalizationTextListFactory.Load
@@ -381,11 +384,11 @@ Public Class LOCList
         End Set
     End Property
 
-    Public Overridable Function GetBitmap(ByVal GlyphWidth As Integer, ByVal GlyphHeight As Integer, ByVal Index As Integer, Optional ByVal Space As Integer = 0) As Bitmap
+    Public Overridable Function GetBitmap(ByVal GlyphWidth As Integer, ByVal GlyphHeight As Integer, ByVal GlyphScale As Double, ByVal Index As Integer, Optional ByVal Space As Integer = 0) As Bitmap
         If Index < 0 OrElse Index >= Values.Length Then Return Nothing
         If Space < 0 Then Return Nothing
 
-        Return Displayer.GetBitmap(GlyphWidth, GlyphHeight, Index, Space)
+        Return Displayer.GetBitmap(GlyphWidth, GlyphHeight, GlyphScale, Index, Space)
     End Function
 
     Public Sub Flush() Implements ILocalizationTextList.Flush

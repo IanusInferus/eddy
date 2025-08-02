@@ -3,7 +3,7 @@
 '  File:        LOC1.vb
 '  Location:    Firefly.Texting <Visual Basic .Net>
 '  Description: LOC文件格式类(版本1)(图形文本)
-'  Version:     2010.09.14.
+'  Version:     2025.08.03.
 '  Copyright(C) F.R.C.
 '
 '==========================================================================
@@ -25,6 +25,7 @@ Imports Firefly.Glyphing
 Public Class GlyphText
 
     Private FontLib As New Dictionary(Of StringCode, IGlyph)
+    Private UnicodeStringToStringCode As New Dictionary(Of String, StringCode)
     Private Text As IEnumerable(Of StringCode)()
 
     ''' <summary>已重载。从字库、默认字形大小和文本码点创建实例。</summary>
@@ -37,7 +38,19 @@ Public Class GlyphText
         For Each g In CharGlyph
             Dim c = g.c
             If FontLib.ContainsKey(c) Then Continue For
+            Dim gg = New Glyph With {.c = c, .Block = g.Block, .VirtualBox = g.VirtualBox}
+            For y = 0 To gg.Block.GetUpperBound(1)
+                For x = 0 To gg.Block.GetUpperBound(0)
+                    Dim color = gg.Block(x, y)
+                    If color = &HFFFFFFFF Then
+                        gg.Block(x, y) = &HFFFFFF
+                    End If
+                Next
+            Next
             FontLib.Add(c, g)
+            If c.HasUnicodes AndAlso Not UnicodeStringToStringCode.ContainsKey(c.UnicodeString) Then
+                UnicodeStringToStringCode.Add(c.UnicodeString, c)
+            End If
         Next
 
         Me.Text = Text
@@ -46,12 +59,36 @@ Public Class GlyphText
     ''' <summary>指示指定字符码点是否存在字形。</summary>
     Private ReadOnly Property HasGlyph(ByVal StringCode As StringCode) As Boolean
         Get
-            Return FontLib.ContainsKey(StringCode) AndAlso FontLib(StringCode) IsNot Nothing
+            If FontLib.ContainsKey(StringCode) AndAlso FontLib(StringCode) IsNot Nothing Then
+                Return True
+            End If
+            If StringCode.HasUnicodes AndAlso UnicodeStringToStringCode.ContainsKey(StringCode.UnicodeString) Then
+                Dim c = UnicodeStringToStringCode(StringCode.UnicodeString)
+                If FontLib.ContainsKey(c) AndAlso FontLib(c) IsNot Nothing Then
+                    Return True
+                End If
+            End If
+            Return False
+        End Get
+    End Property
+
+    Private ReadOnly Property GetGlyph(ByVal StringCode As StringCode) As IGlyph
+        Get
+            If FontLib.ContainsKey(StringCode) AndAlso FontLib(StringCode) IsNot Nothing Then
+                Return FontLib(StringCode)
+            End If
+            If StringCode.HasUnicodes AndAlso UnicodeStringToStringCode.ContainsKey(StringCode.UnicodeString) Then
+                Dim c = UnicodeStringToStringCode(StringCode.UnicodeString)
+                If FontLib.ContainsKey(c) AndAlso FontLib(c) IsNot Nothing Then
+                    Return FontLib(c)
+                End If
+            End If
+            Throw New InvalidOperationException
         End Get
     End Property
 
     ''' <summary>绘制CharInfo表示的文本。</summary>
-    Public Overridable Function GetBitmap(ByVal GlyphWidth As Integer, ByVal GlyphHeight As Integer, ByVal TextIndex As Integer, Optional ByVal Space As Integer = 0, Optional ByVal PhoneticDictionary As Dictionary(Of String, String) = Nothing) As Bitmap
+    Public Overridable Function GetBitmap(ByVal GlyphWidth As Integer, ByVal GlyphHeight As Integer, ByVal GlyphScale As Double, ByVal TextIndex As Integer, Optional ByVal Space As Integer = 0, Optional ByVal PhoneticDictionary As Dictionary(Of String, String) = Nothing) As Bitmap
         Dim EnablePhonetic As Boolean = PhoneticDictionary IsNot Nothing
 
         Dim GlyphText As IEnumerable(Of StringCode) = Text(TextIndex)
@@ -75,16 +112,23 @@ Public Class GlyphText
                 LineWidth = 0
             ElseIf HasGlyph(c) Then
                 Line.Add(c)
-                LineWidth += GetWidth(FontLib(c).VirtualBox.Width)
+                LineWidth += GetWidth(GetGlyph(c).VirtualBox.Width * GlyphScale)
             Else
+                Dim ch As String
+                If c.HasUnicodes Then
+                    ch = c.UnicodeString
+                Else
+                    ch = "{" & c.CodeString & "}"
+                End If
                 Line.Add(c)
-                LineWidth += GetWidth(GlyphWidth)
+                LineWidth += GetWidth(GlyphWidth * ch.Select(Function(cc) If(AscW(cc) <= &HFF, 0.5, 1)).Sum())
             End If
         Next
         Lines.Add(Line.ToArray)
         Line.Clear()
         If MaxLineWidth < LineWidth Then MaxLineWidth = LineWidth
         LineWidth = 0
+        MaxLineWidth *= 1.1
 
 
         Using ZHFont As New Drawing.Font("宋体", Size, FontStyle.Regular, GraphicsUnit.Pixel)
@@ -146,15 +190,16 @@ Public Class GlyphText
                                     g.FillRectangle(Brushes.Gray, New Rectangle(x, y, GlyphWidth, GlyphHeight))
                                     x += GetWidth(GlyphWidth)
                                 ElseIf HasGlyph(c) Then
-                                    Dim Width = FontLib(c).VirtualBox.Width
-                                    Dim Glyph = FontLib(c)
+                                    Dim Glyph = GetGlyph(c)
+                                    Dim Width = Glyph.VirtualBox.Width
                                     If Glyph.VirtualBox.Width <= 0 OrElse Glyph.VirtualBox.Height <= 0 Then
 
                                     End If
                                     Using SrcImage As New Bitmap(Glyph.VirtualBox.Width, Glyph.VirtualBox.Height)
                                         SrcImage.SetRectangle(0, 0, Glyph.Block)
                                         Dim SrcRect As New Rectangle(0, 0, Glyph.VirtualBox.Width, Glyph.VirtualBox.Height)
-                                        Dim DestRect As New Rectangle(x, y, Glyph.VirtualBox.Width, Glyph.VirtualBox.Height)
+                                        Dim yy = y - Glyph.VirtualBox.Height * GlyphScale * 0.5 + GetWidth(Size) * 0.5
+                                        Dim DestRect As New Rectangle(x, yy, Glyph.VirtualBox.Width * GlyphScale, Glyph.VirtualBox.Height * GlyphScale)
                                         g.DrawImage(SrcImage, DestRect, SrcRect, GraphicsUnit.Pixel)
                                         '下面这句因为.Net Framework 2.0内部错误源矩形会向右偏移1像素
                                         'g.DrawImage(SrcImage, x, y, SrcRect, GraphicsUnit.Pixel)
@@ -164,13 +209,18 @@ Public Class GlyphText
                                         Dim ch As String = c.UnicodeString
                                         If EnablePhonetic AndAlso PhoneticDictionary.ContainsKey(ch) Then
                                             Dim s = PhoneticDictionary(ch)
-                                            Dim OffsetX As Integer = (Width - g.MeasureStringWidth(s, PFont)) \ 2
+                                            Dim OffsetX As Integer = (Width * GlyphScale - g.MeasureStringWidth(s, PFont)) \ 2
                                             If g IsNot Nothing Then g.DrawString(s, PFont, Brushes.DimGray, x + OffsetX, y - Size, StringFormat.GenericTypographic)
                                         End If
                                     End If
-                                    x += GetWidth(Width)
+                                    x += GetWidth(Width * GlyphScale)
                                 Else
-                                    Dim ch As String = c.UnicodeString
+                                    Dim ch As String
+                                    If c.HasUnicodes Then
+                                        ch = c.UnicodeString
+                                    Else
+                                        ch = "{" & c.CodeString & "}"
+                                    End If
                                     If (c.UnicodeString >= ChrQ(&H3040).ToString) AndAlso (c.UnicodeString < ChrQ(&H3100).ToString) Then
                                         Dim Width = g.MeasureStringWidth(ch, JPFont)
                                         g.DrawString(ch, JPFont, Brushes.Black, x, y, StringFormat.GenericTypographic)
